@@ -1,0 +1,117 @@
+{
+  "identity": {
+    "name": "Alex Rivera",
+    "headline": "Senior Software Engineer · Payments Platform",
+    "location": "Barcelona, Catalonia, Spain",
+    "email": "alex.rivera@example.com",
+    "phone": "+34 600 000 000",
+    "linkedin": "linkedin.com/in/alexrivera",
+    "experience_years": "10+"
+  },
+  "summary": "Software engineer with 10+ years of experience building and scaling payment platforms across fintech and e-commerce. Currently leading a team of 6 engineers responsible for the core payments API — processing millions of transactions per day across Europe and Latin America.\n\nStrong background in distributed systems and event-driven architecture. Comfortable switching between technical leadership and hands-on delivery — contributing code, reviewing architecture, and working closely with product and compliance teams.",
+  "experience": [
+    {
+      "company": "FinCo",
+      "title": "Senior Software Engineer → Engineering Lead, Payments",
+      "period": "Mar 2020 – present",
+      "location": "Barcelona, Spain",
+      "highlights": [
+        "Led migration of the monolithic payments service to an event-driven microservices architecture (Kafka + Go) — reduced p99 latency by 40% and enabled independent scaling per payment method",
+        "Built the fraud detection pipeline integrating three third-party risk providers with a local rules engine — reduced chargebacks by 22% in the first quarter after launch",
+        "Grew the team from 2 to 6 engineers; introduced engineering ladders, quarterly tech reviews, and a rotating on-call structure",
+        "Led PCI-DSS Level 1 compliance project: scoped the cardholder data environment, coordinated penetration testing, and managed remediation across 4 teams",
+        "Designed and shipped the multi-currency settlement module supporting 12 currencies and 3 payout schedules — unblocked expansion into 5 new markets"
+      ],
+      "stack": ["Go", "Kafka", "PostgreSQL", "Kubernetes", "AWS", "Terraform"]
+    },
+    {
+      "company": "ShopGrid",
+      "title": "Software Engineer, Checkout",
+      "period": "Jun 2017 – Feb 2020",
+      "location": "Madrid, Spain",
+      "highlights": [
+        "Owned the checkout API serving 2M+ daily active users across web and mobile; maintained 99.95% uptime through two Black Friday peaks",
+        "Rebuilt the discount and promotions engine from scratch — cut promotion setup time from 3 days to under 2 hours for the business team",
+        "Introduced contract testing between checkout and inventory services, eliminating a class of production incidents caused by silent API changes",
+        "Mentored 2 junior engineers; both were promoted within 18 months"
+      ],
+      "stack": ["Node.js", "TypeScript", "React", "PostgreSQL", "Redis", "Docker"]
+    },
+    {
+      "company": "Devhaus",
+      "title": "Junior → Mid Software Engineer",
+      "period": "Sep 2014 – May 2017",
+      "location": "Valencia, Spain",
+      "highlights": [
+        "Delivered full-stack features across 6 client projects (retail, logistics, healthcare) as a consultant in a small agency",
+        "Built a real-time warehouse dashboard using WebSockets — replaced a manual refresh flow that had been in place for 5 years",
+        "Introduced automated testing to the agency's default project template, raising average coverage from 0% to 65%"
+      ],
+      "stack": ["PHP", "JavaScript", "MySQL", "Vue.js", "Laravel"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitat Politècnica de Catalunya",
+      "degree": "B.Sc. Computer Science",
+      "equivalent": "Bachelor's degree (EQF Level 6)",
+      "period": "2010 – 2014",
+      "notes": "Specialisation in distributed systems and networks. Final project: a peer-to-peer file-sharing protocol with Byzantine fault tolerance."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect – Associate",
+      "issuer": "AWS",
+      "year": 2023
+    },
+    {
+      "name": "Certified Kubernetes Application Developer (CKAD)",
+      "issuer": "The Linux Foundation",
+      "year": 2022
+    },
+    {
+      "name": "Professional Scrum Master (PSM I)",
+      "issuer": "Scrum.org",
+      "year": 2020
+    }
+  ],
+  "skills": {
+    "languages_and_frameworks": ["Go", "TypeScript", "Node.js", "React", "Python", "PHP"],
+    "cloud_and_infrastructure": ["AWS", "Kubernetes", "Docker", "Terraform", "Kafka", "PostgreSQL", "Redis"],
+    "methodologies": ["Domain-Driven Design", "Event-Driven Architecture", "Scrum", "TDD", "GitHub Flow"]
+  },
+  "languages": [
+    { "language": "Spanish", "level": "Native" },
+    { "language": "English", "level": "C1 (professional)" },
+    { "language": "Catalan", "level": "Native" }
+  ],
+  "awards": [
+    {
+      "name": "Hack to the Future — 1st place",
+      "issuer": "FinCo",
+      "date": "November 2022",
+      "description": "Won the company-wide hackathon with a prototype for real-time spend analytics using streaming aggregations over the payments event log. The prototype was productionised and shipped 6 months later."
+    }
+  ],
+  "side_projects": [
+    {
+      "name": "pago-cli",
+      "status": "Active · open source",
+      "description": "Command-line tool for reconciling personal bank exports (CSV/OFX) against a local ledger. Built for privacy — runs entirely offline, no cloud sync.",
+      "stack": ["Go", "SQLite"]
+    },
+    {
+      "name": "kafka-lag-exporter",
+      "status": "Active · open source",
+      "description": "Prometheus exporter for Kafka consumer group lag with per-partition granularity. Used in production at FinCo before an equivalent was added to the official ecosystem.",
+      "stack": ["Go", "Prometheus", "Kafka"]
+    },
+    {
+      "name": "homelab",
+      "status": "Ongoing",
+      "description": "Self-hosted infrastructure running on a mini-PC cluster: Proxmox, TrueNAS, Home Assistant, and a local Ollama instance for experimenting with LLM integrations without cloud dependencies.",
+      "stack": ["Proxmox", "TrueNAS", "Docker", "Ollama", "Home Assistant"]
+    }
+  ]
+}

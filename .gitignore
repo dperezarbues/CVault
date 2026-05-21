@@ -20,3 +20,9 @@
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CV personal data — keep private, copy cv.example.json → cv.json to get started
+src/data/cv.json
+
+# Generated PDFs contain personal data
+public/*.pdf

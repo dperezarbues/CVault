@@ -23,7 +23,10 @@ if [ ! -f "$TYPST_BIN" ]; then
   echo "   Done."
 fi
 
-echo "→ Compiling src/typst/cv.typ → public/cv.pdf"
-rm -f public/cv.pdf
-"$TYPST_BIN" compile --root . src/typst/cv.typ public/cv.pdf
-echo "✓ public/cv.pdf generated"
+LAYOUT=${1:-default}
+OUTPUT="public/cv${1:+-$1}.pdf"
+
+echo "→ Compiling src/typst/cv.typ → ${OUTPUT} (layout: ${LAYOUT})"
+rm -f "$OUTPUT"
+"$TYPST_BIN" compile --root . --input layout="${LAYOUT}" src/typst/cv.typ "$OUTPUT"
+echo "✓ ${OUTPUT} generated"
