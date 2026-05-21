@@ -1,0 +1,147 @@
+{
+  "identity": {
+    "name": "David Pérez Arbués",
+    "headline": "Engineering Lead · .com Membership @ adidas",
+    "location": "Zaragoza, Aragón, Spain",
+    "email": "dperezarbues@gmail.com",
+    "experience_years": "15+"
+  },
+  "summary": "Software engineering leader with 15+ years of experience, from legacy Java systems to modern cloud-native microservices and cross-platform digital products. At Adidas since 2019, currently leading .com Membership — the React-powered experience behind vouchers, exclusive access, raffles, and loyalty features for millions of adidas members.\n\nTrack record of taking ownership of ambiguous, high-stakes situations: internalized a fully external team (12 contractors → in-house), delivered a blocked microfrontend migration in 3 months, expanded a mobile-native rendering technology (Latte) across all of adidas.com in 6 months. Strong hands-on engineering instincts — built internal NestJS libraries before open-source equivalents existed; reduced on-call incidents by 80% through quality engineering practices at Deutsche Bank.\n\nBackground in AI/ML research from 2009 (Deep Belief Networks for BCI at University of Zaragoza) gives a grounded, non-hype perspective on AI. Also experienced with IoT: in 2024, designed and built a full smart locker kiosk system end-to-end — edge-first, Balena, custom TCP binary protocol, XState, NestJS, AWS CDK.",
+  "experience": [
+    {
+      "company": "adidas",
+      "title": "Senior Software Engineer (Engineering Lead, .com Membership)",
+      "period": "Aug 2022 – present",
+      "location": "Zaragoza, Spain",
+      "highlights": [
+        "Internalized a fully external team (12 Merkle contractors) in 7 months, building a stable in-house org of 5 engineers + 2 QAs",
+        "Delivered microfrontend migration in 3 months on a hard deadline despite losing most senior knowledge holders; extended the Adidas microfrontend framework to support nested microfrontends",
+        "Built and shipped the Latte microfrontend to production in 6 months; expanded JSON-driven rendering to checkout, PDP, PLP and other .com surfaces",
+        "Presented microfrontend migration strategy and Latte case study to ~100 Adidas engineers each",
+        "Introduced code quality culture: githooks, coverage thresholds, rotating quality champion role, improved deployment flows",
+        "Oct–Nov 2025: Interim Director of Software Engineering — directed Membership org, participated in Director-level meetings with Senior Director of SE, designed 2026 value-led team structure",
+        "2026: expanded scope to include .com Acquisition team; built AI-powered SDLC orchestration platform (Claude Agent SDK + XState v5 + Fastify + Next.js) to accelerate Glass migration",
+        "Team size: ~12 engineers, 5 direct reports"
+      ],
+      "stack": ["React", "TypeScript", "Node.js", "Nx", "Jest", "Vitest", "Vite", "AWS Lambda", "DynamoDB", "Kubernetes", "Docker", "XState v5", "Fastify", "Next.js"]
+    },
+    {
+      "company": "Partum",
+      "title": "Tech Lead & Sole Engineer",
+      "period": "2024 (parallel to adidas)",
+      "location": "Remote",
+      "highlights": [
+        "Designed and built a new generation smart locker kiosk from scratch — edge-first, Raspberry Pi + NestJS + React inside Docker managed by Balena",
+        "Integrated Kerong smart lock hardware via a custom TCP binary protocol (STX/ETX framed) over raw sockets",
+        "Kiosk UI driven entirely by XState v5 state machines (delivery and pickup flows)",
+        "Moved cloud communication to AWS IoT and WebSockets; provisioned all infrastructure with AWS CDK v2"
+      ],
+      "stack": ["NestJS", "React", "XState v5", "TypeScript", "Balena", "AWS CDK v2", "DynamoDB", "Lambda", "socket.io", "Turborepo", "Nginx"]
+    },
+    {
+      "company": "adidas",
+      "title": "Software Engineer (Backend Lead, Connection Studio)",
+      "period": "Jan 2019 – Aug 2022",
+      "location": "Zaragoza, Spain",
+      "highlights": [
+        "Led the full re-architecture of Connection Studio 2.0: migrated from Java/Spring to Node.js/NestJS/TypeScript, replaced Oracle DB with DynamoDB",
+        "Built a suite of internal NestJS libraries before equivalent open-source solutions existed: fluent DynamoDB query builder, decorator-driven Kafka router, @Cache() method decorator, runtime decorator discovery",
+        "Reduced monthly deployments to weekly via GitHub Flow and CI/CD improvements; introduced Sonar, Instana, Grafana, Opsgenie",
+        "Migrated mission-critical microservices to AWS Lambda; introduced Terraform and AWS CDK for IaC",
+        "Mentored one engineer across 3+ years and 3 technology shifts (Java BE → Node.js BE → React FE)",
+        "Promoted to Senior Software Engineer in 2022"
+      ],
+      "stack": ["TypeScript", "Node.js", "NestJS", "React", "Nx", "AWS Lambda", "DynamoDB", "Apache Kafka", "Kubernetes", "Docker", "Terraform", "Kong API Gateway"]
+    },
+    {
+      "company": "GFT Group",
+      "title": "Software Engineer",
+      "period": "Jan 2014 – Jan 2019",
+      "location": "Zaragoza, Spain (client: Deutsche Bank UK)",
+      "highlights": [
+        "Technical area lead for architecture, code quality, and security on the EUS project at Deutsche Bank UK",
+        "80% reduction in on-call incidents through Java and Unix quality engineering",
+        "Led knowledge transfer to HCL India (technical and functional); led disaster recovery planning",
+        "Voluntarily took on frontend work on dbPalace after self-studying Angular when no frontend engineer was available"
+      ],
+      "stack": ["Java / J2EE", "Spring Boot", "Angular", "PL/SQL", "WebSphere", "Informatica PowerCenter", "Python", "Perl"]
+    },
+    {
+      "company": "everis",
+      "title": "Consultant / Analyst",
+      "period": "May 2011 – Jan 2014",
+      "location": "Madrid, Spain (client: Ministerio de Economía y Competitividad)",
+      "highlights": [
+        "Developer and analyst for the unified application processing system and its data model",
+        "Continuous development and improvement of the document processing system",
+        "Created and improved Oracle stored procedures for inter-application data transfers"
+      ],
+      "stack": ["Java / J2EE", "Oracle SQL", "PL/SQL", "iBatis", "jBPM"]
+    },
+    {
+      "company": "Universidad de Zaragoza",
+      "title": "Researcher",
+      "period": "Jan 2009 – Jan 2010",
+      "location": "Zaragoza, Spain",
+      "highlights": [
+        "Research on Deep Belief Networks applied to brain-computer interfaces: using EEG signals to control a wheelchair through pattern recognition",
+        "Implemented learning algorithms in Matlab; built a handwritten digit recogniser via camera as proof of concept",
+        "Publication: zaguan.unizar.es/record/5100"
+      ],
+      "stack": ["Matlab", "Deep Belief Networks", "EEG signal processing"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad de Zaragoza",
+      "degree": "Ingeniería Superior de Telecomunicaciones",
+      "equivalent": "Telecommunications Engineering — Master's equivalent (EQF Level 7)",
+      "period": "2000 – 2010",
+      "notes": "Covers networks, systems, signal processing, and embedded systems. Combined with part-time work during the later years."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Oracle Cloud Infrastructure 2023 Certified Architect Associate",
+      "issuer": "Oracle",
+      "year": "2023"
+    },
+    {
+      "name": "AWS Certified Solutions Architect – Associate",
+      "issuer": "AWS",
+      "year": "2022"
+    },
+    {
+      "name": "CKAD: Certified Kubernetes Application Developer",
+      "issuer": "The Linux Foundation",
+      "year": "2022"
+    },
+    {
+      "name": "Oracle Certified Professional, Java SE 8",
+      "issuer": "Oracle",
+      "year": "2017"
+    },
+    {
+      "name": "Professional Scrum Master (PSM I)",
+      "issuer": "Scrum.org",
+      "year": "2018"
+    },
+    {
+      "name": "Cambridge English: Advanced (CAE) — Grade A — C2",
+      "issuer": "University of Cambridge",
+      "year": "2016"
+    }
+  ],
+  "skills": {
+    "languages_and_frameworks": ["TypeScript", "JavaScript", "Node.js", "React", "Go", "Python", "Java", "NestJS", "XState"],
+    "cloud_and_infra": ["AWS (Lambda, DynamoDB, API Gateway, S3, CDK, IoT)", "Kubernetes", "Docker", "Terraform", "Serverless Framework", "Balena"],
+    "data_and_messaging": ["DynamoDB", "PostgreSQL", "Oracle", "Apache Kafka", "WebSockets", "socket.io"],
+    "observability_and_tooling": ["Instana", "Kibana", "Grafana", "Sonar", "Nx", "Turborepo", "Vite", "Biome"],
+    "methodologies": ["Scrum (PSM I)", "SAFe", "Kanban", "GitHub Flow", "Single-table DynamoDB design", "Microfrontend architecture"]
+  },
+  "languages": [
+    { "language": "Spanish", "level": "Native" },
+    { "language": "English", "level": "C2 (Cambridge Grade A)" },
+    { "language": "German", "level": "Basic" }
+  ]
+}
