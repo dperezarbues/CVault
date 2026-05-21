@@ -7,8 +7,10 @@ export default function Certifications() {
       <div className="space-y-1">
         {cv.certifications.map((cert, i) => (
           <div key={i} className="flex items-baseline justify-between gap-2 text-sm">
-            <span className="text-gray-800">{cert.name}</span>
-            <span className="shrink-0 text-gray-500">{cert.issuer} · {cert.year}</span>
+            <span className={cert.expired ? 'text-gray-400' : 'text-gray-800'}>{cert.name}</span>
+            <span className="shrink-0 text-gray-400">
+              {cert.issuer} · {cert.year}{cert.expired ? ' · expired' : ''}
+            </span>
           </div>
         ))}
       </div>

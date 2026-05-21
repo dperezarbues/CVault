@@ -2,9 +2,7 @@ import cv from '@/data/cv.json'
 
 const LABELS: Record<string, string> = {
   languages_and_frameworks: 'Languages & Frameworks',
-  cloud_and_infra: 'Cloud & Infrastructure',
-  data_and_messaging: 'Data & Messaging',
-  observability_and_tooling: 'Observability & Tooling',
+  cloud_and_infrastructure: 'Cloud & Infrastructure',
   methodologies: 'Methodologies',
 }
 

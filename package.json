@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "bash scripts/generate-pdf.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate-pdf": "bash scripts/generate-pdf.sh"
   },
   "dependencies": {
     "next": "15.5.18",
