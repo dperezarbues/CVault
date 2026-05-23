@@ -1,171 +1,263 @@
-#import "theme.typ": *
+#import "styles.typ": *
 #import "components.typ": *
 
-#let data = json("/src/data/cv.json")
+#let data = normalize-cv(json(sys.inputs.at("cv_file", default: "/src/data/cv.json")))
 
 // ── Summary ───────────────────────────────────────────────────────────────────
-#let render-summary() = [
-  #cv-section("Summary")
+#let render-summary(pre: section-pre, post: section-post) = [
+  #cv-section("Summary", pre: pre, post: post, id: "summary")
   #for (i, para) in data.summary.split("\n\n").enumerate() {
     if i > 0 { v(sp-xl) }
-    text(size: fs-md, para)
+    text(size: fs-md)[#parse-links(para)]
   }
 ]
 
 // ── Experience ────────────────────────────────────────────────────────────────
-#let render-experience() = [
-  #cv-section("Experience")
+#let render-experience(pre: section-pre, post: section-post) = [
+  #cv-section("Experience", pre: pre, post: post, id: "experience")
   #for (ji, job) in data.experience.enumerate() {
     if ji > 0 { v(sp-xl) }
     block(breakable: false)[
+      #let subtitle = job.at("subtitle", default: "")
+      #let period   = job.at("period",   default: "")
+      #bookmark(job.title + if subtitle != "" { " · " + subtitle } else { "" } + if period != "" { " · " + period } else { "" }, level: 2)
       #grid(
         columns: (1fr, auto),
         gutter: sp-sm,
         text(size: fs-lg, weight: "bold", fill: c-ink, job.title),
-        text(size: fs-sm, fill: c-muted, job.period),
+        text(size: fs-sm, fill: c-muted, period),
       )
-      #v(sp-sm)
-      #text(size: fs-sm, fill: c-muted)[#job.company — #job.location]
-      #v(sp-sm)
-      #for (hi, hl) in job.highlights.enumerate() {
-        if hi > 0 { v(sp-2xs) }
-        if ji == 0 and hi == 2 {
-          let needle = "Bolder Award (April 2026)"
-          let parts = hl.split(needle)
-          if parts.len() >= 2 [
-            • #text(size: fs-md)[#(parts.at(0))#link(<bolder-award>)[Bolder Award (April 2026)]#(parts.at(1))]
-          ] else [
-            • #text(size: fs-md)[#hl]
-          ]
-        } else [
-          • #text(size: fs-md)[#hl]
-        ]
-      }
-      #if "stack" in job {
+      #if subtitle != "" {
         v(sp-sm)
-        for t in job.stack { pill(t); h(pill-gap) }
+        text(size: fs-sm, fill: c-muted, subtitle)
+      }
+      #let highlights = job.at("highlights", default: ())
+      #if highlights.len() > 0 {
+        v(sp-sm)
+        for (hi, hl) in highlights.enumerate() {
+          if hi > 0 { v(sp-2xs) }
+          [• #text(size: fs-md)[#parse-links(hl)]]
+        }
+      }
+      #let tags = job.at("tags", default: ())
+      #if tags.len() > 0 {
+        v(sp-sm)
+        for t in tags { pill(t); h(pill-gap) }
       }
     ]
   }
 ]
 
 // ── Awards ────────────────────────────────────────────────────────────────────
-#let render-awards() = [
-  #cv-section("Awards")
-  #metadata("") <bolder-award>
+#let render-awards(pre: section-pre, post: section-post) = [
+  #cv-section("Awards", pre: pre, post: post, id: "awards")
   #for (i, award) in data.awards.enumerate() {
     if i > 0 { v(sp-md) }
     block(breakable: false)[
+      #let subtitle = award.at("subtitle", default: "")
+      #bookmark(award.title + if subtitle != "" { " · " + subtitle } else { "" }, level: 2)
       #grid(
         columns: (1fr, auto),
         gutter: sp-sm,
-        text(size: fs-lg, weight: "bold", fill: c-ink, award.name),
-        text(size: fs-sm, fill: c-muted)[#award.issuer · #award.date],
+        text(size: fs-lg, weight: "bold", fill: c-ink, award.title),
+        text(size: fs-sm, fill: c-muted, subtitle),
       )
-      #v(sp-sm)
-      #text(size: fs-md, award.description)
-    ]
-  }
-]
-
-// ── Skills ────────────────────────────────────────────────────────────────────
-#let render-skills() = [
-  #cv-section("Skills")
-  #set par(justify: false)
-  #set text(hyphenate: false)
-  #let s = data.skills
-  #let dot = "\u{00a0}· "
-  #grid(
-    columns: (1fr, 1fr, 1fr),
-    column-gutter: skills-gutter,
-    [
-      #text(size: fs-2xs, weight: "bold", tracking: skills-label-tracking, fill: c-light)[LANGUAGES & FRAMEWORKS]
-      #v(sp-sm, weak: true)
-      #text(size: fs-sm, fill: c-body, s.languages_and_frameworks.join(dot))
-    ],
-    [
-      #text(size: fs-2xs, weight: "bold", tracking: skills-label-tracking, fill: c-light)[CLOUD & INFRASTRUCTURE]
-      #v(sp-sm, weak: true)
-      #text(size: fs-sm, fill: c-body, s.cloud_and_infrastructure.join(dot))
-    ],
-    [
-      #text(size: fs-2xs, weight: "bold", tracking: skills-label-tracking, fill: c-light)[METHODOLOGIES]
-      #v(sp-sm, weak: true)
-      #text(size: fs-sm, fill: c-body, s.methodologies.join(dot))
-    ],
-  )
-]
-
-// ── Education ─────────────────────────────────────────────────────────────────
-#let render-education() = [
-  #cv-section("Education")
-  #for (i, edu) in data.education.enumerate() {
-    if i > 0 { v(sp-md) }
-    block(breakable: false)[
-      #grid(
-        columns: (1fr, auto),
-        gutter: sp-sm,
-        text(size: fs-lg, weight: "bold", fill: c-ink, edu.institution),
-        text(size: fs-sm, fill: c-muted, edu.period),
-      )
-      #v(sp-sm, weak: true)
-      #text(size: fs-md, edu.degree) \
-      #text(size: fs-sm, fill: c-muted, edu.equivalent) \
-      #v(sp-sm, weak: true)
-      #text(size: fs-sm, fill: c-muted, edu.notes)
-    ]
-  }
-]
-
-// ── Languages ─────────────────────────────────────────────────────────────────
-#let render-languages() = [
-  #cv-section("Languages")
-  #set text(hyphenate: false)
-  #for lang in data.languages [
-    #text(size: fs-md)[*#lang.language* ]#text(size: fs-sm, fill: c-muted, lang.level)#h(gap-lg)
-  ]
-]
-
-// ── Certifications ────────────────────────────────────────────────────────────
-#let render-certifications() = [
-  #cv-section("Certifications")
-  #for (i, cert) in data.certifications.enumerate() {
-    let expired = cert.at("expired", default: false)
-    if i > 0 { v(sp-sm) }
-    block(breakable: false)[
-      #text(size: fs-sm, fill: if expired { c-light } else { c-body }, cert.name) \
-      #text(size: fs-xs, fill: c-light)[#cert.issuer · #cert.year#if expired [ · exp.]]
-    ]
-  }
-]
-
-// ── Side Projects ─────────────────────────────────────────────────────────────
-#let render-side-projects() = [
-  #cv-section("Side Projects & Interests")
-  #for (i, proj) in data.side_projects.enumerate() {
-    if i > 0 { v(sp-md) }
-    block(breakable: false)[
-      #text(size: fs-lg, weight: "bold", fill: c-ink, proj.name)
-      #h(gap-xs)
-      #text(size: fs-xs, fill: c-light, proj.status)
-      #v(sp-sm)
-      #text(size: fs-md, proj.description)
-      #if "stack" in proj {
+      #let desc = award.at("description", default: "")
+      #if desc != "" {
         v(sp-sm)
-        for t in proj.stack { pill(t); h(pill-gap) }
+        text(size: fs-md)[#parse-links(desc)]
       }
     ]
   }
 ]
 
+// ── Skills ────────────────────────────────────────────────────────────────────
+#let render-skills(pre: section-pre, post: section-post) = [
+  #cv-section("Skills", pre: pre, post: post, id: "skills")
+  #set par(justify: false)
+  #set text(hyphenate: false)
+  #let dot    = "\u{00a0}· "
+  #let groups = data.skills
+  #grid(
+    columns: groups.map(_ => 1fr),
+    column-gutter: skills-gutter,
+    ..groups.map(g => [
+      #text(size: fs-2xs, weight: "bold", tracking: skills-label-tracking, fill: c-light, upper(g.name))
+      #v(sp-sm, weak: true)
+      #text(size: fs-sm, fill: c-body, g.entries.join(dot))
+    ])
+  )
+]
+
+// ── Education ─────────────────────────────────────────────────────────────────
+#let render-education(pre: section-pre, post: section-post) = [
+  #cv-section("Education", pre: pre, post: post, id: "education")
+  #for (i, edu) in data.education.enumerate() {
+    if i > 0 { v(sp-md) }
+    block(breakable: false)[
+      #let period   = edu.at("period",   default: "")
+      #let subtitle = edu.at("subtitle", default: "")
+      #let desc     = edu.at("description", default: "")
+      #bookmark(edu.title + if period != "" { " · " + period } else { "" }, level: 2)
+      #grid(
+        columns: (1fr, auto),
+        gutter: sp-sm,
+        text(size: fs-lg, weight: "bold", fill: c-ink, edu.title),
+        text(size: fs-sm, fill: c-muted, period),
+      )
+      #if subtitle != "" {
+        v(sp-sm, weak: true)
+        text(size: fs-md, subtitle)
+      }
+      #if desc != "" {
+        v(sp-sm, weak: true)
+        text(size: fs-sm, fill: c-muted, desc)
+      }
+    ]
+  }
+]
+
+// ── Languages ─────────────────────────────────────────────────────────────────
+#let render-languages(pre: section-pre, post: section-post) = [
+  #cv-section("Languages", pre: pre, post: post, id: "languages")
+  #set text(hyphenate: false)
+  #for lang in data.languages [
+    #text(size: fs-md)[*#lang.title* ]#text(size: fs-sm, fill: c-muted, lang.at("subtitle", default: ""))#h(gap-lg)
+  ]
+]
+
+// ── Certifications ────────────────────────────────────────────────────────────
+#let render-certifications(pre: section-pre, post: section-post) = [
+  #cv-section("Certifications", pre: pre, post: post, id: "certifications")
+  #for (i, cert) in data.certifications.enumerate() {
+    let tags    = cert.at("tags", default: ())
+    let expired = "expired" in tags
+    if i > 0 { v(sp-sm) }
+    block(breakable: false)[
+      #text(size: fs-sm, fill: if expired { c-light } else { c-body }, cert.title) \
+      #text(size: fs-xs, fill: c-light)[#cert.at("subtitle", default: "")#if expired [ · exp.]]
+    ]
+  }
+]
+
+// ── Side Projects ─────────────────────────────────────────────────────────────
+#let render-side-projects(pre: section-pre, post: section-post) = [
+  #cv-section("Side Projects & Interests", pre: pre, post: post, id: "side_projects")
+  #for (i, proj) in data.side_projects.enumerate() {
+    if i > 0 { v(sp-md) }
+    block(breakable: false)[
+      #let subtitle = proj.at("subtitle", default: "")
+      #bookmark(proj.title, level: 2)
+      #text(size: fs-lg, weight: "bold", fill: c-ink, proj.title)
+      #if subtitle != "" { h(gap-xs); text(size: fs-xs, fill: c-light, subtitle) }
+      #let desc = proj.at("description", default: "")
+      #if desc != "" {
+        v(sp-sm)
+        text(size: fs-md)[#parse-links(desc)]
+      }
+      #let tags = proj.at("tags", default: ())
+      #if tags.len() > 0 {
+        v(sp-sm)
+        for t in tags { pill(t); h(pill-gap) }
+      }
+    ]
+  }
+]
+
+// ── Core Strengths ────────────────────────────────────────────────────────────
+#let render-core-strengths(pre: section-pre, post: section-post) = {
+  if "core_strengths" not in data { return }
+  [
+    #cv-section("Core Strengths", pre: pre, post: post, id: "core_strengths")
+    #set par(justify: false)
+    #set text(hyphenate: false)
+    #for s in data.core_strengths { pill(s); h(pill-gap) }
+  ]
+}
+
+// ── Leadership Profile ────────────────────────────────────────────────────────
+#let render-leadership-profile(pre: section-pre, post: section-post) = {
+  if "leadership_profile" not in data { return }
+  [
+    #cv-section("Leadership Profile", pre: pre, post: post, id: "leadership_profile")
+    #let lp = data.leadership_profile
+    #let sub = lp.at("subtitle", default: "")
+    #if sub != "" {
+      text(size: fs-sm, fill: c-muted, sub)
+      v(sp-sm)
+    }
+    #let highlights = lp.at("highlights", default: ())
+    #for (i, hl) in highlights.enumerate() {
+      if i > 0 { v(sp-2xs) }
+      [• #text(size: fs-md)[#parse-links(hl)]]
+    }
+  ]
+}
+
+// ── Generic fallback ──────────────────────────────────────────────────────────
+#let render-generic(id, pre: section-pre, post: section-post) = {
+  let sec = data.at(id, default: none)
+  if sec == none { return }
+  let label = id.replace("_", " ")
+  cv-section(label, pre: pre, post: post, id: id)
+  if type(sec) == str {
+    text(size: fs-md)[#parse-links(sec)]
+  } else if type(sec) == array {
+    for (i, item) in sec.enumerate() {
+      if i > 0 { v(sp-2xs) }
+      if type(item) == str {
+        [• #text(size: fs-md)[#parse-links(item)]]
+      } else if type(item) == dictionary {
+        let title    = item.at("title",    default: item.at("name", default: ""))
+        let subtitle = item.at("subtitle", default: "")
+        let period   = item.at("period",   default: "")
+        let desc     = item.at("description", default: "")
+        if title != "" {
+          grid(
+            columns: (1fr, auto),
+            gutter: sp-sm,
+            text(size: fs-lg, weight: "bold", fill: c-ink, title),
+            text(size: fs-sm, fill: c-muted, period),
+          )
+          if subtitle != "" { v(sp-xs); text(size: fs-sm, fill: c-muted, subtitle) }
+          v(sp-xs)
+        }
+        if "highlights" in item {
+          for (hi, hl) in item.highlights.enumerate() {
+            if hi > 0 { v(sp-2xs) }
+            [• #text(size: fs-md)[#parse-links(hl)]]
+          }
+        } else if desc != "" {
+          text(size: fs-md)[#parse-links(desc)]
+        }
+      }
+    }
+  } else if type(sec) == dictionary {
+    let sub = sec.at("subtitle", default: "")
+    if sub != "" { text(size: fs-sm, fill: c-muted, sub); v(sp-sm) }
+    if "highlights" in sec {
+      for (i, hl) in sec.highlights.enumerate() {
+        if i > 0 { v(sp-2xs) }
+        [• #text(size: fs-md)[#parse-links(hl)]]
+      }
+    } else {
+      let desc = sec.at("description", default: "")
+      if desc != "" { text(size: fs-md)[#parse-links(desc)] }
+    }
+  }
+}
+
 // ── Dispatcher ────────────────────────────────────────────────────────────────
-#let render-section(id) = {
-  if id == "summary"             { render-summary() }
-  else if id == "experience"     { render-experience() }
-  else if id == "awards"         { render-awards() }
-  else if id == "skills"         { render-skills() }
-  else if id == "education"      { render-education() }
-  else if id == "languages"      { render-languages() }
-  else if id == "certifications" { render-certifications() }
-  else if id == "side_projects"  { render-side-projects() }
+#let render-section(id, pre: section-pre, post: section-post) = {
+  if id == "summary"                 { render-summary(pre: pre, post: post) }
+  else if id == "experience"         { render-experience(pre: pre, post: post) }
+  else if id == "awards"             { render-awards(pre: pre, post: post) }
+  else if id == "skills"             { render-skills(pre: pre, post: post) }
+  else if id == "education"          { render-education(pre: pre, post: post) }
+  else if id == "languages"          { render-languages(pre: pre, post: post) }
+  else if id == "certifications"     { render-certifications(pre: pre, post: post) }
+  else if id == "side_projects"      { render-side-projects(pre: pre, post: post) }
+  else if id == "core_strengths"     { render-core-strengths(pre: pre, post: post) }
+  else if id == "leadership_profile" { render-leadership-profile(pre: pre, post: post) }
+  else                               { render-generic(id, pre: pre, post: post) }
 }

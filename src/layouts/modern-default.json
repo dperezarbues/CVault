@@ -1,0 +1,25 @@
+{
+  "header": {
+    "style": "band"
+  },
+  "style": {
+    "header_bg": "#111827",
+    "accent":    "#3b82f6"
+  },
+  "sections": [
+    { "id": "summary",      "breakable": true  },
+    { "id": "experience",   "breakable": true  },
+    { "id": "awards",       "breakable": false },
+    { "id": "side_projects","breakable": false },
+    { "id": "skills",       "breakable": false },
+    {
+      "type": "columns",
+      "columns": 2,
+      "breakable": true,
+      "content": [
+        ["education", "languages"],
+        ["certifications"]
+      ]
+    }
+  ]
+}

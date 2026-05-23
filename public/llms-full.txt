@@ -1,0 +1,357 @@
+# CVault — Full Reference for LLMs
+
+> Privacy-first CV editor that compiles PDFs using Typst. CV data is stored in the browser; sent to the server only transiently during PDF compilation and immediately discarded.
+
+This file contains the complete reference for generating valid CVault data — CV content JSON schema, layout structure, and all style parameters. No external links need to be followed.
+
+---
+
+## What CVault does
+
+Users maintain their CV as a JSON file stored locally in the browser. They select a template, customise layout and style through a visual editor, and generate a high-quality PDF compiled by Typst on the server. The data is processed transiently and immediately discarded — no server-side storage.
+
+**Templates available:** default, modern, minimal, sidebar
+
+**Workflow for an agent helping a user:**
+1. Collect the user's information
+2. Generate a JSON file following the schema below
+3. The user imports it via the "↑ Import" button in the editor at /editor
+4. They pick a template, customise, and download their PDF
+
+---
+
+## CV JSON Schema
+
+The CV is a single JSON object. All sections are optional except `identity`.
+
+### identity (required)
+
+```json
+{
+  "identity": {
+    "name": "Ada Lovelace",
+    "headline": "Software Engineer & Mathematician",
+    "contact": [
+      { "type": "email",    "value": "ada@example.com",               "key": "Email"    },
+      { "type": "phone",    "value": "+44 7000 000000",               "key": "Phone"    },
+      { "type": "location", "value": "London, UK",                    "key": "Location" },
+      { "type": "linkedin", "value": "linkedin.com/in/adalovelace",   "key": "LinkedIn" },
+      { "type": "github",   "value": "github.com/ada",                "key": "GitHub"   },
+      { "type": "web",      "value": "adalovelace.io",                "key": "Website"  }
+    ]
+  }
+}
+```
+
+Contact `type` values: `email`, `phone`, `location`, `linkedin`, `github`, `medium`, `web`
+- `email` → mailto: link; `phone` → tel: link; `location` → plain text (no link)
+- All others → URL link with matching icon
+- `key` is the display label (any string, e.g. "Email", "E-mail", "Work email")
+- `value` for linkedin/github: full URL or path both work
+
+### summary
+
+Plain text. Separate paragraphs with `\n\n`. Single newlines are treated as spaces.
+
+```json
+{ "summary": "First paragraph.\n\nSecond paragraph." }
+```
+
+### experience
+
+```json
+{
+  "experience": [
+    {
+      "title":      "Principal Engineer",
+      "subtitle":   "Acme Corp · London",
+      "period":     "2021 – Present",
+      "highlights": [
+        "Led migration to microservices, reducing p99 latency by 40%.",
+        "Built internal platform adopted by 5 teams."
+      ],
+      "tags": ["Go", "Kubernetes", "PostgreSQL"]
+    }
+  ]
+}
+```
+
+Fields: `title` (string), `subtitle` (string, convention: "Company · Location"), `period` (string), `highlights` (string[]), `tags` (string[])
+
+### education
+
+```json
+{
+  "education": [
+    {
+      "title":       "University of Cambridge",
+      "subtitle":    "MA · Mathematics",
+      "period":      "2015 – 2019",
+      "description": "Optional notes, thesis, honours."
+    }
+  ]
+}
+```
+
+### skills
+
+Array of groups. Each group has a `name` and an `entries` array of strings.
+
+```json
+{
+  "skills": [
+    { "name": "Languages & Frameworks", "entries": ["Go", "TypeScript", "React"] },
+    { "name": "Cloud & Infrastructure",  "entries": ["AWS", "Kubernetes", "Terraform"] },
+    { "name": "Methodologies",           "entries": ["DDD", "TDD", "Event Sourcing"] }
+  ]
+}
+```
+
+### languages
+
+```json
+{
+  "languages": [
+    { "title": "English", "subtitle": "Native" },
+    { "title": "Spanish", "subtitle": "Professional working proficiency" }
+  ]
+}
+```
+
+### certifications
+
+`tags: ["expired"]` renders an expired warning style. Otherwise `tags` is typically empty.
+
+```json
+{
+  "certifications": [
+    { "title": "AWS Solutions Architect – Professional", "subtitle": "Amazon Web Services · 2023", "tags": [] },
+    { "title": "CKA: Certified Kubernetes Administrator", "subtitle": "CNCF · 2021", "tags": ["expired"] }
+  ]
+}
+```
+
+### awards
+
+```json
+{
+  "awards": [
+    {
+      "title":       "Best Paper Award",
+      "subtitle":    "IEEE Conference · 2022",
+      "description": "Optional. Supports [links](https://example.com)."
+    }
+  ]
+}
+```
+
+### side_projects
+
+```json
+{
+  "side_projects": [
+    {
+      "title":       "typst-cv",
+      "subtitle":    "open source",
+      "description": "A Typst template library. [GitHub](https://github.com/example/typst-cv).",
+      "tags":        ["Typst", "Open Source"]
+    }
+  ]
+}
+```
+
+### Links in text fields
+
+`highlights`, `description`, and `summary` all support Markdown-style links:
+- External: `[display text](https://example.com)`
+- Internal PDF jump: `[display text](#section-id)` — e.g. `[see projects](#side_projects)`
+
+Section IDs for internal links: `summary`, `experience`, `education`, `skills`, `languages`, `certifications`, `awards`, `side_projects`
+
+---
+
+## Complete minimal example
+
+```json
+{
+  "identity": {
+    "name": "Ada Lovelace",
+    "headline": "Software Engineer",
+    "contact": [
+      { "type": "email",    "value": "ada@example.com",             "key": "Email"    },
+      { "type": "location", "value": "London, UK",                  "key": "Location" },
+      { "type": "linkedin", "value": "linkedin.com/in/adalovelace", "key": "LinkedIn" }
+    ]
+  },
+  "summary": "Experienced engineer with a background in distributed systems.",
+  "experience": [
+    {
+      "title": "Senior Engineer",
+      "subtitle": "Acme Corp · London",
+      "period": "2020 – Present",
+      "highlights": ["Designed and shipped the new data pipeline.", "Mentored 4 junior engineers."],
+      "tags": ["Go", "Kafka", "PostgreSQL"]
+    }
+  ],
+  "education": [
+    { "title": "University of Cambridge", "subtitle": "MA · Computer Science", "period": "2016 – 2020" }
+  ],
+  "skills": [
+    { "name": "Backend", "entries": ["Go", "Python", "PostgreSQL", "Redis"] }
+  ],
+  "languages": [
+    { "title": "English", "subtitle": "Native" }
+  ]
+}
+```
+
+---
+
+## Layout JSON structure
+
+Layout JSON controls section ordering, page-break behaviour, multi-column layout, and style overrides. It is separate from CV content and managed by the visual editor, but can also be produced directly.
+
+### Top-level fields
+
+| Field | Type | Description |
+|---|---|---|
+| `header` | object | `{"style": "split"}` for default/minimal, `{"style": "band"}` for modern, `{"style": "sidebar"}` for sidebar |
+| `sections` | array | Main column sections (see below) |
+| `sidebar_sections` | array | Sidebar template only — sections rendered in the left sidebar |
+| `style` | object | Style overrides (see Style parameters section) |
+
+### Section entry
+
+```json
+{ "id": "experience", "breakable": true, "pre_spacing": 0.5, "post_spacing": 0.2 }
+```
+
+- `id`: section ID string
+- `breakable`: whether Typst may insert a page break before this block (default: true)
+- `pre_spacing`: space above section title in em (optional, overrides template default)
+- `post_spacing`: space below section rule in em (optional, overrides template default)
+
+### Columns section
+
+```json
+{
+  "type": "columns",
+  "columns": 2,
+  "breakable": true,
+  "content": [["education", "languages"], ["certifications"]]
+}
+```
+
+### Layout examples
+
+**Default / Minimal:**
+```json
+{
+  "header": { "style": "split" },
+  "sections": [
+    { "id": "summary",    "breakable": true  },
+    { "id": "experience", "breakable": true  },
+    { "id": "skills",     "breakable": false },
+    { "type": "columns", "columns": 2, "breakable": true,
+      "content": [["education", "languages"], ["certifications"]] }
+  ]
+}
+```
+
+**Sidebar:**
+```json
+{
+  "header": { "style": "sidebar" },
+  "sidebar_sections": [
+    { "id": "contact",        "breakable": false },
+    { "id": "skills",         "breakable": true  },
+    { "id": "languages",      "breakable": false },
+    { "id": "certifications", "breakable": true  }
+  ],
+  "sections": [
+    { "id": "summary",    "breakable": true },
+    { "id": "experience", "breakable": true },
+    { "id": "education",  "breakable": false }
+  ]
+}
+```
+
+---
+
+## Style parameters
+
+All style values go in the `style` key of the layout JSON. All are optional.
+
+### Common — all templates
+
+| Key | Type | Range / options | Default |
+|---|---|---|---|
+| `font_family` | string | New Computer Modern, Libertinus Serif, Helvetica Neue, Optima, Georgia | New Computer Modern |
+| `name_size` | number (pt) | 12 – 24 | 17 |
+| `headline_size` | number (pt) | 8 – 14 | 10 |
+| `entry_size` | number (pt) | 8.5 – 12 | 9.5 |
+| `body_size` | number (pt) | 7.5 – 11 | 8.5 |
+| `section_heading_size` | number (pt) | 6 – 10 | 7.5 |
+| `body_color` | hex string | any | #333333 |
+| `heading_color` | hex string | any | #111111 |
+| `muted_color` | hex string | any | #666666 |
+| `line_height` | number (em) | 0.5 – 1.2 | 0.7 |
+| `section_pre` | number (em) | 0.2 – 0.9 | 0.5 |
+| `section_post` | number (em) | 0.05 – 0.4 | 0.2 |
+| `section_rule_gap` | number (em) | 0 – 0.5 | 0.2 |
+| `show_footer` | "true" / "false" | — | "false" |
+| `show_qr` | "true" / "false" | — | "false" |
+| `qr_url` | string (URL) | — | "" |
+| `show_contact_icons` | "true" / "false" | — | "false" |
+| `show_contact_labels` | "true" / "false" | — | "false" |
+
+### default & minimal template
+
+| Key | Default | Purpose |
+|---|---|---|
+| `accent_color` | #1a56db | Hyperlinks and section accents |
+
+### modern template
+
+| Key | Default | Purpose |
+|---|---|---|
+| `header_bg` | #111827 | Dark band header background |
+| `accent` | #3b82f6 | Hyperlinks and accent elements |
+
+### sidebar template
+
+| Key | Default | Purpose |
+|---|---|---|
+| `sidebar_bg` | #1e2d3d | Sidebar background colour |
+| `sidebar_accent` | #5b9bd5 | Sidebar section heading colour |
+| `sidebar_link_color` | #5b9bd5 | Links and icons in the sidebar |
+| `sidebar_text` | #bcc8d4 | Body text in the sidebar |
+| `sidebar_width` | 6.5 | Sidebar width in cm (range: 4.5 – 9.0) |
+| `accent_color` | #1a56db | Hyperlinks in the main column |
+
+### Style example
+
+```json
+{
+  "style": {
+    "font_family": "Helvetica Neue",
+    "heading_color": "#0f172a",
+    "accent_color": "#f59e0b",
+    "body_size": 9.0,
+    "line_height": 0.75,
+    "show_footer": "true",
+    "show_contact_icons": "true"
+  }
+}
+```
+
+---
+
+## Tips for agents
+
+- **subtitle is flexible.** No strict format. Common conventions: "Company · Location" for experience, "Degree · Field" for education, "Issuer · Year" for certifications. The · separator is a display convention only.
+- **Omit sections with no data.** All top-level sections except `identity` are optional. Empty arrays are noisier than omitting the field.
+- **tags are decorative pills.** Keep them short (1–3 words). For certifications, `"expired"` is a special tag that renders a warning style.
+- **summary paragraphs.** Use `\n\n` (literal double newline in JSON: `\\n\\n`) to separate paragraphs.
+- **contact key field.** The `key` is only shown when `show_contact_labels` is enabled. It can be any display string.
+- **Internal PDF links.** Use `[text](#section-id)` inside text fields to create clickable PDF cross-references. The link silently degrades to plain text if the target section is not rendered in the chosen layout.

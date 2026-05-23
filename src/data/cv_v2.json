@@ -8,7 +8,78 @@
     "linkedin": "linkedin.com/in/dperezarbues",
     "experience_years": "15+"
   },
-  "summary": "Software engineering leader with 15+ years of experience, currently working within adidas DXP — the engineering organisation that builds and operates adidas.com, the Flagship app, CONFIRMED, and Running. Leading the .com Membership chapter (9 engineers, 5 direct reports), with scope recently expanded to include .com Acquisition (3 engineers focused on Glass decommission) and cross-platform coordination across Upper Funnel surfaces — PDP, PLP, and checkout — through the Latte rendering initiative.\n\nIn 2025, stepped up to cover the Director of Software Engineering role during a period of leave — gaining direct exposure to Director-level decision-making and contributing to the 2026 value-led team structure.\n\nStrong hands-on engineering instincts alongside the leadership breadth: in 2026 led AI-enabled engineering transformation — pioneering GenAI-assisted delivery that halved Glass Decommission timelines and earning the adidas Bolder Award (April 2026). A consistent track record of hands-on delivery: critical microfrontend migrations under hard deadlines, internal tooling built before the ecosystem caught up. Grounded in AI/ML research since 2009 (Deep Belief Networks applied to brain-computer interfaces, University of Zaragoza) — a foundation that informs a practical, first-principles approach to AI adoption.",
+  "core_strengths": [
+    {
+      "strength": "Technical Leadership & Deep Expertise",
+      "note": "Stays hands-on by design — unblocks team-level problems, leads architecture decisions, and contributes code while running a 12-engineer chapter"
+    },
+    {
+      "strength": "Building High-Performing Engineering Teams",
+      "note": "Internalized a 12-person external team in 7 months; direct report feedback rated 'among the best I have seen' by manager across career; 4 consecutive ALMOST ALWAYS ratings on people management"
+    },
+    {
+      "strength": "Strong Ownership & Execution at Scale",
+      "note": "Delivered Glass Decommissioning in 3 months vs. 6-month estimate; covered Director role solo for 1+ month; recognised for operating at M2 level while at M1"
+    },
+    {
+      "strength": "Driving Alignment Across Organizations",
+      "note": "Coordinates API contracts and releases across .com, iOS, and Android; bridges engineering and business/product stakeholders; presents to 100+ engineers"
+    },
+    {
+      "strength": "Coaching & Talent Development",
+      "note": "Mentored one engineer across 3+ years and 3 technology shifts; onboarded 3 new direct reports in 2025; proactively supports career growth inside and outside the team"
+    },
+    {
+      "strength": "AI-Enabled Engineering Transformation",
+      "note": "Built an AI-powered SDLC orchestration platform (Claude Agent SDK + XState v5) that drives delivery tickets autonomously — analysis → implementation → code review → security audit → PR"
+    },
+    {
+      "strength": "Decision-Making Under Ambiguity",
+      "note": "Thrives during reorganizations, shifting priorities, and hard deadlines — described by peers as 'calm under pressure, showing composure while analysing the situation to come up with a plan'"
+    },
+    {
+      "strength": "Psychological Safety & Team Enablement",
+      "note": "Creates environments where engineers take full ownership of epics, feel heard, and are protected from unnecessary pressure — directly linked to team productivity and retention"
+    }
+  ],
+  "summary": "Engineering leader combining deep technical expertise with a strong track record of team development, cross-functional alignment, and execution at scale — currently Engineering Lead within adidas DXP, managing a 12-engineer chapter (5 direct reports) spanning Membership and Acquisition on adidas.com. In 2025, covered the Director of Software Engineering role for 1+ month — participating in Director-level forums, reporting to the Senior Director across all of Membership (.com + apps), and co-designing the 2026 value-led team structure. Consistently rated 'almost always at the highest level' on people management across four consecutive review cycles; described by manager as the go-to leader for complex situations and by peers as 'calm under pressure, creating a safe and motivating environment.'\n\nIn 2026, pioneered AI-enabled engineering transformation that halved Glass Decommission timelines — recognised with the adidas Bolder Award (April 2026). Stays hands-on by design: critical microfrontend migrations under hard deadlines, internal tooling built before the ecosystem caught up, and Upper Funnel platform experience across PDP, PLP, and navigation surfaces. Grounded in AI/ML research since 2009 (Deep Belief Networks applied to brain-computer interfaces, University of Zaragoza) — a foundation that informs a practical, first-principles approach to AI adoption.",
+  "leadership_profile": {
+    "chapter_size": "12 engineers (9 Membership + 3 Acquisition), 5 direct reports",
+    "highlights": [
+      "Covered Director of Software Engineering role for 1+ month during leave — operated at M2 level, participated in Senior Director meetings, owned cross-team reporting and co-designed the 2026 value-led team structure (cross-functional squads: backend, .com, iOS, Android)",
+      "Internalized a 12-person fully-external Merkle team in 7 months; built onboarding, knowledge transfer, and team culture from scratch",
+      "Onboarded and integrated 3 new direct reports in 2025, creating a supportive and encouraging environment that fosters growth (manager rating: ALMOST ALWAYS, 4.0/5)",
+      "Managed complex personnel dynamics while keeping the team focused and motivated — direct report feedback rated 'among the best I have seen' by manager across career",
+      "Introduced rotating quality champion role, coverage thresholds, Sonar gates, and githooks — lifted quality culture across two chapters",
+      "Consistently rated ALMOST ALWAYS (4.0/5) on people management across four consecutive review cycles (2024–2025)"
+    ]
+  },
+  "leadership_competencies": [
+    {
+      "competency": "Calm under pressure",
+      "evidence": "Peers consistently note composure during tight timelines — 'seems never in a hurry, shows calmness while analysing the situation to come up with a plan' (peer 360, Jan 2026)"
+    },
+    {
+      "competency": "Psychological safety",
+      "evidence": "Described as creating 'a safe and motivating environment where every voice is heard'; direct report feedback rated among the best seen by manager across career"
+    },
+    {
+      "competency": "Technical depth as force multiplier",
+      "evidence": "Hybrid IC/lead profile — 'finds elegant solutions in minutes' for team blockers while simultaneously driving chapter-level planning; peer-noted 'hybrid profile: very needed'"
+    },
+    {
+      "competency": "Stakeholder translation",
+      "evidence": "Recognised by manager for 'translating complex technical requirements into business-friendly language'; acts as bridge between engineering teams and cross-functional partners"
+    },
+    {
+      "competency": "Team growth & coaching",
+      "evidence": "Mentored one engineer across 3+ years and 3 technology shifts; proactively supported direct report career exploration with cross-adidas introductions; 3 new direct reports onboarded in 2025"
+    },
+    {
+      "competency": "Operating above role",
+      "evidence": "Manager explicitly stated 'operating at an M2 mindset' while at M1 level; covered Director responsibilities solo for 1+ month"
+    }
+  ],
   "experience": [
     {
       "company": "adidas",
@@ -17,9 +88,10 @@
       "location": "Zaragoza, Spain",
       "highlights": [
         "2025 — Covered the Director of Software Engineering role during a period of leave: participated in Director-level meetings with the Senior Director of SE, reported across all of Membership (.com + apps), and collaborated on the 2026 value-led team structure (cross-functional squads: backend, .com, iOS, Android)",
-        "Led .com Membership chapter (9 engineers, 5 direct reports) with expanded scope covering .com Acquisition (3 engineers, Glass decommission); responsible for KLO/RUN/Support — including security issue resolution — coaching, capacity planning, and collaboration with QA Excellence on testing standards",
-        "2026 — Led Glass Decommissioning: delivered in 3 months what was estimated at 6 months with 4.5 FTEs, including unplanned scope — recognised with the adidas Bolder Award (April 2026); led go-live security process (security architecture review, penetration testing coordination); leading AI-driven creation and migration of end-to-end tests across Glass components",
-        "Drove Latte cross-platform initiative: built the microfrontend from scratch and expanded JSON-driven rendering to Upper Funnel surfaces — checkout, PDP, PLP — coordinating joint API contracts and releases across .com and iOS/Android teams",
+        "Led .com Membership chapter (9 engineers, 5 direct reports) with expanded scope covering .com Acquisition (3 engineers, Glass decommission); responsible for chapter KPIs, hiring, capacity planning, and coaching — including security issue resolution and collaboration with QA Excellence on testing standards",
+        "2026 — AI-enabled engineering transformation: pioneered GenAI-assisted delivery for the Glass Decommissioning initiative — built an AI-powered SDLC orchestration platform (Claude Agent SDK + XState v5 + Next.js) driving tickets autonomously through analysis → implementation → code review → security audit → PR. Delivered in 3 months what was estimated at 6 months with 4.5 FTEs; recognised with the adidas Bolder Award (April 2026). Learnings shared across DXP and CE to drive broader adoption",
+        "Led go-live security process for Glass Decommissioning: owned security architecture review, coordinated penetration testing, and resolved all findings before production release; also leading AI-driven creation and migration of end-to-end tests across Glass components",
+        "Upper Funnel platform: drove Latte cross-platform initiative, expanding JSON-driven rendering to PDP, PLP, and navigation surfaces — owning the product discovery and presentation layer architecture across web and mobile; coordinated joint API contracts and releases across .com and iOS/Android teams",
         "Internalized a fully external team (12 Merkle contractors → in-house) in 7 months; delivered the resulting microfrontend migration in 3 months on a hard deadline, extending the framework to support nested microfrontends",
         "Presented microfrontend migration strategy and Latte case study to ~100 adidas engineers each",
         "Defined and owned testing strategy: coverage thresholds, rotating quality champion role, Sonar gates, githooks, and improved deployment flows — lifting quality culture across both chapters"
@@ -157,7 +229,7 @@
   "skills": {
     "languages_and_frameworks": ["TypeScript", "JavaScript", "Node.js", "React", "Go", "Python", "Java", "NestJS", "XState", "Express.js"],
     "cloud_and_infrastructure": ["AWS (Lambda, DynamoDB, API Gateway, S3, CDK, IoT)", "Kubernetes", "Docker", "Terraform", "Balena", "Apache Kafka", "WebSockets", "PostgreSQL", "Instana", "Grafana", "Sonar"],
-    "methodologies": ["Scrum (PSM I)", "SAFe (Agilist + Practitioner)", "Kanban", "GitHub Flow", "Microfrontend architecture"]
+    "methodologies": ["Scrum (PSM I)", "SAFe (Agilist + Practitioner)", "Kanban", "GitHub Flow", "Microfrontend architecture", "AI-enabled SDLC", "Chapter management", "Value-led team design"]
   },
   "languages": [
     { "language": "Spanish", "level": "Native" },

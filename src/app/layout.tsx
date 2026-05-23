@@ -1,16 +1,26 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import cv from '@/data/cv.json'
 
 export const metadata: Metadata = {
-  title: `${cv.identity.name} — CV`,
-  description: cv.summary.slice(0, 160),
+  title: 'CVault — Privacy-first CV editor',
+  description: 'Build a professional CV with a live editor. Compiles to PDF with Typst. Your data lives in your browser — no accounts, no cloud storage.',
 }
+
+const GOATCOUNTER_CODE = process.env.NEXT_PUBLIC_GOATCOUNTER_CODE
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        {GOATCOUNTER_CODE && (
+          <script
+            data-goatcounter={`https://${GOATCOUNTER_CODE}.goatcounter.com/count`}
+            async
+            src="//gc.zgo.at/count.js"
+          />
+        )}
+      </body>
     </html>
   )
 }

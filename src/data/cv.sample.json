@@ -1,0 +1,100 @@
+{
+  "identity": {
+    "name": "Alex Rivera",
+    "headline": "Senior Software Engineer · Platform & Infrastructure",
+    "contact": [
+      { "type": "email",    "value": "alex.rivera@example.com",          "key": "Email"    },
+      { "type": "phone",    "value": "+1 415 555 0182",                  "key": "Phone"    },
+      { "type": "location", "value": "San Francisco, CA",                "key": "Location" },
+      { "type": "linkedin", "value": "linkedin.com/in/alex-rivera-eng",  "key": "LinkedIn" },
+      { "type": "github",   "value": "github.com/alexrivera",            "key": "GitHub"   }
+    ]
+  },
+  "summary": "Platform engineer with 9 years of experience building and operating distributed systems at scale. Focused on developer productivity, reliability engineering, and the intersection of infrastructure and product.\n\nPassionate about open-source tooling and mentoring engineers transitioning into platform roles.",
+
+  "experience": [
+    {
+      "title": "Staff Platform Engineer",
+      "subtitle": "Veritas Systems · San Francisco, CA",
+      "period": "2021 – Present",
+      "highlights": [
+        "Designed and led migration of 120 microservices from EC2 to Kubernetes, reducing infra costs by 38% and improving deployment frequency from weekly to on-demand.",
+        "Built an internal developer platform (IDP) adopted by 6 product teams; cut new-service onboarding from 3 days to under 2 hours.",
+        "Established SLO framework and error-budget policies; p99 latency for critical paths dropped from 340ms to 90ms over 18 months.",
+        "Grew and led a team of 5 platform engineers across two time zones."
+      ],
+      "tags": ["Go", "Kubernetes", "Terraform", "AWS", "Datadog"]
+    },
+    {
+      "title": "Senior Software Engineer",
+      "subtitle": "Meridian Health · Remote",
+      "period": "2018 – 2021",
+      "highlights": [
+        "Re-architected the claims processing pipeline to event-driven (Kafka), enabling real-time fraud detection and reducing processing lag from 4 hours to under 3 minutes.",
+        "Led HIPAA compliance initiative across 14 backend services; zero findings in two consecutive external audits.",
+        "Mentored 4 junior engineers; 3 were promoted within 18 months."
+      ],
+      "tags": ["Java", "Kafka", "PostgreSQL", "GCP"]
+    },
+    {
+      "title": "Software Engineer",
+      "subtitle": "Loopline Technologies · Austin, TX",
+      "period": "2015 – 2018",
+      "highlights": [
+        "Built core billing infrastructure processing $2M+ monthly recurring revenue.",
+        "Introduced contract testing (Pact) across 8 services, reducing integration failures in production by 60%."
+      ],
+      "tags": ["Python", "Django", "Stripe", "Redis", "PostgreSQL"]
+    }
+  ],
+
+  "education": [
+    {
+      "title": "University of Texas at Austin",
+      "subtitle": "BSc · Computer Science",
+      "period": "2011 – 2015",
+      "description": "Graduated with honours. Teaching assistant for Distributed Systems (CS378) for two semesters."
+    }
+  ],
+
+  "skills": [
+    { "name": "Languages",        "entries": ["Go", "Python", "TypeScript", "Java", "Bash"] },
+    { "name": "Infrastructure",   "entries": ["Kubernetes", "Terraform", "AWS", "GCP", "Helm"] },
+    { "name": "Data & Messaging", "entries": ["PostgreSQL", "Redis", "Kafka", "Elasticsearch"] },
+    { "name": "Observability",    "entries": ["Datadog", "Prometheus", "Grafana", "OpenTelemetry"] }
+  ],
+
+  "languages": [
+    { "title": "English", "subtitle": "Native" },
+    { "title": "Spanish", "subtitle": "Professional working proficiency" }
+  ],
+
+  "certifications": [
+    { "title": "Certified Kubernetes Administrator (CKA)", "subtitle": "CNCF · 2023",                     "tags": []          },
+    { "title": "AWS Solutions Architect – Professional",   "subtitle": "Amazon Web Services · 2022",      "tags": []          },
+    { "title": "Google Professional Cloud Architect",      "subtitle": "Google Cloud · 2020",             "tags": ["expired"] }
+  ],
+
+  "awards": [
+    {
+      "title": "Platform Engineering Excellence Award",
+      "subtitle": "Veritas Systems · 2023",
+      "description": "Awarded for the IDP project, recognised as the highest-impact internal tooling initiative of the year."
+    }
+  ],
+
+  "side_projects": [
+    {
+      "title": "driftwatch",
+      "subtitle": "open source",
+      "description": "CLI tool for detecting infrastructure drift between Terraform state and live cloud resources. 600+ GitHub stars.",
+      "tags": ["Go", "AWS", "Terraform"]
+    },
+    {
+      "title": "k8s-cost-exporter",
+      "subtitle": "open source",
+      "description": "Prometheus exporter that surfaces per-namespace and per-deployment cost estimates from cloud billing APIs.",
+      "tags": ["Go", "Kubernetes", "Prometheus"]
+    }
+  ]
+}
