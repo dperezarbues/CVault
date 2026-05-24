@@ -39,3 +39,6 @@ public/wasm/
 public/typst/
 
 # Fonts are committed (public/fonts/) — small static assets with no reliable CDN source
+test-results/
+playwright-report/
+.playwright/
