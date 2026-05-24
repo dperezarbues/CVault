@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition, useRef, createContext, useContext, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef, createContext, useContext, useMemo, useCallback } from 'react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -10,7 +10,8 @@ import {
   useSortable, arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { generateEditorPdf } from './actions'
+import { compileTypst, isCompilerReady, onCompilerReady } from '@/lib/typst-compile'
+import QRCode from 'qrcode'
 import { getItem, setItem, KEYS } from '@/lib/storage'
 
 // ── Section registry ──────────────────────────────────────────────────────────
@@ -574,7 +575,9 @@ export default function LayoutEditor({
   onPdfChange: (url: string) => void; onGenerating: (v: boolean) => void
 }) {
   const [state, setState] = useState<EditorState>(() => parseLayout(initialLayout, styleParams, loadStyleOverrides()))
-  const [isPending, startTransition] = useTransition()
+  type CompileState = 'idle' | 'loading' | 'compiling'
+  const [compileState, setCompileState] = useState<CompileState>('idle')
+  const [compilerReady, setCompilerReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [activePanel, setActivePanel] = useState<Panel>('layout')
@@ -721,20 +724,58 @@ export default function LayoutEditor({
 
   // ── Generate ─────────────────────────────────────────────────────────────────
 
-  function handleGenerate() {
+  async function handleGenerate() {
+    if (compileState !== 'idle') return
     setError(null)
+    const layoutData = serializeForTypst(state)
+
+    // Determine QR SVG if the template requests it
+    let qrSvg: string | undefined
+    const style = (layoutData as { style?: Record<string, unknown> }).style ?? {}
+    if (style.show_qr === 'true' || style.show_qr === true) {
+      let qrUrl = String(style.qr_url ?? '').trim()
+      if (!qrUrl) {
+        try {
+          const cv = JSON.parse(cvContent) as { identity?: { contact?: Array<{ type: string; value: string }>; linkedin?: string } }
+          const contact = cv.identity?.contact ?? []
+          const entry = contact.find(e => e.type === 'linkedin')
+          const val = entry?.value ?? cv.identity?.linkedin ?? ''
+          qrUrl = val ? (val.startsWith('http') ? val : `https://${val}`) : 'https://linkedin.com'
+        } catch { qrUrl = 'https://linkedin.com' }
+      }
+      qrSvg = await QRCode.toString(qrUrl, { type: 'svg', margin: 0 })
+    }
+
+    setCompileState(isCompilerReady() ? 'compiling' : 'loading')
     onGenerating(true)
-    startTransition(async () => {
-      const result = await generateEditorPdf(serializeForTypst(state), templateId, cvContent)
+    if (!isCompilerReady()) {
+      onCompilerReady(() => setCompileState('compiling'))
+    }
+    try {
+      const url = await compileTypst({
+        templateId,
+        cvContent,
+        layoutJson: JSON.stringify(layoutData),
+        qrSvg,
+      })
+      onPdfChange(url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setCompileState('idle')
       onGenerating(false)
-      if (result.success) onPdfChange(result.pdf)
-      else setError(result.error)
-    })
+    }
   }
+
+  // Track when the WASM compiler finishes initializing (for button label)
+  useEffect(() => {
+    if (isCompilerReady()) { setCompilerReady(true); return }
+    onCompilerReady(() => setCompilerReady(true))
+  }, [])
 
   // Auto-generate when parent increments the trigger (e.g. after first CV save)
   useEffect(() => {
-    if (generateTrigger > 0 && !isPending && cvContent) handleGenerate()
+    if (generateTrigger > 0 && compileState === 'idle' && cvContent) handleGenerate()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generateTrigger])
 
@@ -893,11 +934,19 @@ export default function LayoutEditor({
             <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
           </div>
 
-          <button onClick={handleGenerate} disabled={isPending}
+          <button onClick={handleGenerate} disabled={compileState !== 'idle'}
             className="w-full text-sm bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-            {isPending ? 'Generating…' : 'Generate PDF'}
+            {compileState === 'loading' ? 'Loading compiler…' : compileState === 'compiling' ? 'Compiling…' : 'Generate PDF'}
           </button>
-          <p className="text-xs text-gray-400 text-center">Preview only — does not overwrite saved layouts</p>
+          <p className="text-xs text-gray-400 text-center">
+            {compileState === 'loading'
+              ? 'Downloading compiler (~6 MB, once per session)'
+              : compileState === 'compiling'
+              ? 'Running Typst in your browser…'
+              : compilerReady
+              ? 'Runs entirely in your browser'
+              : 'Compiled locally — your CV never leaves your device'}
+          </p>
         </div>
       </div>
     </LabelCtx.Provider>

@@ -1,0 +1,74 @@
+'use client'
+
+import type { CompileRequest, CompileResponse, WorkerMessage } from './typst-worker'
+
+type PendingCallback = { resolve: (url: string) => void; reject: (err: Error) => void }
+
+let worker: Worker | null = null
+let workerReady = false
+let nextId = 0
+const pending = new Map<number, PendingCallback>()
+const readyListeners: Array<() => void> = []
+
+function getWorker(): Worker {
+  if (worker) return worker
+
+  worker = new Worker(new URL('./typst-worker.ts', import.meta.url))
+
+  worker.onmessage = (e: MessageEvent<WorkerMessage>) => {
+    const msg = e.data
+
+    if ('type' in msg && msg.type === 'ready') {
+      workerReady = true
+      readyListeners.splice(0).forEach(fn => fn())
+      return
+    }
+
+    const resp = msg as CompileResponse
+    const cb = pending.get(resp.id)
+    if (!cb) return
+    pending.delete(resp.id)
+
+    if (resp.ok) {
+      const blob = new Blob([resp.pdf], { type: 'application/pdf' })
+      cb.resolve(URL.createObjectURL(blob))
+    } else {
+      cb.reject(new Error(resp.error))
+    }
+  }
+
+  worker.onerror = (e) => {
+    const msg = e.message ?? 'Worker error'
+    for (const [id, cb] of pending) {
+      cb.reject(new Error(msg))
+      pending.delete(id)
+    }
+    worker = null
+    workerReady = false
+  }
+
+  return worker
+}
+
+export function isCompilerReady(): boolean {
+  return workerReady
+}
+
+export function onCompilerReady(fn: () => void): void {
+  if (workerReady) { fn(); return }
+  readyListeners.push(fn)
+}
+
+export async function compileTypst(options: {
+  templateId: string
+  cvContent: string
+  layoutJson: string
+  qrSvg?: string
+}): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const id = nextId++
+    pending.set(id, { resolve, reject })
+    const msg: CompileRequest = { id, ...options }
+    getWorker().postMessage(msg)
+  })
+}

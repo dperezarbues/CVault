@@ -44,15 +44,15 @@ export default function TermsPage() {
 
         <Section title="PDF generation">
           <p>
-            When you click &ldquo;Generate PDF&rdquo;, your CV JSON and layout configuration are sent to the server
-            to be compiled by <a href="https://typst.app" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Typst</a>.
-            The data is written to a temporary file, the PDF is compiled, and the temporary file is
-            deleted immediately — before the PDF is returned to you.
+            When you click &ldquo;Generate PDF&rdquo;, your CV data never leaves your device.
+            The <a href="https://typst.app" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Typst</a> compiler
+            runs entirely in your browser as a WebAssembly module (~6 MB, downloaded once and cached).
+            Compilation happens locally; no CV content is sent to any server at any point.
           </p>
           <p>
-            The server does not log CV content, persist it, or pass it to any third party.
-            Standard web server request logs (IP address, timestamp, request size) may be retained
-            by the hosting provider per their own policies.
+            The only network requests are: loading the compiler itself (from this site), loading fonts
+            (also from this site), and the GoatCounter analytics beacon described below. Your CV data
+            is never included in any of these requests.
           </p>
         </Section>
 

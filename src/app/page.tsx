@@ -56,7 +56,7 @@ export default function LandingPage() {
             {
               n: '3',
               title: 'Generate & download',
-              body: 'Hit Generate. Your CV is compiled with Typst on the server, returned as a PDF, and your data is immediately discarded.',
+              body: 'Hit Generate. Your CV is compiled with Typst directly in your browser — no data leaves your device. Download the PDF when you\'re happy.',
             },
           ] as const).map(s => (
             <div key={s.n} className="bg-gray-50 rounded-2xl p-6">
@@ -75,7 +75,7 @@ export default function LandingPage() {
         {([
           {
             title: 'Privacy-first',
-            body: "CV data is sent to the server only during PDF compilation and immediately discarded. No database, no logs, no accounts.",
+            body: 'PDF compilation runs in your browser via WebAssembly — your CV data never leaves your device. No server, no database, no logs, no accounts.',
           },
           {
             title: '4 professional templates',
