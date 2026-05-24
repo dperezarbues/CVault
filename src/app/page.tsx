@@ -111,13 +111,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* For LLMs / Agents */}
+      {/* Schema reference */}
       <section className="max-w-5xl mx-auto px-6 py-8">
         <div className="border border-gray-100 rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1">
-            <p className="text-sm font-semibold text-gray-900 mb-1">Using an AI assistant to write your CV?</p>
+            <p className="text-sm font-semibold text-gray-900 mb-1">Want to understand the CV format?</p>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Point your LLM or agent at the schema reference — it explains the full JSON format, all section types, and every style option. Your assistant can produce an importable file in one shot.
+              The schema reference documents the full JSON structure — every section type, field, and style option. Useful whether you&apos;re hand-editing your CV, writing a script to generate it, or prompting an AI assistant to produce an importable file.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
