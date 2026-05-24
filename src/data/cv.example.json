@@ -78,8 +78,22 @@
   ],
   "skills": {
     "languages_and_frameworks": ["Go", "TypeScript", "Node.js", "React", "Python", "PHP"],
-    "cloud_and_infrastructure": ["AWS", "Kubernetes", "Docker", "Terraform", "Kafka", "PostgreSQL", "Redis"],
-    "methodologies": ["Domain-Driven Design", "Event-Driven Architecture", "Scrum", "TDD", "GitHub Flow"]
+    "cloud_and_infrastructure": [
+      "AWS",
+      "Kubernetes",
+      "Docker",
+      "Terraform",
+      "Kafka",
+      "PostgreSQL",
+      "Redis"
+    ],
+    "methodologies": [
+      "Domain-Driven Design",
+      "Event-Driven Architecture",
+      "Scrum",
+      "TDD",
+      "GitHub Flow"
+    ]
   },
   "languages": [
     { "language": "Spanish", "level": "Native" },

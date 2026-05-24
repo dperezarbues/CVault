@@ -1,26 +1,40 @@
 import { createContext } from 'react'
-import { getItem, setItem, KEYS } from '@/lib/storage'
+import { getItem, KEYS, setItem } from '@/lib/storage'
 import type {
-  LayoutStructure, EditorSection, SidebarSection,
-  LayoutData, SavedConfig, StyleParam, StyleOverrides, StyleValues,
+  EditorSection,
+  LayoutData,
+  LayoutStructure,
+  SavedConfig,
+  SidebarSection,
+  StyleOverrides,
+  StyleParam,
+  StyleValues,
 } from './types'
 
-export const DEFAULT_PRE  = 0.50
-export const DEFAULT_POST = 0.20
+export const DEFAULT_PRE = 0.5
+export const DEFAULT_POST = 0.2
 
-export const LabelCtx = createContext<(id: string) => string>(id => id)
+export const LabelCtx = createContext<(id: string) => string>((id) => id)
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
 
 export function loadSaves(): SavedConfig[] {
-  try { return JSON.parse(getItem(KEYS.saves) ?? '[]') } catch { return [] }
+  try {
+    return JSON.parse(getItem(KEYS.saves) ?? '[]')
+  } catch {
+    return []
+  }
 }
 export function persistSaves(saves: SavedConfig[]) {
   setItem(KEYS.saves, JSON.stringify(saves))
 }
 
 export function loadStyleOverrides(): StyleOverrides {
-  try { return JSON.parse(getItem(KEYS.styleOverrides) ?? '{}') } catch { return {} }
+  try {
+    return JSON.parse(getItem(KEYS.styleOverrides) ?? '{}')
+  } catch {
+    return {}
+  }
 }
 export function persistStyleOverride(canonicalKey: string, value: string | number) {
   const overrides = loadStyleOverrides()
@@ -39,29 +53,37 @@ export function serializeLayout(layout: LayoutStructure): LayoutData {
   return {
     header: layout.header,
     ...(layout.sidebarSections !== undefined && {
-      sidebar_sections: layout.sidebarSections.map(s => ({
-        id: s.id, breakable: s.breakable,
-        ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
+      sidebar_sections: layout.sidebarSections.map((s) => ({
+        id: s.id,
+        breakable: s.breakable,
+        ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing }),
         ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
       })),
     }),
-    sections: layout.sections.map(s =>
+    sections: layout.sections.map((s) =>
       s.kind === 'full'
         ? {
-            id: s.id, breakable: s.breakable,
-            ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
+            id: s.id,
+            breakable: s.breakable,
+            ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing }),
             ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
           }
         : {
-            type: 'columns' as const, columns: s.columns, content: s.content, breakable: s.breakable,
-            ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
+            type: 'columns' as const,
+            columns: s.columns,
+            content: s.content,
+            breakable: s.breakable,
+            ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing }),
             ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
           },
     ),
   }
 }
 
-export function serializeForTypst(layout: LayoutStructure, style: StyleValues): LayoutData & { style?: StyleValues } {
+export function serializeForTypst(
+  layout: LayoutStructure,
+  style: StyleValues,
+): LayoutData & { style?: StyleValues } {
   return {
     ...serializeLayout(layout),
     ...(Object.keys(style).length > 0 && { style }),
@@ -73,33 +95,41 @@ export function serializeForTypst(layout: LayoutStructure, style: StyleValues): 
 export function parseLayoutStructure(raw: Record<string, unknown>): LayoutStructure {
   const rawSections = (raw.sections as Record<string, unknown>[]) ?? []
   let colIdx = 0
-  const sections: EditorSection[] = rawSections.map(s => {
+  const sections: EditorSection[] = rawSections.map((s) => {
     if (s.type === 'columns') {
       return {
-        kind: 'columns' as const, key: `columns-${colIdx++}`,
+        kind: 'columns' as const,
+        key: `columns-${colIdx++}`,
         columns: (s.columns as number) ?? 2,
         content: (s.content as string[][]) ?? [[], []],
         breakable: (s.breakable as boolean) ?? true,
-        ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  as number }),
+        ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing as number }),
         ...(s.post_spacing != null && { post_spacing: s.post_spacing as number }),
       }
     }
     return {
-      kind: 'full' as const, key: s.id as string, id: s.id as string,
+      kind: 'full' as const,
+      key: s.id as string,
+      id: s.id as string,
       breakable: (s.breakable as boolean) ?? true,
-      ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  as number }),
+      ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing as number }),
       ...(s.post_spacing != null && { post_spacing: s.post_spacing as number }),
     }
   })
 
   let sidebarSections: SidebarSection[] | undefined
   if (raw.sidebar_sections != null) {
-    sidebarSections = (raw.sidebar_sections as Array<string | { id: string; breakable?: boolean; pre_spacing?: number; post_spacing?: number }>).map(s =>
+    sidebarSections = (
+      raw.sidebar_sections as Array<
+        string | { id: string; breakable?: boolean; pre_spacing?: number; post_spacing?: number }
+      >
+    ).map((s) =>
       typeof s === 'string'
         ? { id: s, breakable: true }
         : {
-            id: s.id, breakable: s.breakable ?? true,
-            ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
+            id: s.id,
+            breakable: s.breakable ?? true,
+            ...(s.pre_spacing != null && { pre_spacing: s.pre_spacing }),
             ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
           },
     )
@@ -126,7 +156,8 @@ export function parseStyleValues(
       const v = rawStyle[p.key] ?? override
       style[p.key] = typeof v === 'number' ? v : p.default
     } else {
-      style[p.key] = (rawStyle[p.key] as string | undefined) ?? (override as string | undefined) ?? p.default
+      style[p.key] =
+        (rawStyle[p.key] as string | undefined) ?? (override as string | undefined) ?? p.default
     }
   }
   return style
@@ -143,7 +174,7 @@ export function resolveQrUrl(cvContent: string, style: Record<string, unknown>):
       identity?: { contact?: Array<{ type: string; value: string }>; linkedin?: string }
     }
     const contact = cv.identity?.contact ?? []
-    const linkedinEntry = contact.find(e => e.type === 'linkedin')
+    const linkedinEntry = contact.find((e) => e.type === 'linkedin')
     const val = linkedinEntry?.value ?? cv.identity?.linkedin ?? ''
     return val ? (val.startsWith('http') ? val : `https://${val}`) : 'https://linkedin.com'
   } catch {

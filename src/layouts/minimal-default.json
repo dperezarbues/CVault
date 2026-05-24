@@ -3,20 +3,17 @@
     "style": "stacked"
   },
   "sections": [
-    { "id": "summary",      "breakable": true  },
-    { "id": "experience",   "breakable": true  },
-    { "id": "awards",       "breakable": false },
-    { "id": "skills",       "breakable": false },
-    { "id": "side_projects","breakable": false },
-    { "id": "education",    "breakable": false },
+    { "id": "summary", "breakable": true },
+    { "id": "experience", "breakable": true },
+    { "id": "awards", "breakable": false },
+    { "id": "skills", "breakable": false },
+    { "id": "side_projects", "breakable": false },
+    { "id": "education", "breakable": false },
     {
       "type": "columns",
       "columns": 2,
       "breakable": true,
-      "content": [
-        ["certifications"],
-        ["languages"]
-      ]
+      "content": [["certifications"], ["languages"]]
     }
   ]
 }

@@ -1,23 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import type { StyleParam, StyleValues } from '../types'
 import {
-  parseStyleValues, loadStyleOverrides,
-  persistStyleOverride, clearStyleOverrides,
+  clearStyleOverrides,
+  loadStyleOverrides,
+  parseStyleValues,
+  persistStyleOverride,
 } from '../editor-utils'
+import type { StyleParam, StyleValues } from '../types'
 
-export function useStyleState(
-  initialLayout: Record<string, unknown>,
-  styleParams: StyleParam[],
-) {
+export function useStyleState(initialLayout: Record<string, unknown>, styleParams: StyleParam[]) {
   const [style, setStyle] = useState<StyleValues>(() =>
-    parseStyleValues(initialLayout, styleParams, loadStyleOverrides())
+    parseStyleValues(initialLayout, styleParams, loadStyleOverrides()),
   )
 
   function setStyleValue(key: string, value: string | number) {
-    setStyle(prev => ({ ...prev, [key]: value }))
-    const param = styleParams.find(p => p.key === key)
+    setStyle((prev) => ({ ...prev, [key]: value }))
+    const param = styleParams.find((p) => p.key === key)
     persistStyleOverride(param?.canonical ?? key, value)
   }
 
@@ -25,7 +24,7 @@ export function useStyleState(
     const defaults: StyleValues = {}
     for (const p of styleParams) defaults[p.key] = p.default
     setStyle(defaults)
-    clearStyleOverrides(styleParams.map(p => p.canonical ?? p.key))
+    clearStyleOverrides(styleParams.map((p) => p.canonical ?? p.key))
   }
 
   return { style, setStyle, setStyleValue, resetStyle }

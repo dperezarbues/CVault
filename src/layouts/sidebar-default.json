@@ -3,21 +3,21 @@
     "style": "sidebar"
   },
   "sidebar_sections": [
-    { "id": "contact",          "breakable": false },
-    { "id": "skills",           "breakable": true  },
-    { "id": "languages",        "breakable": false },
-    { "id": "certifications",   "breakable": true  }
+    { "id": "contact", "breakable": false },
+    { "id": "skills", "breakable": true },
+    { "id": "languages", "breakable": false },
+    { "id": "certifications", "breakable": true }
   ],
   "style": {
-    "sidebar_bg":     "#1e2d3d",
+    "sidebar_bg": "#1e2d3d",
     "sidebar_accent": "#5b9bd5",
-    "sidebar_text":   "#bcc8d4"
+    "sidebar_text": "#bcc8d4"
   },
   "sections": [
-    { "id": "summary",      "breakable": true  },
-    { "id": "experience",   "breakable": true  },
-    { "id": "awards",       "breakable": false },
-    { "id": "side_projects","breakable": false },
-    { "id": "education",    "breakable": false }
+    { "id": "summary", "breakable": true },
+    { "id": "experience", "breakable": true },
+    { "id": "awards", "breakable": false },
+    { "id": "side_projects", "breakable": false },
+    { "id": "education", "breakable": false }
   ]
 }

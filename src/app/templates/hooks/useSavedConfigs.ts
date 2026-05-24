@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
-import type { StyleParam, StyleValues, LayoutData, SavedConfig } from '../types'
-import { loadSaves, persistSaves, serializeLayout, parseLayoutStructure, parseStyleValues } from '../editor-utils'
-import type { LayoutStructure } from '../types'
+import { useMemo, useRef, useState } from 'react'
+import { loadSaves, parseLayoutStructure, parseStyleValues, persistSaves } from '../editor-utils'
+import type { LayoutData, LayoutStructure, SavedConfig, StyleParam, StyleValues } from '../types'
 
 export function useSavedConfigs({
   templateId,
@@ -25,14 +24,15 @@ export function useSavedConfigs({
   const importRef = useRef<HTMLInputElement>(null)
 
   const mySavesCount = useMemo(
-    () => saves.filter(s => s.templateId === templateId).length,
+    () => saves.filter((s) => s.templateId === templateId).length,
     [saves, templateId],
   )
 
   function handleSave(name: string) {
     const config: SavedConfig = {
       id: crypto.randomUUID(),
-      name, templateId,
+      name,
+      templateId,
       savedAt: Date.now(),
       layout: getLayoutSnapshot(),
       style,
@@ -50,7 +50,7 @@ export function useSavedConfigs({
   }
 
   function handleDelete(id: string) {
-    const updated = saves.filter(s => s.id !== id)
+    const updated = saves.filter((s) => s.id !== id)
     setSaves(updated)
     persistSaves(updated)
   }
@@ -59,19 +59,27 @@ export function useSavedConfigs({
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = ev => {
+    reader.onload = (ev) => {
       try {
         const raw = JSON.parse(ev.target?.result as string) as Record<string, unknown>
         onLoad(parseLayoutStructure(raw), parseStyleValues(raw, styleParams))
-      } catch { /* ignore malformed files */ }
+      } catch {
+        /* ignore malformed files */
+      }
     }
     reader.readAsText(file)
     e.target.value = ''
   }
 
   return {
-    saves, showSaveModal, setShowSaveModal,
-    importRef, mySavesCount,
-    handleSave, handleLoad, handleDelete, handleImport,
+    saves,
+    showSaveModal,
+    setShowSaveModal,
+    importRef,
+    mySavesCount,
+    handleSave,
+    handleLoad,
+    handleDelete,
+    handleImport,
   }
 }

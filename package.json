@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare": "bash scripts/setup-wasm.sh",
+    "prepare": "bash scripts/setup-wasm.sh && lefthook install",
     "setup:wasm": "bash scripts/setup-wasm.sh",
     "dev": "bash scripts/setup-wasm.sh && next dev",
     "build": "bash scripts/setup-wasm.sh && next build",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "lint": "biome check src/",
+    "lint:fix": "biome check --write src/",
+    "format": "biome format --write src/",
+    "typecheck": "tsc --noEmit",
+    "check:templates": "node scripts/check-templates.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -24,10 +27,12 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "lefthook": "^2.1.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

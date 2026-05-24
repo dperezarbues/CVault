@@ -3,11 +3,11 @@
     "name": "Your Name",
     "headline": "Your Professional Title",
     "contact": [
-      { "type": "email",    "value": "your@email.com",              "key": "Email"    },
-      { "type": "phone",    "value": "+1 000 000 000",              "key": "Phone"    },
-      { "type": "location", "value": "City, Country",               "key": "Location" },
+      { "type": "email", "value": "your@email.com", "key": "Email" },
+      { "type": "phone", "value": "+1 000 000 000", "key": "Phone" },
+      { "type": "location", "value": "City, Country", "key": "Location" },
       { "type": "linkedin", "value": "linkedin.com/in/yourprofile", "key": "LinkedIn" },
-      { "type": "github",   "value": "github.com/yourusername",     "key": "GitHub"   }
+      { "type": "github", "value": "github.com/yourusername", "key": "GitHub" }
     ]
   },
   "summary": "Your professional summary.",
@@ -27,10 +27,6 @@
       "period": "2018 – 2022"
     }
   ],
-  "skills": [
-    { "name": "Languages & Frameworks", "entries": ["Language 1", "Framework 1"] }
-  ],
-  "languages": [
-    { "title": "English", "subtitle": "Native" }
-  ]
+  "skills": [{ "name": "Languages & Frameworks", "entries": ["Language 1", "Framework 1"] }],
+  "languages": [{ "title": "English", "subtitle": "Native" }]
 }

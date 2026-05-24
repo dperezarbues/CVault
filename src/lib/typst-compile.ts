@@ -20,7 +20,7 @@ function getWorker(): Worker {
 
     if ('type' in msg && msg.type === 'ready') {
       workerReady = true
-      readyListeners.splice(0).forEach(fn => fn())
+      for (const fn of readyListeners.splice(0)) fn()
       return
     }
 
@@ -55,7 +55,10 @@ export function isCompilerReady(): boolean {
 }
 
 export function onCompilerReady(fn: () => void): void {
-  if (workerReady) { fn(); return }
+  if (workerReady) {
+    fn()
+    return
+  }
   readyListeners.push(fn)
 }
 
@@ -75,8 +78,14 @@ export async function compileTypst(options: {
     }, COMPILE_TIMEOUT_MS)
 
     pending.set(id, {
-      resolve: (url) => { clearTimeout(timer); resolve(url) },
-      reject:  (err) => { clearTimeout(timer); reject(err) },
+      resolve: (url) => {
+        clearTimeout(timer)
+        resolve(url)
+      },
+      reject: (err) => {
+        clearTimeout(timer)
+        reject(err)
+      },
     })
 
     const msg: CompileRequest = { id, ...options }

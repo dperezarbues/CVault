@@ -3,11 +3,11 @@
     "name": "Alex Rivera",
     "headline": "Senior Software Engineer · Platform & Infrastructure",
     "contact": [
-      { "type": "email",    "value": "alex.rivera@example.com",          "key": "Email"    },
-      { "type": "phone",    "value": "+1 415 555 0182",                  "key": "Phone"    },
-      { "type": "location", "value": "San Francisco, CA",                "key": "Location" },
-      { "type": "linkedin", "value": "linkedin.com/in/alex-rivera-eng",  "key": "LinkedIn" },
-      { "type": "github",   "value": "github.com/alexrivera",            "key": "GitHub"   }
+      { "type": "email", "value": "alex.rivera@example.com", "key": "Email" },
+      { "type": "phone", "value": "+1 415 555 0182", "key": "Phone" },
+      { "type": "location", "value": "San Francisco, CA", "key": "Location" },
+      { "type": "linkedin", "value": "linkedin.com/in/alex-rivera-eng", "key": "LinkedIn" },
+      { "type": "github", "value": "github.com/alexrivera", "key": "GitHub" }
     ]
   },
   "summary": "Platform engineer with 9 years of experience building and operating distributed systems at scale. Focused on developer productivity, reliability engineering, and the intersection of infrastructure and product.\n\nPassionate about open-source tooling and mentoring engineers transitioning into platform roles.",
@@ -58,10 +58,10 @@
   ],
 
   "skills": [
-    { "name": "Languages",        "entries": ["Go", "Python", "TypeScript", "Java", "Bash"] },
-    { "name": "Infrastructure",   "entries": ["Kubernetes", "Terraform", "AWS", "GCP", "Helm"] },
+    { "name": "Languages", "entries": ["Go", "Python", "TypeScript", "Java", "Bash"] },
+    { "name": "Infrastructure", "entries": ["Kubernetes", "Terraform", "AWS", "GCP", "Helm"] },
     { "name": "Data & Messaging", "entries": ["PostgreSQL", "Redis", "Kafka", "Elasticsearch"] },
-    { "name": "Observability",    "entries": ["Datadog", "Prometheus", "Grafana", "OpenTelemetry"] }
+    { "name": "Observability", "entries": ["Datadog", "Prometheus", "Grafana", "OpenTelemetry"] }
   ],
 
   "languages": [
@@ -70,9 +70,17 @@
   ],
 
   "certifications": [
-    { "title": "Certified Kubernetes Administrator (CKA)", "subtitle": "CNCF · 2023",                     "tags": []          },
-    { "title": "AWS Solutions Architect – Professional",   "subtitle": "Amazon Web Services · 2022",      "tags": []          },
-    { "title": "Google Professional Cloud Architect",      "subtitle": "Google Cloud · 2020",             "tags": ["expired"] }
+    { "title": "Certified Kubernetes Administrator (CKA)", "subtitle": "CNCF · 2023", "tags": [] },
+    {
+      "title": "AWS Solutions Architect – Professional",
+      "subtitle": "Amazon Web Services · 2022",
+      "tags": []
+    },
+    {
+      "title": "Google Professional Cloud Architect",
+      "subtitle": "Google Cloud · 2020",
+      "tags": ["expired"]
+    }
   ],
 
   "awards": [

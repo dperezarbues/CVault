@@ -1,9 +1,16 @@
-import fs from 'fs'
-import path from 'path'
-import TemplatesGallery from './TemplatesGallery'
+import fs from 'node:fs'
+import path from 'node:path'
 import type { StyleParam } from './LayoutEditor'
-type Layout     = { id: string; name: string; description: string; pdf: string }
-type Template   = { id: string; name: string; description: string; layouts: Layout[]; styleParams?: StyleParam[] }
+import TemplatesGallery from './TemplatesGallery'
+
+type Layout = { id: string; name: string; description: string; pdf: string }
+type Template = {
+  id: string
+  name: string
+  description: string
+  layouts: Layout[]
+  styleParams?: StyleParam[]
+}
 
 function readJson<T>(filePath: string): T {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T

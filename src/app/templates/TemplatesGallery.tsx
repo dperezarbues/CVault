@@ -1,16 +1,31 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from 'react'
 import dynamic from 'next/dynamic'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  clearAllData,
+  disablePrivateMode,
+  enablePrivateMode,
+  getItem,
+  isPrivateMode,
+  KEYS,
+  removeItem,
+  setItem,
+} from '@/lib/storage'
+import CvDataModal, { type CvEntry } from './CvDataModal'
 import type { StyleParam } from './LayoutEditor'
 import type { SectionDef } from './section-defs'
 import { DEFAULT_SECTIONS } from './section-defs'
-import CvDataModal, { type CvEntry } from './CvDataModal'
-import { getItem, setItem, removeItem, KEYS, isPrivateMode, enablePrivateMode, disablePrivateMode, clearAllData } from '@/lib/storage'
 
 const LayoutEditor = dynamic(() => import('./LayoutEditor'), { ssr: false })
-type Layout     = { id: string; name: string; description: string; pdf?: string }
-type Template   = { id: string; name: string; description: string; layouts: Layout[]; styleParams?: StyleParam[] }
+type Layout = { id: string; name: string; description: string; pdf?: string }
+type Template = {
+  id: string
+  name: string
+  description: string
+  layouts: Layout[]
+  styleParams?: StyleParam[]
+}
 
 type CvModalState =
   | { mode: 'new' }
@@ -45,11 +60,15 @@ export default function TemplatesGallery({
     try {
       const stored = getItem(KEYS.cvs)
       if (stored) setCvList(JSON.parse(stored) as CvEntry[])
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     try {
       const stored = getItem(KEYS.currentCv)
       if (stored) setCurrentCvId(stored)
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     if (!getItem(KEYS.onboarded)) setShowWelcome(true)
     setHydrated(true)
   }, [])
@@ -60,7 +79,7 @@ export default function TemplatesGallery({
   }
 
   const currentCv = useMemo(
-    () => cvList.find(c => c.id === currentCvId) ?? cvList[0] ?? null,
+    () => cvList.find((c) => c.id === currentCvId) ?? cvList[0] ?? null,
     [cvList, currentCvId],
   )
 
@@ -93,24 +112,25 @@ export default function TemplatesGallery({
   }
 
   function handleSaveCv(entry: CvEntry) {
-    const idx = cvList.findIndex(c => c.id === entry.id)
+    const idx = cvList.findIndex((c) => c.id === entry.id)
     const isNew = idx < 0
-    const updated = isNew
-      ? [...cvList, entry]
-      : cvList.map(c => c.id === entry.id ? entry : c)
+    const updated = isNew ? [...cvList, entry] : cvList.map((c) => (c.id === entry.id ? entry : c))
     saveCvList(updated)
     saveCurrentCvId(entry.id)
     setCvModal(null)
-    if (isNew && cvList.length === 0) setGenerateTrigger(t => t + 1)
+    if (isNew && cvList.length === 0) setGenerateTrigger((t) => t + 1)
   }
 
   function handleDeleteCv(id: string) {
-    const updated = cvList.filter(c => c.id !== id)
+    const updated = cvList.filter((c) => c.id !== id)
     saveCvList(updated)
     if (currentCvId === id) {
       const next = updated[0] ?? null
       if (next) saveCurrentCvId(next.id)
-      else { setCurrentCvId(null); removeItem(KEYS.currentCv) }
+      else {
+        setCurrentCvId(null)
+        removeItem(KEYS.currentCv)
+      }
     }
   }
 
@@ -125,7 +145,8 @@ export default function TemplatesGallery({
   }
 
   function handlePrivateToggle(enabled: boolean) {
-    if (enabled) enablePrivateMode(); else disablePrivateMode()
+    if (enabled) enablePrivateMode()
+    else disablePrivateMode()
     // Re-persist current in-memory state into the newly active store
     if (cvList.length > 0) setItem(KEYS.cvs, JSON.stringify(cvList))
     if (currentCvId) setItem(KEYS.currentCv, currentCvId)
@@ -144,7 +165,7 @@ export default function TemplatesGallery({
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = ev => {
+    reader.onload = (ev) => {
       const content = ev.target?.result as string
       const name = file.name.replace(/\.json$/i, '')
       setCvModal({ mode: 'import', content, name })
@@ -166,7 +187,6 @@ export default function TemplatesGallery({
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-
       {/* ── Col 1: Template + layout picker ──────────────────────────── */}
       <aside className="w-52 bg-white border-r border-gray-200 flex flex-col shrink-0">
         <div className="px-4 py-3 border-b border-gray-100">
@@ -174,7 +194,6 @@ export default function TemplatesGallery({
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 space-y-5">
-
           {/* CV section */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -188,6 +207,7 @@ export default function TemplatesGallery({
                   onChange={handleImportFile}
                 />
                 <button
+                  type="button"
                   onClick={() => setCvModal({ mode: 'new' })}
                   title="New CV"
                   className="text-xs text-gray-400 hover:text-blue-600 transition-colors px-1"
@@ -195,6 +215,7 @@ export default function TemplatesGallery({
                   + New
                 </button>
                 <button
+                  type="button"
                   onClick={() => importRef.current?.click()}
                   title="Import JSON"
                   className="text-xs text-gray-400 hover:text-blue-600 transition-colors px-1"
@@ -208,38 +229,50 @@ export default function TemplatesGallery({
               <p className="text-xs text-gray-400 text-center py-3">No CVs yet</p>
             ) : (
               <div className="space-y-1">
-                {cvList.map(entry => {
+                {cvList.map((entry) => {
                   const isCurrent = currentCv?.id === entry.id
                   return (
                     <div
                       key={entry.id}
-                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer group transition-colors ${
+                      className={`flex items-center gap-1 rounded-lg group transition-colors ${
                         isCurrent ? 'bg-blue-50' : 'hover:bg-gray-50'
                       }`}
-                      onClick={() => saveCurrentCvId(entry.id)}
                     >
-                      <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-blue-500' : 'bg-transparent'}`} />
-                      <span className={`flex-1 text-xs truncate ${isCurrent ? 'text-blue-700 font-medium' : 'text-gray-700'}`}>
-                        {entry.name}
-                      </span>
                       <button
-                        onClick={e => { e.stopPropagation(); setCvModal({ mode: 'edit', entry }) }}
+                        type="button"
+                        className="flex-1 flex items-center gap-1 px-2 py-1.5 text-left"
+                        onClick={() => saveCurrentCvId(entry.id)}
+                      >
+                        <span
+                          className={`shrink-0 w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-blue-500' : 'bg-transparent'}`}
+                        />
+                        <span
+                          className={`flex-1 text-xs truncate ${isCurrent ? 'text-blue-700 font-medium' : 'text-gray-700'}`}
+                        >
+                          {entry.name}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCvModal({ mode: 'edit', entry })}
                         title="Edit"
-                        className="text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm"
+                        className="text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm px-1 py-1.5"
                       >
                         ✎
                       </button>
                       <button
-                        onClick={e => { e.stopPropagation(); handleDownloadCv(entry) }}
+                        type="button"
+                        onClick={() => handleDownloadCv(entry)}
                         title="Download"
-                        className="text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm"
+                        className="text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm px-1 py-1.5"
                       >
                         ↓
                       </button>
                       <button
-                        onClick={e => { e.stopPropagation(); handleDeleteCv(entry.id) }}
+                        type="button"
+                        onClick={() => handleDeleteCv(entry.id)}
                         title="Delete"
-                        className="text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm"
+                        className="text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity leading-none text-sm px-1.5 py-1.5"
                       >
                         ×
                       </button>
@@ -251,17 +284,22 @@ export default function TemplatesGallery({
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Template</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+              Template
+            </p>
             <div className="space-y-1">
-              {templates.map(t => (
+              {templates.map((t) => (
                 <button
+                  type="button"
                   key={t.id}
                   onClick={() => selectTemplate(t)}
                   className={`w-full text-left px-2.5 py-2 rounded-lg transition-colors ${
                     activeTemplate.id === t.id ? 'bg-blue-50' : 'hover:bg-gray-50'
                   }`}
                 >
-                  <div className={`text-sm font-medium ${activeTemplate.id === t.id ? 'text-blue-700' : 'text-gray-800'}`}>
+                  <div
+                    className={`text-sm font-medium ${activeTemplate.id === t.id ? 'text-blue-700' : 'text-gray-800'}`}
+                  >
                     {t.name}
                   </div>
                   <div className="text-xs text-gray-400 mt-0.5 leading-snug">{t.description}</div>
@@ -272,10 +310,13 @@ export default function TemplatesGallery({
 
           {activeTemplate.layouts.length > 1 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Layout</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+                Layout
+              </p>
               <div className="space-y-1">
-                {activeTemplate.layouts.map(l => (
+                {activeTemplate.layouts.map((l) => (
                   <button
+                    type="button"
                     key={l.id}
                     onClick={() => selectLayout(l)}
                     className={`w-full text-left px-2.5 py-2 rounded-lg transition-colors text-sm ${
@@ -300,9 +341,12 @@ export default function TemplatesGallery({
             </div>
           )}
           <div className="flex items-center justify-between">
-            <a href="/" className="text-xs text-gray-400 hover:text-gray-600">← Home</a>
+            <a href="/" className="text-xs text-gray-400 hover:text-gray-600">
+              ← Home
+            </a>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={handleClearData}
                 title="Clear all stored data"
                 className="text-xs text-gray-300 hover:text-red-400 transition-colors"
@@ -310,6 +354,7 @@ export default function TemplatesGallery({
                 Clear data
               </button>
               <button
+                type="button"
                 onClick={() => setShowWelcome(true)}
                 title="Help"
                 className="text-xs text-gray-400 hover:text-gray-600 w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center leading-none"
@@ -336,10 +381,12 @@ export default function TemplatesGallery({
             sections={activeSections}
             cvContent={currentCv?.content ?? ''}
             generateTrigger={generateTrigger}
-            onPdfChange={url => setPreviewPdf(prev => {
-              if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
-              return url
-            })}
+            onPdfChange={(url) =>
+              setPreviewPdf((prev) => {
+                if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
+                return url
+              })
+            }
             onGenerating={setIsGenerating}
           />
         </div>
@@ -351,15 +398,21 @@ export default function TemplatesGallery({
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="font-medium text-gray-900">{activeTemplate.name}</span>
             {activeTemplate.layouts.length > 1 && (
-              <><span className="text-gray-300">·</span><span>{activeLayout.name}</span></>
+              <>
+                <span className="text-gray-300">·</span>
+                <span>{activeLayout.name}</span>
+              </>
             )}
             {previewPdf && (
-              <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">preview</span>
+              <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                preview
+              </span>
             )}
           </div>
           <div className="flex items-center gap-2">
             {previewPdf && (
               <button
+                type="button"
                 onClick={() => setPreviewPdf(null)}
                 className="text-xs text-gray-400 hover:text-gray-600"
               >
@@ -399,7 +452,9 @@ export default function TemplatesGallery({
           {!isGenerating && isSample && (
             <div className="absolute bottom-0 inset-x-0 bg-gray-900/80 backdrop-blur-sm text-white px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-white/20 text-white px-1.5 py-0.5 rounded font-medium">Sample</span>
+                <span className="text-xs bg-white/20 text-white px-1.5 py-0.5 rounded font-medium">
+                  Sample
+                </span>
                 <p className="text-xs text-gray-300">
                   {currentCv
                     ? 'Hit Generate PDF to preview your CV'
@@ -408,7 +463,8 @@ export default function TemplatesGallery({
               </div>
               {currentCv ? (
                 <button
-                  onClick={() => setGenerateTrigger(t => t + 1)}
+                  type="button"
+                  onClick={() => setGenerateTrigger((t) => t + 1)}
                   className="text-xs bg-blue-500 hover:bg-blue-400 text-white px-3 py-1.5 rounded-lg transition-colors shrink-0 ml-4"
                 >
                   Generate PDF
@@ -416,12 +472,14 @@ export default function TemplatesGallery({
               ) : (
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   <button
+                    type="button"
                     onClick={() => setCvModal({ mode: 'new' })}
                     className="text-xs bg-blue-500 hover:bg-blue-400 text-white px-3 py-1.5 rounded-lg transition-colors"
                   >
                     + New CV
                   </button>
                   <button
+                    type="button"
                     onClick={() => importRef.current?.click()}
                     className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition-colors"
                   >
@@ -441,27 +499,30 @@ export default function TemplatesGallery({
             <div className="px-8 pt-8 pb-6">
               <h2 className="text-lg font-bold text-gray-900 mb-1">Welcome to CVault</h2>
               <p className="text-sm text-gray-500 mb-6">
-                A privacy-first CV editor. Your data is stored in this browser — nothing is saved server-side.
+                A privacy-first CV editor. Your data is stored in this browser — nothing is saved
+                server-side.
               </p>
 
               <div className="space-y-4">
-                {([
-                  {
-                    step: '1',
-                    title: 'Add your CV',
-                    body: 'Use "+ New" to create a CV from the template, or "↑ Import" to load an existing JSON file. You can have multiple CVs and switch between them.',
-                  },
-                  {
-                    step: '2',
-                    title: 'Pick a template & customise',
-                    body: 'Select a template from the list. The middle panel lets you reorder sections, toggle page breaks, and adjust colors, fonts, and spacing.',
-                  },
-                  {
-                    step: '3',
-                    title: 'Generate your PDF',
-                    body: 'Hit "Generate PDF" in the editor panel. Your CV is compiled with Typst and the PDF appears in the preview. Download whenever you\'re happy.',
-                  },
-                ] as const).map(s => (
+                {(
+                  [
+                    {
+                      step: '1',
+                      title: 'Add your CV',
+                      body: 'Use "+ New" to create a CV from the template, or "↑ Import" to load an existing JSON file. You can have multiple CVs and switch between them.',
+                    },
+                    {
+                      step: '2',
+                      title: 'Pick a template & customise',
+                      body: 'Select a template from the list. The middle panel lets you reorder sections, toggle page breaks, and adjust colors, fonts, and spacing.',
+                    },
+                    {
+                      step: '3',
+                      title: 'Generate your PDF',
+                      body: 'Hit "Generate PDF" in the editor panel. Your CV is compiled with Typst and the PDF appears in the preview. Download whenever you\'re happy.',
+                    },
+                  ] as const
+                ).map((s) => (
                   <div key={s.step} className="flex gap-4">
                     <div className="shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5">
                       {s.step}
@@ -479,13 +540,17 @@ export default function TemplatesGallery({
                   type="checkbox"
                   id="private-mode-toggle"
                   checked={privateMode}
-                  onChange={e => handlePrivateToggle(e.target.checked)}
+                  onChange={(e) => handlePrivateToggle(e.target.checked)}
                   className="mt-0.5 shrink-0"
                 />
-                <label htmlFor="private-mode-toggle" className="text-xs text-gray-600 leading-relaxed cursor-pointer">
+                <label
+                  htmlFor="private-mode-toggle"
+                  className="text-xs text-gray-600 leading-relaxed cursor-pointer"
+                >
                   <span className="font-semibold text-gray-800">I&apos;m on a shared computer</span>
                   <br />
-                  Data will be stored in session storage and cleared automatically when this tab closes.
+                  Data will be stored in session storage and cleared automatically when this tab
+                  closes.
                 </label>
               </div>
             </div>
@@ -493,6 +558,7 @@ export default function TemplatesGallery({
             <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
               <p className="text-xs text-gray-400">You can reopen this via the ? button.</p>
               <button
+                type="button"
                 onClick={dismissWelcome}
                 className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors font-medium"
               >

@@ -1,18 +1,49 @@
 type StyleParamBase = { key: string; label: string; group?: string; canonical?: string }
 
 export type StyleParam =
-  | StyleParamBase & { type: 'color';  default: string }
-  | StyleParamBase & { type: 'range';  min: number; max: number; step: number; unit: string; default: number }
-  | StyleParamBase & { type: 'select'; options: Array<{ label: string; value: string }>; default: string }
-  | StyleParamBase & { type: 'toggle'; default: string }
-  | StyleParamBase & { type: 'text';   placeholder?: string; default: string }
+  | (StyleParamBase & { type: 'color'; default: string })
+  | (StyleParamBase & {
+      type: 'range'
+      min: number
+      max: number
+      step: number
+      unit: string
+      default: number
+    })
+  | (StyleParamBase & {
+      type: 'select'
+      options: Array<{ label: string; value: string }>
+      default: string
+    })
+  | (StyleParamBase & { type: 'toggle'; default: string })
+  | (StyleParamBase & { type: 'text'; placeholder?: string; default: string })
 
 export type StyleValues = Record<string, string | number>
 
-export type FullSection    = { kind: 'full';    key: string; id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }
-export type ColumnsSection = { kind: 'columns'; key: string; columns: number; content: string[][]; breakable: boolean; pre_spacing?: number; post_spacing?: number }
-export type EditorSection  = FullSection | ColumnsSection
-export type SidebarSection = { id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }
+export type FullSection = {
+  kind: 'full'
+  key: string
+  id: string
+  breakable: boolean
+  pre_spacing?: number
+  post_spacing?: number
+}
+export type ColumnsSection = {
+  kind: 'columns'
+  key: string
+  columns: number
+  content: string[][]
+  breakable: boolean
+  pre_spacing?: number
+  post_spacing?: number
+}
+export type EditorSection = FullSection | ColumnsSection
+export type SidebarSection = {
+  id: string
+  breakable: boolean
+  pre_spacing?: number
+  post_spacing?: number
+}
 
 export type LayoutStructure = {
   header: { style: 'split' | 'stacked' }
@@ -25,11 +56,23 @@ export type EditorState = LayoutStructure & { style: StyleValues }
 
 export type SerializedSection =
   | { id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }
-  | { type: 'columns'; columns: number; content: string[][]; breakable: boolean; pre_spacing?: number; post_spacing?: number }
+  | {
+      type: 'columns'
+      columns: number
+      content: string[][]
+      breakable: boolean
+      pre_spacing?: number
+      post_spacing?: number
+    }
 
 export type LayoutData = {
   header: { style: 'split' | 'stacked' }
-  sidebar_sections?: Array<{ id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }>
+  sidebar_sections?: Array<{
+    id: string
+    breakable: boolean
+    pre_spacing?: number
+    post_spacing?: number
+  }>
   sections: SerializedSection[]
 }
 

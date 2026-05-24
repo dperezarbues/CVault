@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
 import QRCode from 'qrcode'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { compileTypst, isCompilerReady, onCompilerReady } from '@/lib/typst-compile'
-import type { CompileState } from '../types'
 import { resolveQrUrl } from '../editor-utils'
+import type { CompileState } from '../types'
 
 export function useCompiler({
   templateId,
@@ -26,17 +26,27 @@ export function useCompiler({
   const [error, setError] = useState<string | null>(null)
 
   // Refs to always-current values so generate() is stable (no stale closures)
-  const layoutRef      = useRef(getLayoutData)
-  const cvRef          = useRef(cvContent)
-  const onPdfRef       = useRef(onPdfChange)
+  const layoutRef = useRef(getLayoutData)
+  const cvRef = useRef(cvContent)
+  const onPdfRef = useRef(onPdfChange)
   const onGeneratingRef = useRef(onGenerating)
   const compileStateRef = useRef(compileState)
 
-  useEffect(() => { layoutRef.current      = getLayoutData  }, [getLayoutData])
-  useEffect(() => { cvRef.current          = cvContent      }, [cvContent])
-  useEffect(() => { onPdfRef.current       = onPdfChange    }, [onPdfChange])
-  useEffect(() => { onGeneratingRef.current = onGenerating  }, [onGenerating])
-  useEffect(() => { compileStateRef.current = compileState  }, [compileState])
+  useEffect(() => {
+    layoutRef.current = getLayoutData
+  }, [getLayoutData])
+  useEffect(() => {
+    cvRef.current = cvContent
+  }, [cvContent])
+  useEffect(() => {
+    onPdfRef.current = onPdfChange
+  }, [onPdfChange])
+  useEffect(() => {
+    onGeneratingRef.current = onGenerating
+  }, [onGenerating])
+  useEffect(() => {
+    compileStateRef.current = compileState
+  }, [compileState])
 
   const generate = useCallback(async () => {
     if (compileStateRef.current !== 'idle') return
@@ -47,7 +57,7 @@ export function useCompiler({
 
     let qrSvg: string | undefined
     const style = (layoutData as { style?: Record<string, unknown> }).style ?? {}
-    if (style.show_qr === 'true' || style.show_qr === true) {
+    if (style.show_qr === 'true') {
       const qrUrl = resolveQrUrl(cv, style)
       qrSvg = await QRCode.toString(qrUrl, { type: 'svg', margin: 0 })
     }
@@ -57,7 +67,12 @@ export function useCompiler({
     if (!isCompilerReady()) onCompilerReady(() => setCompileState('compiling'))
 
     try {
-      const url = await compileTypst({ templateId, cvContent: cv, layoutJson: JSON.stringify(layoutData), qrSvg })
+      const url = await compileTypst({
+        templateId,
+        cvContent: cv,
+        layoutJson: JSON.stringify(layoutData),
+        qrSvg,
+      })
       onPdfRef.current(url)
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -68,7 +83,10 @@ export function useCompiler({
   }, [templateId]) // templateId is the only prop that isn't ref-stabilized
 
   useEffect(() => {
-    if (isCompilerReady()) { setCompilerReady(true); return }
+    if (isCompilerReady()) {
+      setCompilerReady(true)
+      return
+    }
     onCompilerReady(() => setCompilerReady(true))
   }, [])
 

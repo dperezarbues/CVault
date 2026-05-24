@@ -1,6 +1,9 @@
 /// <reference lib="webworker" />
 
-import initWasm, { TypstCompilerBuilder, type TypstCompiler } from '@myriaddreamin/typst-ts-web-compiler'
+import initWasm, {
+  type TypstCompiler,
+  TypstCompilerBuilder,
+} from '@myriaddreamin/typst-ts-web-compiler'
 
 export type CompileRequest = {
   id: number
@@ -11,7 +14,7 @@ export type CompileRequest = {
 }
 
 export type CompileResponse =
-  | { id: number; ok: true;  pdf: ArrayBuffer }
+  | { id: number; ok: true; pdf: ArrayBuffer }
   | { id: number; ok: false; error: string }
 
 export type WorkerMessage = CompileResponse | { type: 'ready' }
@@ -30,14 +33,14 @@ const FONT_FILES = [
 ]
 
 const TYP_FILES: Array<{ vPath: string; publicPath: string }> = [
-  { vPath: '/src/typst/tokens.typ',               publicPath: '/typst/tokens.typ' },
-  { vPath: '/src/typst/styles.typ',               publicPath: '/typst/styles.typ' },
-  { vPath: '/src/typst/components.typ',           publicPath: '/typst/components.typ' },
-  { vPath: '/src/typst/sections.typ',             publicPath: '/typst/sections.typ' },
-  { vPath: '/src/typst/templates/default.typ',    publicPath: '/typst/templates/default.typ' },
-  { vPath: '/src/typst/templates/modern.typ',     publicPath: '/typst/templates/modern.typ' },
-  { vPath: '/src/typst/templates/minimal.typ',    publicPath: '/typst/templates/minimal.typ' },
-  { vPath: '/src/typst/templates/sidebar.typ',    publicPath: '/typst/templates/sidebar.typ' },
+  { vPath: '/src/typst/tokens.typ', publicPath: '/typst/tokens.typ' },
+  { vPath: '/src/typst/styles.typ', publicPath: '/typst/styles.typ' },
+  { vPath: '/src/typst/components.typ', publicPath: '/typst/components.typ' },
+  { vPath: '/src/typst/sections.typ', publicPath: '/typst/sections.typ' },
+  { vPath: '/src/typst/templates/default.typ', publicPath: '/typst/templates/default.typ' },
+  { vPath: '/src/typst/templates/modern.typ', publicPath: '/typst/templates/modern.typ' },
+  { vPath: '/src/typst/templates/minimal.typ', publicPath: '/typst/templates/minimal.typ' },
+  { vPath: '/src/typst/templates/sidebar.typ', publicPath: '/typst/templates/sidebar.typ' },
 ]
 
 const ICON_NAMES = ['email', 'phone', 'github', 'linkedin', 'location', 'web', 'medium', 'facebook']
@@ -98,7 +101,8 @@ self.onmessage = async (e: MessageEvent<CompileRequest>) => {
 
   try {
     await ensureInit()
-    const c = compiler!
+    if (!compiler) throw new Error('Compiler failed to initialise')
+    const c = compiler
 
     // Shadow per-compile dynamic files (overwrites previous values)
     c.map_shadow('/runtime/cv.json', enc.encode(cvContent))
@@ -108,8 +112,8 @@ self.onmessage = async (e: MessageEvent<CompileRequest>) => {
     }
 
     const inputs: [string, string][] = [
-      ['cv_file',  '/runtime/cv.json'],
-      ['layout',   'editor'],
+      ['cv_file', '/runtime/cv.json'],
+      ['layout', 'editor'],
     ]
 
     const result = c.compile(`/src/typst/templates/${templateId}.typ`, inputs, 'pdf', 0)
