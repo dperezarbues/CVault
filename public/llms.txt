@@ -1,0 +1,47 @@
+# CVault
+
+> Privacy-first CV editor that compiles beautiful PDFs using Typst. CV data is stored in the browser; sent to the server only transiently during PDF compilation and immediately discarded.
+
+CVault allows users to maintain their CV as structured JSON, choose from 4 professional templates (Default, Modern, Minimal, Sidebar), customise layout and style through a visual editor, and download high-quality typeset PDFs.
+
+## Docs
+
+- [CV JSON Schema & Full Reference](/for-llms): Complete specification for CV content JSON, layout structure, and all style parameters — the primary reference for generating importable CV data
+- [Editor](/editor): The visual editor (browser-based, no account required)
+
+## Quick start for agents
+
+To help a user create a CV for CVault:
+
+1. Collect their information (name, headline, contact, work history, education, skills, etc.)
+2. Produce a JSON file conforming to the CV JSON schema at /for-llms
+3. The user imports it via the "↑ Import" button in the editor sidebar
+4. They pick a template, customise style, and generate their PDF
+
+## CV JSON — top-level fields
+
+- `identity` — name (string), headline (string), contact (array of {type, value, key})
+- `summary` — plain text; separate paragraphs with \n\n
+- `experience` — array: title, subtitle (Company · Location), period, highlights[], tags[]
+- `education` — array: title, subtitle (Degree · Field), period, description
+- `skills` — array of groups: {name, entries[]}
+- `languages` — array: {title, subtitle}
+- `certifications` — array: {title, subtitle, tags[]}
+- `awards` — array: {title, subtitle, description}
+- `side_projects` — array: {title, subtitle, description, tags[]}
+
+Contact types: email, phone, location, linkedin, github, medium, web
+
+Links in text fields use Markdown syntax: [text](https://url) or [text](#section-id) for internal PDF jumps.
+
+## Templates
+
+- `default` — classic single-column with split header
+- `modern` — dark band header with accent colour
+- `minimal` — minimal typography, no decorative elements
+- `sidebar` — dark left sidebar with main content column
+
+## Optional
+
+- [Landing page](/): Overview of the tool
+- [Full reference (single file)](/llms-full.txt): Complete schema, layout, and style docs in one file — no links to follow

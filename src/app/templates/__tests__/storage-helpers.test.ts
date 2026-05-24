@@ -1,0 +1,262 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  clearLayoutOverride,
+  clearStyleOverrides,
+  loadLayoutOverride,
+  loadSaves,
+  loadStyleOverrides,
+  persistLayoutOverride,
+  persistSaves,
+  persistStyleOverride,
+} from '../storage-helpers'
+import type { SavedConfig } from '../types'
+
+const storageData: Record<string, string> = {}
+
+vi.mock('@/lib/storage', () => ({
+  KEYS: {
+    styleOverrides: 'cvault-style-overrides',
+    layoutOverrides: 'cvault-layout-overrides',
+    saves: 'cvault-saves',
+    cvs: 'cvault-cvs',
+    currentCv: 'cvault-current-cv',
+    onboarded: 'cvault-onboarded',
+    supportPrompted: 'cvault-support-prompted',
+  },
+  getItem: (k: string) => storageData[k] ?? null,
+  setItem: (k: string, v: string) => {
+    storageData[k] = v
+  },
+}))
+
+const KEY = 'cvault-style-overrides'
+
+beforeEach(() => {
+  for (const k in storageData) delete storageData[k]
+})
+
+// ── loadSaves / persistSaves ──────────────────────────────────────────────────
+
+const minLayout = { header: { style: 'split' as const }, sections: [] }
+
+describe('loadSaves', () => {
+  it('returns [] for empty storage', () => {
+    expect(loadSaves()).toEqual([])
+  })
+
+  it('returns saved configs', () => {
+    const save: SavedConfig = {
+      id: '1',
+      name: 'My Save',
+      templateId: 'default',
+      savedAt: 0,
+      layout: minLayout,
+      style: {},
+    }
+    storageData['cvault-saves'] = JSON.stringify([save])
+    expect(loadSaves()).toHaveLength(1)
+    expect(loadSaves()[0].name).toBe('My Save')
+  })
+
+  it('returns [] for corrupt storage', () => {
+    storageData['cvault-saves'] = 'not-json'
+    expect(loadSaves()).toEqual([])
+  })
+})
+
+describe('persistSaves', () => {
+  it('writes saves to storage', () => {
+    const save: SavedConfig = {
+      id: '1',
+      name: 'S',
+      templateId: 'default',
+      savedAt: 0,
+      layout: minLayout,
+      style: {},
+    }
+    persistSaves([save])
+    const stored = JSON.parse(storageData['cvault-saves'])
+    expect(stored).toHaveLength(1)
+    expect(stored[0].id).toBe('1')
+  })
+})
+
+// ── loadLayoutOverride / persistLayoutOverride / clearLayoutOverride ──────────
+
+const LAYOUT_KEY = 'cvault-layout-overrides'
+const sampleLayout = { header: { style: 'split' }, sections: [{ id: 'summary', breakable: true }] }
+
+describe('loadLayoutOverride', () => {
+  it('returns null for empty storage', () => {
+    expect(loadLayoutOverride('default')).toBeNull()
+  })
+
+  it('returns the persisted layout for the requested template', () => {
+    storageData[LAYOUT_KEY] = JSON.stringify({ default: sampleLayout })
+    expect(loadLayoutOverride('default')).toEqual(sampleLayout)
+  })
+
+  it('returns null for an unknown template', () => {
+    storageData[LAYOUT_KEY] = JSON.stringify({ default: sampleLayout })
+    expect(loadLayoutOverride('modern')).toBeNull()
+  })
+
+  it('returns {} for corrupt storage', () => {
+    storageData[LAYOUT_KEY] = 'not-json'
+    expect(loadLayoutOverride('default')).toBeNull()
+  })
+})
+
+describe('persistLayoutOverride', () => {
+  it('saves the layout under the template bucket', () => {
+    persistLayoutOverride('default', sampleLayout as Record<string, unknown>)
+    const saved = JSON.parse(storageData[LAYOUT_KEY])
+    expect(saved.default).toEqual(sampleLayout)
+  })
+
+  it('does not affect other templates', () => {
+    storageData[LAYOUT_KEY] = JSON.stringify({
+      modern: { header: { style: 'stacked' }, sections: [] },
+    })
+    persistLayoutOverride('default', sampleLayout as Record<string, unknown>)
+    const saved = JSON.parse(storageData[LAYOUT_KEY])
+    expect(saved.modern.header.style).toBe('stacked')
+    expect(saved.default).toEqual(sampleLayout)
+  })
+})
+
+describe('clearLayoutOverride', () => {
+  it('removes the template bucket', () => {
+    storageData[LAYOUT_KEY] = JSON.stringify({ default: sampleLayout, modern: {} })
+    clearLayoutOverride('default')
+    const saved = JSON.parse(storageData[LAYOUT_KEY])
+    expect(saved.default).toBeUndefined()
+    expect(saved.modern).toBeDefined()
+  })
+
+  it('is a no-op for empty storage', () => {
+    expect(() => clearLayoutOverride('default')).not.toThrow()
+  })
+})
+
+// ── loadStyleOverrides ────────────────────────────────────────────────────────
+
+describe('loadStyleOverrides', () => {
+  it('returns {} for empty storage', () => {
+    expect(loadStyleOverrides('default')).toEqual({})
+  })
+
+  it('returns scoped overrides for the requested template', () => {
+    storageData[KEY] = JSON.stringify({ default: { accent: '#ff0000' } })
+    expect(loadStyleOverrides('default')).toEqual({ accent: '#ff0000' })
+  })
+
+  it('returns {} for an unknown template', () => {
+    storageData[KEY] = JSON.stringify({ default: { accent: '#ff0000' } })
+    expect(loadStyleOverrides('modern')).toEqual({})
+  })
+
+  it('isolates overrides between templates', () => {
+    storageData[KEY] = JSON.stringify({
+      default: { accent: '#111' },
+      modern: { accent: '#222' },
+    })
+    expect(loadStyleOverrides('default')).toEqual({ accent: '#111' })
+    expect(loadStyleOverrides('modern')).toEqual({ accent: '#222' })
+  })
+})
+
+// ── persistStyleOverride ──────────────────────────────────────────────────────
+
+describe('persistStyleOverride', () => {
+  it('saves a new key under the template bucket', () => {
+    persistStyleOverride('default', 'accent', '#abc')
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.default.accent).toBe('#abc')
+  })
+
+  it('preserves existing keys (read-modify-write)', () => {
+    storageData[KEY] = JSON.stringify({ default: { font_size: 11 } })
+    persistStyleOverride('default', 'accent', '#abc')
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.default.font_size).toBe(11)
+    expect(saved.default.accent).toBe('#abc')
+  })
+
+  it('does not affect other templates', () => {
+    storageData[KEY] = JSON.stringify({ modern: { accent: '#mod' } })
+    persistStyleOverride('default', 'accent', '#def')
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.modern.accent).toBe('#mod')
+    expect(saved.default.accent).toBe('#def')
+  })
+
+  it('stores numeric values', () => {
+    persistStyleOverride('default', 'font_size', 12)
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.default.font_size).toBe(12)
+  })
+})
+
+// ── clearStyleOverrides ───────────────────────────────────────────────────────
+
+describe('clearStyleOverrides', () => {
+  it('removes the specified keys from the template bucket', () => {
+    storageData[KEY] = JSON.stringify({ default: { accent: '#abc', font_size: 11 } })
+    clearStyleOverrides('default', ['accent'])
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.default.accent).toBeUndefined()
+    expect(saved.default.font_size).toBe(11)
+  })
+
+  it('removes multiple keys at once', () => {
+    storageData[KEY] = JSON.stringify({ default: { a: '1', b: '2', c: '3' } })
+    clearStyleOverrides('default', ['a', 'b'])
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.default.a).toBeUndefined()
+    expect(saved.default.b).toBeUndefined()
+    expect(saved.default.c).toBe('3')
+  })
+
+  it('does not affect other templates', () => {
+    storageData[KEY] = JSON.stringify({
+      default: { accent: '#abc' },
+      modern: { accent: '#mod' },
+    })
+    clearStyleOverrides('default', ['accent'])
+    const saved = JSON.parse(storageData[KEY])
+    expect(saved.modern.accent).toBe('#mod')
+  })
+
+  it('is a no-op for empty storage', () => {
+    expect(() => clearStyleOverrides('default', ['k1'])).not.toThrow()
+  })
+})
+
+// ── readScoped error path ─────────────────────────────────────────────────────
+
+describe('readScoped error resilience', () => {
+  it('returns {} when storage contains invalid JSON', () => {
+    storageData[KEY] = 'not-json'
+    expect(loadStyleOverrides('default')).toEqual({})
+  })
+})
+
+// ── flat-format migration ─────────────────────────────────────────────────────
+
+describe('migration from flat format', () => {
+  it('migrates flat overrides into a "default" bucket on load', () => {
+    storageData[KEY] = JSON.stringify({ accent: '#old', font_size: 10 })
+    const overrides = loadStyleOverrides('default')
+    expect(overrides).toEqual({ accent: '#old', font_size: 10 })
+    // After load, storage should be in the new scoped format
+    const migrated = JSON.parse(storageData[KEY])
+    expect(migrated.default).toEqual({ accent: '#old', font_size: 10 })
+  })
+
+  it('returns {} for other templates after migration', () => {
+    storageData[KEY] = JSON.stringify({ accent: '#old' })
+    loadStyleOverrides('default') // triggers migration
+    expect(loadStyleOverrides('modern')).toEqual({})
+  })
+})

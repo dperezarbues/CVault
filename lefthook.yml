@@ -1,0 +1,11 @@
+pre-commit:
+  commands:
+    biome:
+      glob: '{src,e2e,scripts}/**/*.{js,ts,jsx,tsx,json,css}'
+      run: npx biome check --write {staged_files}
+      stage_fixed: true
+
+pre-push:
+  commands:
+    typecheck:
+      run: npx tsc --noEmit

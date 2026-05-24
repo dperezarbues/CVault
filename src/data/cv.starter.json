@@ -1,0 +1,32 @@
+{
+  "identity": {
+    "name": "Your Name",
+    "headline": "Your Professional Title",
+    "contact": [
+      { "type": "email", "value": "your@email.com", "key": "Email" },
+      { "type": "phone", "value": "+1 000 000 000", "key": "Phone" },
+      { "type": "location", "value": "City, Country", "key": "Location" },
+      { "type": "linkedin", "value": "linkedin.com/in/yourprofile", "key": "LinkedIn" },
+      { "type": "github", "value": "github.com/yourusername", "key": "GitHub" }
+    ]
+  },
+  "summary": "Your professional summary.",
+  "experience": [
+    {
+      "title": "Job Title",
+      "subtitle": "Company · Location",
+      "period": "2020 – Present",
+      "highlights": ["Key achievement 1", "Key achievement 2"],
+      "tags": ["Skill 1", "Skill 2"]
+    }
+  ],
+  "education": [
+    {
+      "title": "University Name",
+      "subtitle": "Degree · Field of Study",
+      "period": "2018 – 2022"
+    }
+  ],
+  "skills": [{ "name": "Languages & Frameworks", "entries": ["Language 1", "Framework 1"] }],
+  "languages": [{ "title": "English", "subtitle": "Native" }]
+}

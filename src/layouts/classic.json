@@ -1,0 +1,15 @@
+{
+  "header": {
+    "style": "stacked"
+  },
+  "sections": [
+    { "id": "summary", "breakable": true },
+    { "id": "experience", "breakable": true },
+    { "id": "awards", "breakable": false },
+    { "id": "skills", "breakable": false },
+    { "id": "education", "breakable": false },
+    { "id": "languages", "breakable": false },
+    { "id": "certifications", "breakable": false },
+    { "id": "side_projects", "breakable": false }
+  ]
+}
