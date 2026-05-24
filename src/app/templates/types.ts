@@ -14,11 +14,23 @@ export type ColumnsSection = { kind: 'columns'; key: string; columns: number; co
 export type EditorSection  = FullSection | ColumnsSection
 export type SidebarSection = { id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }
 
-export type EditorState = {
+export type LayoutStructure = {
   header: { style: 'split' | 'stacked' }
   sidebarSections?: SidebarSection[]
   sections: EditorSection[]
-  style: StyleValues
+}
+
+/** Full editor state — layout structure + style values combined. */
+export type EditorState = LayoutStructure & { style: StyleValues }
+
+export type SerializedSection =
+  | { id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }
+  | { type: 'columns'; columns: number; content: string[][]; breakable: boolean; pre_spacing?: number; post_spacing?: number }
+
+export type LayoutData = {
+  header: { style: 'split' | 'stacked' }
+  sidebar_sections?: Array<{ id: string; breakable: boolean; pre_spacing?: number; post_spacing?: number }>
+  sections: SerializedSection[]
 }
 
 export type SavedConfig = {
@@ -26,7 +38,7 @@ export type SavedConfig = {
   name: string
   templateId: string
   savedAt: number
-  layout: object
+  layout: LayoutData
   style: StyleValues
 }
 

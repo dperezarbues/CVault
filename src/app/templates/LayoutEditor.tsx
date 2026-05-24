@@ -43,9 +43,9 @@ export default function LayoutEditor({
                 <p className="text-xs text-gray-400 mb-2">Name &amp; headline always shown</p>
                 <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Sidebar</p>
                 <DndContext sensors={ed.sensors} collisionDetection={closestCenter} onDragEnd={ed.handleSidebarDragEnd}>
-                  <SortableContext items={ed.state.sidebarSections!.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                  <SortableContext items={ed.layout.sidebarSections!.map(s => s.id)} strategy={verticalListSortingStrategy}>
                     <div className="space-y-1.5">
-                      {ed.state.sidebarSections!.map(s => (
+                      {ed.layout.sidebarSections!.map(s => (
                         <SortableSidebarChip key={s.id} item={s}
                           onRemove={() => ed.removeSidebarSection(s.id)}
                           onToggleBreakable={() => ed.toggleSidebarBreakable(s.id)}
@@ -68,8 +68,8 @@ export default function LayoutEditor({
                 <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Header style</p>
                 <div className="flex gap-1 mb-3">
                   {(['split', 'stacked'] as const).map(v => (
-                    <button key={v} onClick={() => ed.setHeaderStyle(v)}
-                      className={`flex-1 text-xs py-1 rounded border transition-colors ${ed.state.header.style === v ? 'bg-gray-900 text-white border-gray-900' : 'text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
+                    <button key={v} onClick={() => ed.setHeader(v)}
+                      className={`flex-1 text-xs py-1 rounded border transition-colors ${ed.layout.header.style === v ? 'bg-gray-900 text-white border-gray-900' : 'text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
                       {v}
                     </button>
                   ))}
@@ -80,9 +80,9 @@ export default function LayoutEditor({
 
             <div className="px-4">
               <DndContext sensors={ed.sensors} collisionDetection={closestCenter} onDragEnd={ed.handleDragEnd}>
-                <SortableContext items={ed.state.sections.map(s => s.key)} strategy={verticalListSortingStrategy}>
+                <SortableContext items={ed.layout.sections.map(s => s.key)} strategy={verticalListSortingStrategy}>
                   <div className="space-y-1.5">
-                    {ed.state.sections.map(item => (
+                    {ed.layout.sections.map(item => (
                       <SortableCard key={item.key} item={item} available={ed.available}
                         onToggleBreakable={() => ed.updateSection(item.key, s => ({ ...s, breakable: !s.breakable }))}
                         onRemove={() => ed.removeSection(item.key)}
@@ -125,14 +125,14 @@ export default function LayoutEditor({
                       {ungrouped.length > 0 && (
                         <div className="space-y-3 pb-3">
                           {ungrouped.map(p => (
-                            <StyleParamField key={p.key} p={p} value={ed.state.style[p.key]} onChange={ed.setStyleValue} />
+                            <StyleParamField key={p.key} p={p} value={ed.style[p.key]} onChange={ed.setStyleValue} />
                           ))}
                         </div>
                       )}
                       {groupOrder.map((g, i) => (
                         <StyleGroup key={g} title={g} defaultOpen={i === 0}>
                           {groupMap.get(g)!.map(p => (
-                            <StyleParamField key={p.key} p={p} value={ed.state.style[p.key]} onChange={ed.setStyleValue} />
+                            <StyleParamField key={p.key} p={p} value={ed.style[p.key]} onChange={ed.setStyleValue} />
                           ))}
                         </StyleGroup>
                       ))}

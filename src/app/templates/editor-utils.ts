@@ -1,6 +1,9 @@
 import { createContext } from 'react'
 import { getItem, setItem, KEYS } from '@/lib/storage'
-import type { EditorState, EditorSection, SidebarSection, SavedConfig, StyleParam, StyleOverrides, StyleValues } from './types'
+import type {
+  LayoutStructure, EditorSection, SidebarSection,
+  LayoutData, SavedConfig, StyleParam, StyleOverrides, StyleValues,
+} from './types'
 
 export const DEFAULT_PRE  = 0.50
 export const DEFAULT_POST = 0.20
@@ -32,17 +35,17 @@ export function clearStyleOverrides(canonicalKeys: string[]) {
 
 // ── Serialization ─────────────────────────────────────────────────────────────
 
-export function serializeLayout(state: EditorState): object {
+export function serializeLayout(layout: LayoutStructure): LayoutData {
   return {
-    header: state.header,
-    ...(state.sidebarSections !== undefined && {
-      sidebar_sections: state.sidebarSections.map(s => ({
+    header: layout.header,
+    ...(layout.sidebarSections !== undefined && {
+      sidebar_sections: layout.sidebarSections.map(s => ({
         id: s.id, breakable: s.breakable,
         ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
         ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
       })),
     }),
-    sections: state.sections.map(s =>
+    sections: layout.sections.map(s =>
       s.kind === 'full'
         ? {
             id: s.id, breakable: s.breakable,
@@ -50,7 +53,7 @@ export function serializeLayout(state: EditorState): object {
             ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
           }
         : {
-            type: 'columns', columns: s.columns, content: s.content, breakable: s.breakable,
+            type: 'columns' as const, columns: s.columns, content: s.content, breakable: s.breakable,
             ...(s.pre_spacing  != null && { pre_spacing:  s.pre_spacing  }),
             ...(s.post_spacing != null && { post_spacing: s.post_spacing }),
           },
@@ -58,14 +61,16 @@ export function serializeLayout(state: EditorState): object {
   }
 }
 
-export function serializeForTypst(state: EditorState): object {
+export function serializeForTypst(layout: LayoutStructure, style: StyleValues): LayoutData & { style?: StyleValues } {
   return {
-    ...serializeLayout(state),
-    ...(Object.keys(state.style).length > 0 && { style: state.style }),
+    ...serializeLayout(layout),
+    ...(Object.keys(style).length > 0 && { style }),
   }
 }
 
-export function parseLayout(raw: Record<string, unknown>, styleParams: StyleParam[], overrides?: StyleOverrides): EditorState {
+// ── Parsing ───────────────────────────────────────────────────────────────────
+
+export function parseLayoutStructure(raw: Record<string, unknown>): LayoutStructure {
   const rawSections = (raw.sections as Record<string, unknown>[]) ?? []
   let colIdx = 0
   const sections: EditorSection[] = rawSections.map(s => {
@@ -100,6 +105,18 @@ export function parseLayout(raw: Record<string, unknown>, styleParams: StylePara
     )
   }
 
+  return {
+    header: (raw.header as LayoutStructure['header']) ?? { style: 'stacked' },
+    sidebarSections,
+    sections,
+  }
+}
+
+export function parseStyleValues(
+  raw: Record<string, unknown>,
+  styleParams: StyleParam[],
+  overrides?: StyleOverrides,
+): StyleValues {
   const rawStyle = (raw.style as StyleValues) ?? {}
   const style: StyleValues = {}
   for (const p of styleParams) {
@@ -112,10 +129,25 @@ export function parseLayout(raw: Record<string, unknown>, styleParams: StylePara
       style[p.key] = (rawStyle[p.key] as string | undefined) ?? (override as string | undefined) ?? p.default
     }
   }
+  return style
+}
 
-  return {
-    header: (raw.header as { style: 'split' | 'stacked' }) ?? { style: 'stacked' },
-    sidebarSections, sections, style,
+// ── QR code ───────────────────────────────────────────────────────────────────
+
+/** Resolves the URL to encode as a QR code. Falls back to the LinkedIn contact entry, then a placeholder. */
+export function resolveQrUrl(cvContent: string, style: Record<string, unknown>): string {
+  const explicit = String(style.qr_url ?? '').trim()
+  if (explicit) return explicit
+  try {
+    const cv = JSON.parse(cvContent) as {
+      identity?: { contact?: Array<{ type: string; value: string }>; linkedin?: string }
+    }
+    const contact = cv.identity?.contact ?? []
+    const linkedinEntry = contact.find(e => e.type === 'linkedin')
+    const val = linkedinEntry?.value ?? cv.identity?.linkedin ?? ''
+    return val ? (val.startsWith('http') ? val : `https://${val}`) : 'https://linkedin.com'
+  } catch {
+    return 'https://linkedin.com'
   }
 }
 
