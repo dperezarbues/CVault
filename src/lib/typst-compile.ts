@@ -59,6 +59,8 @@ export function onCompilerReady(fn: () => void): void {
   readyListeners.push(fn)
 }
 
+const COMPILE_TIMEOUT_MS = 30_000
+
 export async function compileTypst(options: {
   templateId: string
   cvContent: string
@@ -67,7 +69,16 @@ export async function compileTypst(options: {
 }): Promise<string> {
   return new Promise((resolve, reject) => {
     const id = nextId++
-    pending.set(id, { resolve, reject })
+    const timer = setTimeout(() => {
+      pending.delete(id)
+      reject(new Error('Compile timed out after 30 s'))
+    }, COMPILE_TIMEOUT_MS)
+
+    pending.set(id, {
+      resolve: (url) => { clearTimeout(timer); resolve(url) },
+      reject:  (err) => { clearTimeout(timer); reject(err) },
+    })
+
     const msg: CompileRequest = { id, ...options }
     getWorker().postMessage(msg)
   })

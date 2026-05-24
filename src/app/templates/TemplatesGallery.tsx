@@ -93,7 +93,6 @@ export default function TemplatesGallery({
   }
 
   function handleSaveCv(entry: CvEntry) {
-    const isFirst = cvList.length === 0 || (cvList.length === 1 && cvList[0].id === entry.id && !cvList.find(c => c.id !== entry.id))
     const idx = cvList.findIndex(c => c.id === entry.id)
     const isNew = idx < 0
     const updated = isNew
@@ -102,7 +101,7 @@ export default function TemplatesGallery({
     saveCvList(updated)
     saveCurrentCvId(entry.id)
     setCvModal(null)
-    if (isNew && (cvList.length === 0)) setGenerateTrigger(t => t + 1)
+    if (isNew && cvList.length === 0) setGenerateTrigger(t => t + 1)
   }
 
   function handleDeleteCv(id: string) {
@@ -337,7 +336,10 @@ export default function TemplatesGallery({
             sections={activeSections}
             cvContent={currentCv?.content ?? ''}
             generateTrigger={generateTrigger}
-            onPdfChange={url => setPreviewPdf(url)}
+            onPdfChange={url => setPreviewPdf(prev => {
+              if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
+              return url
+            })}
             onGenerating={setIsGenerating}
           />
         </div>

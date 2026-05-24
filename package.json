@@ -1,18 +1,15 @@
 {
-  "name": "cv-web",
+  "name": "cvault",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "prepare": "bash scripts/setup-wasm.sh",
     "setup:wasm": "bash scripts/setup-wasm.sh",
     "dev": "bash scripts/setup-wasm.sh && next dev",
-    "dev:debug": "bash scripts/setup-wasm.sh && CV_DEBUG=1 next dev",
     "build": "bash scripts/setup-wasm.sh && next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "generate-pdf": "bash scripts/generate-pdf.sh",
-    "generate-samples": "for t in default modern minimal sidebar; do bash scripts/generate-pdf.sh $t default /src/data/cv.sample.json && mv public/cv${t:+'-'}${t/default/}.pdf public/samples/${t}.pdf 2>/dev/null || mv public/cv.pdf public/samples/default.pdf 2>/dev/null; done && echo 'Sample PDFs updated'"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
