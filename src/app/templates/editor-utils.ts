@@ -1,10 +1,8 @@
 import { createContext } from 'react'
-import { getItem, KEYS, setItem } from '@/lib/storage'
 import type {
   EditorSection,
   LayoutData,
   LayoutStructure,
-  SavedConfig,
   SidebarSection,
   StyleOverrides,
   StyleParam,
@@ -15,37 +13,6 @@ export const DEFAULT_PRE = 0.5
 export const DEFAULT_POST = 0.2
 
 export const LabelCtx = createContext<(id: string) => string>((id) => id)
-
-// ── Storage helpers ───────────────────────────────────────────────────────────
-
-export function loadSaves(): SavedConfig[] {
-  try {
-    return JSON.parse(getItem(KEYS.saves) ?? '[]')
-  } catch {
-    return []
-  }
-}
-export function persistSaves(saves: SavedConfig[]) {
-  setItem(KEYS.saves, JSON.stringify(saves))
-}
-
-export function loadStyleOverrides(): StyleOverrides {
-  try {
-    return JSON.parse(getItem(KEYS.styleOverrides) ?? '{}')
-  } catch {
-    return {}
-  }
-}
-export function persistStyleOverride(canonicalKey: string, value: string | number) {
-  const overrides = loadStyleOverrides()
-  overrides[canonicalKey] = value
-  setItem(KEYS.styleOverrides, JSON.stringify(overrides))
-}
-export function clearStyleOverrides(canonicalKeys: string[]) {
-  const overrides = loadStyleOverrides()
-  for (const k of canonicalKeys) delete overrides[k]
-  setItem(KEYS.styleOverrides, JSON.stringify(overrides))
-}
 
 // ── Serialization ─────────────────────────────────────────────────────────────
 

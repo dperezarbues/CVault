@@ -90,3 +90,12 @@ export type StyleOverrides = Record<string, string | number>
 export type CompileState = 'idle' | 'loading' | 'compiling'
 
 export type Panel = 'layout' | 'style' | 'saved'
+
+export type Layout = { id: string; name: string; description: string; pdf?: string }
+export type Template = {
+  id: string
+  name: string
+  description: string
+  layouts: Layout[]
+  styleParams?: StyleParam[]
+}

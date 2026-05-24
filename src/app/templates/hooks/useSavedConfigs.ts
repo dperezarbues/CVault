@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import { loadSaves, parseLayoutStructure, parseStyleValues, persistSaves } from '../editor-utils'
+import { parseLayoutStructure, parseStyleValues } from '../editor-utils'
+import { LayoutImportSchema } from '../schemas'
+import { loadSaves, persistSaves } from '../storage-helpers'
 import type { LayoutData, LayoutStructure, SavedConfig, StyleParam, StyleValues } from '../types'
 
 export function useSavedConfigs({
@@ -61,7 +63,10 @@ export function useSavedConfigs({
     const reader = new FileReader()
     reader.onload = (ev) => {
       try {
-        const raw = JSON.parse(ev.target?.result as string) as Record<string, unknown>
+        const json = JSON.parse(ev.target?.result as string)
+        const result = LayoutImportSchema.safeParse(json)
+        if (!result.success) return
+        const raw = result.data as Record<string, unknown>
         onLoad(parseLayoutStructure(raw), parseStyleValues(raw, styleParams))
       } catch {
         /* ignore malformed files */

@@ -6,6 +6,8 @@ import { compileTypst, isCompilerReady, onCompilerReady } from '@/lib/typst-comp
 import { resolveQrUrl } from '../editor-utils'
 import type { CompileState } from '../types'
 
+const AUTO_GENERATE_DELAY_MS = 600
+
 export function useCompiler({
   templateId,
   cvContent,
@@ -95,6 +97,19 @@ export function useCompiler({
     const cv = cvRef.current
     if (generateTrigger > 0 && compileStateRef.current === 'idle' && cv) generate()
   }, [generateTrigger, generate])
+
+  // Auto-generate on any layout, style, or CV content change (debounced)
+  const isFirstRender = useRef(true)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: getLayoutData and cvContent are hook params that change reactively
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (!cvRef.current) return
+    const timer = setTimeout(() => generate(), AUTO_GENERATE_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [getLayoutData, cvContent, generate])
 
   return { compileState, compilerReady, error, generate }
 }

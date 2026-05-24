@@ -1,12 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  clearStyleOverrides,
-  loadStyleOverrides,
-  parseStyleValues,
-  persistStyleOverride,
-} from '../editor-utils'
+import { parseStyleValues } from '../editor-utils'
+import { clearStyleOverrides, loadStyleOverrides, persistStyleOverride } from '../storage-helpers'
 import type { StyleParam, StyleValues } from '../types'
 
 export function useStyleState(initialLayout: Record<string, unknown>, styleParams: StyleParam[]) {
