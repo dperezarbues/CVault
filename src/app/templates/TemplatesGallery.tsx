@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkProof from '@/components/proof/MarkProof'
@@ -345,13 +346,15 @@ function TemplateTab({
             >
               {/* Template thumbnail */}
               <div
-                className="h-24 mb-2 overflow-hidden"
+                className="h-24 mb-2 overflow-hidden relative"
                 style={{ background: '#f5f5f5', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }}
               >
-                <img
+                <Image
                   src={`/thumbnails/${t.id}.png`}
                   alt={`${t.name} template preview`}
-                  className="w-full h-full object-cover object-top"
+                  fill
+                  className="object-cover object-top"
+                  sizes="152px"
                 />
               </div>
               <div className="flex items-center justify-between">
