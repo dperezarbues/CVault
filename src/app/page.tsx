@@ -25,15 +25,34 @@ function PNav() {
       </div>
 
       <div className="flex items-center gap-8">
-        {(['Generate', 'Templates', 'Privacy', 'Schema'] as const).map((label) => (
-          <span
-            key={label}
-            className="font-semibold text-[14px]"
-            style={{ color: 'var(--c-ink2)' }}
-          >
-            {label}
-          </span>
-        ))}
+        <a
+          href="#generate"
+          className="font-semibold text-[14px]"
+          style={{ color: 'var(--c-ink2)', textDecoration: 'none', cursor: 'pointer' }}
+        >
+          Generate
+        </a>
+        <a
+          href="#templates"
+          className="font-semibold text-[14px]"
+          style={{ color: 'var(--c-ink2)', textDecoration: 'none', cursor: 'pointer' }}
+        >
+          Templates
+        </a>
+        <a
+          href="#privacy"
+          className="font-semibold text-[14px]"
+          style={{ color: 'var(--c-ink2)', textDecoration: 'none', cursor: 'pointer' }}
+        >
+          Privacy
+        </a>
+        <Link
+          href="/for-llms"
+          className="font-semibold text-[14px]"
+          style={{ color: 'var(--c-ink2)', textDecoration: 'none', cursor: 'pointer' }}
+        >
+          Schema
+        </Link>
         <ProofButton href="/editor" variant="dark">
           Open editor →
         </ProofButton>
@@ -329,7 +348,7 @@ function PMakeYours() {
   ]
 
   return (
-    <section className="px-14 py-16" style={{ borderTop: '1px solid var(--c-line)' }}>
+    <section id="generate" className="px-14 py-16" style={{ borderTop: '1px solid var(--c-line)' }}>
       <MonoLabel>Then make it yours</MonoLabel>
 
       <div className="grid grid-cols-[0.9fr_1.1fr] gap-12 items-center mt-6">
@@ -448,6 +467,7 @@ const TEMPLATE_NAMES = [
 function PTemplates() {
   return (
     <section
+      id="templates"
       className="px-14 py-16"
       style={{ borderTop: '1px solid var(--c-line)', background: 'var(--c-paper-deep)' }}
     >
@@ -516,7 +536,7 @@ function PPrivacy() {
   const chips = ['No account', 'No cloud', 'No tracking', 'Open source']
 
   return (
-    <section className="px-14 py-20" style={{ borderTop: '1px solid var(--c-line)' }}>
+    <section id="privacy" className="px-14 py-20" style={{ borderTop: '1px solid var(--c-line)' }}>
       <div className="grid grid-cols-2 gap-12 items-center">
         <h2
           className="font-black text-[56px] tracking-[-0.03em] leading-[0.98] uppercase"

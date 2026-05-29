@@ -343,28 +343,27 @@ function TemplateTab({
                 boxShadow: on ? `0 0 0 2px var(--c-accent)` : 'inset 0 0 0 1px var(--c-line)',
               }}
             >
-              {/* Thumbnail placeholder */}
+              {/* PDF thumbnail — scaled iframe showing first page of sample */}
               <div
-                className="h-24 mb-2 overflow-hidden"
+                className="h-24 mb-2 overflow-hidden relative"
                 style={{
                   background: '#fff',
                   boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
                 }}
               >
-                <div className="p-2 space-y-1">
-                  <div
-                    className="h-1.5 rounded-full w-2/3"
-                    style={{ background: 'var(--c-ink)' }}
-                  />
-                  <div className="h-1 rounded-full w-1/2" style={{ background: 'var(--c-line)' }} />
-                  {(['65%', '75%', '85%'] as const).map((w) => (
-                    <div
-                      key={w}
-                      className="h-1 rounded-full"
-                      style={{ background: 'var(--c-line2)', width: w }}
-                    />
-                  ))}
-                </div>
+                <iframe
+                  src={`/samples/${t.id}.pdf`}
+                  className="absolute top-0 left-0 border-0"
+                  style={{
+                    width: 794,
+                    height: 1123,
+                    transform: 'scale(0.192)',
+                    transformOrigin: 'top left',
+                    pointerEvents: 'none',
+                  }}
+                  title={`${t.name} preview`}
+                  tabIndex={-1}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-[12px]" style={{ color: 'var(--c-ink)' }}>
@@ -605,8 +604,13 @@ export default function TemplatesGallery({
             />
           )}
 
-          {(activeTab === 'layout' || activeTab === 'style') &&
-            (isEditable && activeLayoutData ? (
+          {/* EditorShell is always mounted so the compiler stays alive for Generate button */}
+          <div
+            style={{
+              display: activeTab === 'layout' || activeTab === 'style' ? undefined : 'none',
+            }}
+          >
+            {isEditable && activeLayoutData ? (
               <EditorShell
                 key={`${activeTemplate.id}-${activeLayout.id}`}
                 initialLayout={activeLayoutData}
@@ -631,7 +635,8 @@ export default function TemplatesGallery({
                   No layout for this template
                 </p>
               </div>
-            ))}
+            )}
+          </div>
         </div>
 
         {/* Actions bar */}
