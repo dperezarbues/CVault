@@ -56,8 +56,13 @@ export default function LayoutPanel({
     <>
       {hasSidebar ? (
         <div className="px-4 pb-3">
-          <p className="text-xs text-gray-400 mb-2">Name &amp; headline always shown</p>
-          <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+          <p className="text-xs mb-2" style={{ color: 'var(--c-faint)' }}>
+            Name &amp; headline always shown
+          </p>
+          <p
+            className="text-xs font-mono uppercase tracking-wide mb-1.5"
+            style={{ color: 'var(--c-faint)' }}
+          >
             Sidebar
           </p>
           <DndContext
@@ -84,7 +89,12 @@ export default function LayoutPanel({
           </DndContext>
           {availableSb.length > 0 && (
             <select
-              className="mt-2 w-full text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 bg-white"
+              className="mt-2 w-full text-xs rounded px-2 py-1.5"
+              style={{
+                border: '1px dashed var(--c-line)',
+                background: 'var(--c-card)',
+                color: 'var(--c-sub)',
+              }}
               value=""
               onChange={(e) => {
                 if (e.target.value) addSidebarSection(e.target.value)
@@ -98,13 +108,19 @@ export default function LayoutPanel({
               ))}
             </select>
           )}
-          <p className="text-xs font-medium text-gray-500 mt-4 mb-1.5 uppercase tracking-wide">
+          <p
+            className="text-xs font-mono uppercase tracking-wide mt-4 mb-1.5"
+            style={{ color: 'var(--c-faint)' }}
+          >
             Main column
           </p>
         </div>
       ) : (
         <div className="px-4 pb-3">
-          <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+          <p
+            className="text-xs font-mono uppercase tracking-wide mb-1.5"
+            style={{ color: 'var(--c-faint)' }}
+          >
             Header style
           </p>
           <div className="flex gap-1 mb-3">
@@ -113,13 +129,25 @@ export default function LayoutPanel({
                 type="button"
                 key={v}
                 onClick={() => setHeader(v)}
-                className={`flex-1 text-xs py-1 rounded border transition-colors ${layout.header.style === v ? 'bg-gray-900 text-white border-gray-900' : 'text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                className="flex-1 text-xs py-1 rounded-[3px] transition-colors"
+                style={
+                  layout.header.style === v
+                    ? { background: 'var(--c-ink)', color: 'var(--c-paper)', border: 'none' }
+                    : {
+                        color: 'var(--c-sub)',
+                        background: 'transparent',
+                        boxShadow: 'inset 0 0 0 1px var(--c-line)',
+                      }
+                }
               >
                 {v}
               </button>
             ))}
           </div>
-          <p className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+          <p
+            className="text-xs font-mono uppercase tracking-wide mb-1.5"
+            style={{ color: 'var(--c-faint)' }}
+          >
             Sections
           </p>
         </div>
@@ -151,7 +179,12 @@ export default function LayoutPanel({
         <div className="flex gap-1.5 pt-2">
           {available.length > 0 && (
             <select
-              className="flex-1 text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 bg-white"
+              className="flex-1 text-xs rounded px-2 py-1.5"
+              style={{
+                border: '1px dashed var(--c-line)',
+                background: 'var(--c-card)',
+                color: 'var(--c-sub)',
+              }}
               value=""
               onChange={(e) => {
                 if (e.target.value) addFullSection(e.target.value)
@@ -168,7 +201,11 @@ export default function LayoutPanel({
           <button
             type="button"
             onClick={addColumnsGroup}
-            className="text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 hover:bg-gray-50 whitespace-nowrap"
+            className="text-xs rounded-[3px] px-2 py-1.5 whitespace-nowrap transition-colors"
+            style={{
+              boxShadow: 'inset 0 0 0 1.3px var(--c-line)',
+              color: 'var(--c-sub)',
+            }}
           >
             + columns
           </button>

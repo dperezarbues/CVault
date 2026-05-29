@@ -44,7 +44,18 @@ const SHARED_TYP_FILES: Array<{ vPath: string; publicPath: string }> = [
 
 const ICON_NAMES = ['email', 'phone', 'github', 'linkedin', 'location', 'web', 'medium', 'facebook']
 
-const ALLOWED_TEMPLATES = new Set(['default', 'modern', 'minimal', 'sidebar'])
+const ALLOWED_TEMPLATES = new Set([
+  'default',
+  'modern',
+  'minimal',
+  'sidebar',
+  'compact',
+  'banner',
+  'timeline',
+  'academic',
+  'tech',
+  'editorial',
+])
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 

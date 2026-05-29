@@ -1,0 +1,12 @@
+{
+  "sections": [
+    { "id": "summary", "breakable": true },
+    {
+      "type": "columns",
+      "columns": 2,
+      "breakable": true,
+      "content": [["experience", "awards"], ["skills", "education", "languages", "certifications"]]
+    },
+    { "id": "side_projects", "breakable": false }
+  ]
+}

@@ -51,15 +51,19 @@ export default function SectionCard({
         transition,
         opacity: isDragging ? 0.4 : 1,
         zIndex: isDragging ? 10 : undefined,
+        boxShadow: 'inset 0 0 0 1px var(--c-line)',
+        background: 'var(--c-card)',
+        borderRadius: 3,
       }}
-      className="border border-gray-200 rounded-lg bg-white hover:border-gray-300 group"
+      className="group"
     >
       <div className="flex items-center gap-2 px-2 py-2">
         <button
           type="button"
           {...attributes}
           {...listeners}
-          className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing select-none text-base leading-none px-0.5"
+          className="cursor-grab active:cursor-grabbing select-none text-base leading-none px-0.5"
+          style={{ color: 'var(--c-faint)' }}
         >
           ⠿
         </button>
@@ -67,24 +71,36 @@ export default function SectionCard({
         <button
           type="button"
           onClick={toggleSpacing}
-          className={`text-xs px-1 leading-none transition-colors ${hasCustomSpacing ? 'text-blue-500' : 'text-gray-300 hover:text-gray-500'}`}
+          className="text-xs px-1 leading-none transition-colors"
+          style={{ color: hasCustomSpacing ? 'var(--c-accent)' : 'var(--c-faint)' }}
           title="Per-section spacing"
         >
           ↕
         </button>
-        <label className="flex items-center gap-1 text-xs text-gray-400 select-none cursor-pointer">
+        <label
+          className="flex items-center gap-1 text-xs select-none cursor-pointer"
+          style={{ color: 'var(--c-sub)' }}
+        >
           <input
             type="checkbox"
             checked={breakable}
             onChange={onToggleBreakable}
-            className="w-3 h-3 accent-blue-500"
+            className="w-3 h-3"
+            style={{ accentColor: 'var(--c-accent)' }}
           />
           <span>break</span>
         </label>
         <button
           type="button"
           onClick={onRemove}
-          className="text-gray-200 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+          className="opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+          style={{ color: 'var(--c-line)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--c-accent)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--c-line)'
+          }}
         >
           ×
         </button>

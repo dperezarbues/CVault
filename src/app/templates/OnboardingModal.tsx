@@ -1,5 +1,7 @@
 'use client'
 
+import MarkProof from '@/components/proof/MarkProof'
+
 const STEPS = [
   {
     step: '1',
@@ -27,53 +29,152 @@ type Props = {
 export default function OnboardingModal({ privateMode, onPrivateToggle, onDismiss }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-        <div className="px-8 pt-8 pb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">Welcome to CVault</h2>
-          <p className="text-sm text-gray-500 mb-6">
+      <div
+        style={{
+          background: 'var(--c-paper)',
+          borderRadius: 6,
+          boxShadow: '0 40px 100px rgba(0,0,0,0.4)',
+          width: '100%',
+          maxWidth: 448,
+          margin: '0 1rem',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header */}
+        <div style={{ padding: '2rem 2rem 1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem' }}>
+            <MarkProof size={26} />
+            <span
+              style={{
+                fontFamily: 'var(--f-display)',
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'var(--c-ink)',
+              }}
+            >
+              Welcome to Proof
+            </span>
+          </div>
+          <p
+            style={{ fontSize: 13, color: 'var(--c-sub)', lineHeight: 1.6, marginBottom: '1.5rem' }}
+          >
             A privacy-first CV editor. Your data is stored in this browser — nothing is saved
             server-side.
           </p>
 
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {STEPS.map((s) => (
-              <div key={s.step} className="flex gap-4">
-                <div className="shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5">
+              <div key={s.step} style={{ display: 'flex', gap: 14 }}>
+                <div
+                  style={{
+                    flexShrink: 0,
+                    width: 24,
+                    height: 24,
+                    borderRadius: 3,
+                    background: 'var(--c-accent-soft)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: 1,
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: 'var(--c-accent)',
+                    letterSpacing: '0',
+                  }}
+                >
                   {s.step}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-0.5">{s.title}</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">{s.body}</p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: 'var(--c-ink)',
+                      marginBottom: 2,
+                      fontFamily: 'var(--f-display)',
+                    }}
+                  >
+                    {s.title}
+                  </p>
+                  <p style={{ fontSize: 12, color: 'var(--c-sub)', lineHeight: 1.6 }}>{s.body}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 flex items-start gap-3 bg-gray-50 rounded-xl px-4 py-3">
+          <div
+            style={{
+              marginTop: '1.25rem',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              background: 'var(--c-card)',
+              borderRadius: 4,
+              padding: '12px 14px',
+              border: '1px solid var(--c-line)',
+            }}
+          >
             <input
               type="checkbox"
               id="private-mode-toggle"
               checked={privateMode}
               onChange={(e) => onPrivateToggle(e.target.checked)}
-              className="mt-0.5 shrink-0"
+              style={{ marginTop: 2, flexShrink: 0 }}
             />
             <label
               htmlFor="private-mode-toggle"
-              className="text-xs text-gray-600 leading-relaxed cursor-pointer"
+              style={{ fontSize: 12, color: 'var(--c-sub)', lineHeight: 1.6, cursor: 'pointer' }}
             >
-              <span className="font-semibold text-gray-800">I&apos;m on a shared computer</span>
+              <span style={{ fontWeight: 700, color: 'var(--c-ink)' }}>
+                I&apos;m on a shared computer
+              </span>
               <br />
               Data will be stored in session storage and cleared automatically when this tab closes.
             </label>
           </div>
         </div>
 
-        <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-          <p className="text-xs text-gray-400">You can reopen this via the ? button.</p>
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 2rem',
+            background: 'var(--c-paper-deep)',
+            borderTop: '1px solid var(--c-line)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+            }}
+          >
+            Reopen via the ? button
+          </p>
           <button
             type="button"
             onClick={onDismiss}
-            className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors font-medium"
+            style={{
+              background: 'var(--c-accent)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 3,
+              padding: '8px 20px',
+              fontSize: 12,
+              fontWeight: 700,
+              fontFamily: 'var(--f-display)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+            }}
           >
             Get started
           </button>

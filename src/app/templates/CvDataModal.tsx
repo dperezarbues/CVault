@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import MarkProof from '@/components/proof/MarkProof'
 import cvStarter from '@/data/cv.starter.json'
 import { CvEditor } from './cv-editor/CvEditor'
 import { cvFormToJson, initFormData, jsonToCvForm } from './cv-editor/serialise'
@@ -122,16 +123,56 @@ export default function CvDataModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div
-        className="bg-white rounded-xl shadow-2xl flex flex-col w-full max-w-2xl mx-4"
-        style={{ height: '90vh' }}
+        style={{
+          background: 'var(--c-paper)',
+          borderRadius: 6,
+          boxShadow: '0 40px 100px rgba(0,0,0,0.4)',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          maxWidth: 672,
+          margin: '0 1rem',
+          height: '90vh',
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
-          <h2 className="text-sm font-semibold text-gray-900">{entry ? 'Edit CV' : 'New CV'}</h2>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 1.25rem',
+            borderBottom: '1px solid var(--c-line)',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <MarkProof size={26} />
+            <h2
+              style={{
+                fontFamily: 'var(--f-display)',
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: 'var(--c-ink)',
+              }}
+            >
+              {entry ? 'Edit CV data' : 'New CV'}
+            </h2>
+          </div>
           <button
             type="button"
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 text-lg leading-none"
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: 20,
+              lineHeight: 1,
+              color: 'var(--c-faint)',
+              cursor: 'pointer',
+              padding: '2px 4px',
+            }}
             aria-label="Close"
           >
             ×
@@ -139,8 +180,27 @@ export default function CvDataModal({
         </div>
 
         {/* Name + mode tabs */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 shrink-0">
-          <label htmlFor="cv-name" className="text-xs font-medium text-gray-600 shrink-0">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '0.625rem 1.25rem',
+            borderBottom: '1px solid var(--c-line2)',
+            flexShrink: 0,
+          }}
+        >
+          <label
+            htmlFor="cv-name"
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              flexShrink: 0,
+            }}
+          >
             Name
           </label>
           <input
@@ -149,20 +209,60 @@ export default function CvDataModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="My CV"
-            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{
+              flex: 1,
+              fontSize: 13,
+              border: '1px solid var(--c-line)',
+              borderRadius: 4,
+              padding: '6px 12px',
+              outline: 'none',
+              background: 'var(--c-card)',
+              color: 'var(--c-ink)',
+            }}
           />
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden shrink-0">
+          {/* Mode tab pills */}
+          <div
+            style={{
+              display: 'flex',
+              borderRadius: 4,
+              border: '1px solid var(--c-line)',
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}
+          >
             <button
               type="button"
               onClick={() => mode === 'json' && switchToEditor()}
-              className={`text-xs px-3 py-1.5 transition-colors ${mode === 'editor' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                padding: '5px 12px',
+                border: 'none',
+                cursor: 'pointer',
+                background: mode === 'editor' ? 'var(--c-ink)' : 'transparent',
+                color: mode === 'editor' ? 'var(--c-paper)' : 'var(--c-sub)',
+                transition: 'background 0.15s, color 0.15s',
+              }}
             >
               Editor
             </button>
             <button
               type="button"
               onClick={() => mode === 'editor' && switchToJson()}
-              className={`text-xs px-3 py-1.5 transition-colors ${mode === 'json' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                padding: '5px 12px',
+                border: 'none',
+                cursor: 'pointer',
+                background: mode === 'json' ? 'var(--c-ink)' : 'transparent',
+                color: mode === 'json' ? 'var(--c-paper)' : 'var(--c-sub)',
+                transition: 'background 0.15s, color 0.15s',
+              }}
             >
               JSON
             </button>
@@ -170,16 +270,35 @@ export default function CvDataModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
           {mode === 'editor' ? (
             <CvEditor data={formData} onChange={setFormData} />
           ) : (
-            <div className="h-full flex flex-col px-5 py-3 gap-2">
-              <div className="flex justify-end">
+            <div
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '0.75rem 1.25rem',
+                gap: 8,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={handleFormat}
-                  className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg transition-colors"
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    background: 'var(--c-paper-deep)',
+                    color: 'var(--c-sub)',
+                    border: '1px solid var(--c-line)',
+                    borderRadius: 3,
+                    padding: '4px 12px',
+                    cursor: 'pointer',
+                  }}
                 >
                   Format
                 </button>
@@ -192,31 +311,100 @@ export default function CvDataModal({
                 }}
                 aria-label="CV JSON"
                 spellCheck={false}
-                className="flex-1 font-mono text-xs border border-gray-200 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-800 min-h-0"
+                style={{
+                  flex: 1,
+                  fontFamily: 'var(--f-mono)',
+                  fontSize: 11,
+                  border: '1px solid var(--c-line)',
+                  borderRadius: 4,
+                  padding: 12,
+                  resize: 'none',
+                  outline: 'none',
+                  background: '#0E0B08',
+                  color: 'rgba(255,255,255,0.8)',
+                  minHeight: 0,
+                  lineHeight: 1.65,
+                }}
               />
             </div>
           )}
         </div>
 
         {/* Error */}
-        {error && <p className="px-5 pb-1 text-xs text-red-500 shrink-0">{error}</p>}
+        {error && (
+          <p
+            style={{
+              padding: '0 1.25rem 4px',
+              fontSize: 12,
+              color: 'var(--c-accent)',
+              flexShrink: 0,
+            }}
+          >
+            {error}
+          </p>
+        )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-100 shrink-0">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-sm text-gray-500 hover:text-gray-700 px-4 py-1.5 rounded-lg transition-colors"
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 1.25rem',
+            borderTop: '1px solid var(--c-line)',
+            flexShrink: 0,
+            background: 'var(--c-paper-deep)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+            }}
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors"
-          >
-            Save
-          </button>
+            Data stays in your browser
+          </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={onCancel}
+              style={{
+                fontSize: 12,
+                fontFamily: 'var(--f-display)',
+                fontWeight: 600,
+                color: 'var(--c-sub)',
+                background: 'transparent',
+                border: '1px solid var(--c-line)',
+                borderRadius: 3,
+                padding: '6px 16px',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              style={{
+                fontSize: 12,
+                fontFamily: 'var(--f-display)',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: '#fff',
+                background: 'var(--c-accent)',
+                border: 'none',
+                borderRadius: 3,
+                padding: '6px 16px',
+                cursor: 'pointer',
+              }}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>

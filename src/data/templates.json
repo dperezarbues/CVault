@@ -411,6 +411,137 @@
           "default": 0.2
         }
       ]
+    },
+    {
+      "id": "compact",
+      "name": "Compact",
+      "description": "Dense two-column body fits a long CV on one page. Bold name-and-headline header with a thick ink rule.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Experience left, skills · education · languages right"
+        }
+      ],
+      "styleParams": [
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Accent",
+          "type": "color",
+          "default": "#334155",
+          "canonical": "cv_accent"
+        }
+      ]
+    },
+    {
+      "id": "banner",
+      "name": "Banner",
+      "description": "Full-width dark header band with accent-coloured role and filled stack pills. Teal accent.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Dark header, full-width body, 2-col education + skills at bottom"
+        }
+      ],
+      "styleParams": [
+        {
+          "group": "Header",
+          "key": "header_bg",
+          "label": "Header background",
+          "type": "color",
+          "default": "#243b53",
+          "canonical": "cv_dark_bg"
+        },
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Accent",
+          "type": "color",
+          "default": "#2bb0a4",
+          "canonical": "cv_accent"
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "description": "Experience entries on a dated rail with circular markers. Accent-coloured section rules.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Stacked header, timeline experience, 2-col skills + education"
+        }
+      ],
+      "styleParams": [
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Accent",
+          "type": "color",
+          "default": "#0f766e",
+          "canonical": "cv_accent"
+        }
+      ]
+    },
+    {
+      "id": "academic",
+      "name": "Academic",
+      "description": "Centred formal layout. Experience shows as Appointments, projects as Selected Work.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Centred header, appointments, education, selected work"
+        }
+      ],
+      "styleParams": []
+    },
+    {
+      "id": "tech",
+      "name": "Tech",
+      "description": "Monospace section headers with // prefix, left accent-bar, and a flat tag grid for skills.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Left accent bar header, flat skill tags, 2-col footer"
+        }
+      ],
+      "styleParams": [
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Accent",
+          "type": "color",
+          "default": "#0e9f6e",
+          "canonical": "cv_accent"
+        }
+      ]
+    },
+    {
+      "id": "editorial",
+      "name": "Editorial",
+      "description": "Magazine-style: large italic display name, narrow meta column, italic summary with accent border.",
+      "layouts": [
+        {
+          "id": "default",
+          "name": "Default",
+          "description": "Display name header, meta left column, experience right"
+        }
+      ],
+      "styleParams": [
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Accent",
+          "type": "color",
+          "default": "#9b3a2e",
+          "canonical": "cv_accent"
+        }
+      ]
     }
   ]
 }
