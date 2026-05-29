@@ -13,7 +13,7 @@ import OnboardingModal from './OnboardingModal'
 import PdfPreview from './PdfPreview'
 import type { SectionDef } from './section-defs'
 import { DEFAULT_SECTIONS } from './section-defs'
-import type { CompileState, Template } from './types'
+import type { CompileState, Layout, Template } from './types'
 
 const EditorShell = dynamic(() => import('./EditorShell'), { ssr: false })
 
