@@ -343,26 +343,15 @@ function TemplateTab({
                 boxShadow: on ? `0 0 0 2px var(--c-accent)` : 'inset 0 0 0 1px var(--c-line)',
               }}
             >
-              {/* PDF thumbnail — scaled iframe showing first page of sample */}
+              {/* Template thumbnail */}
               <div
-                className="h-24 mb-2 overflow-hidden relative"
-                style={{
-                  background: '#fff',
-                  boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
-                }}
+                className="h-24 mb-2 overflow-hidden"
+                style={{ background: '#f5f5f5', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }}
               >
-                <iframe
-                  src={`/samples/${t.id}.pdf`}
-                  className="absolute top-0 left-0 border-0"
-                  style={{
-                    width: 794,
-                    height: 1123,
-                    transform: 'scale(0.192)',
-                    transformOrigin: 'top left',
-                    pointerEvents: 'none',
-                  }}
-                  title={`${t.name} preview`}
-                  tabIndex={-1}
+                <img
+                  src={`/thumbnails/${t.id}.png`}
+                  alt={`${t.name} template preview`}
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
               <div className="flex items-center justify-between">

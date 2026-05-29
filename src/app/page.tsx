@@ -13,7 +13,7 @@ function PNav() {
       className="flex items-center justify-between px-14 py-5"
       style={{ borderBottom: '1.5px solid var(--c-ink)' }}
     >
-      <div className="flex items-center gap-3">
+      <Link href="/" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
         <MarkProof size={30} />
         <span
           className="font-black text-[22px] tracking-[-0.02em]"
@@ -22,15 +22,15 @@ function PNav() {
           Proof
         </span>
         <MonoLabel className="ml-1">Beta</MonoLabel>
-      </div>
+      </Link>
 
       <div className="flex items-center gap-8">
         <a
-          href="#generate"
+          href="#editor"
           className="font-semibold text-[14px]"
           style={{ color: 'var(--c-ink2)', textDecoration: 'none', cursor: 'pointer' }}
         >
-          Generate
+          Editor
         </a>
         <a
           href="#templates"
@@ -348,7 +348,7 @@ function PMakeYours() {
   ]
 
   return (
-    <section id="generate" className="px-14 py-16" style={{ borderTop: '1px solid var(--c-line)' }}>
+    <section id="editor" className="px-14 py-16" style={{ borderTop: '1px solid var(--c-line)' }}>
       <MonoLabel>Then make it yours</MonoLabel>
 
       <div className="grid grid-cols-[0.9fr_1.1fr] gap-12 items-center mt-6">
@@ -386,6 +386,11 @@ function PMakeYours() {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-7">
+            <ProofButton href="/editor" variant="primary" size="lg">
+              Open editor →
+            </ProofButton>
           </div>
         </div>
 
@@ -574,20 +579,27 @@ function PPrivacy() {
 
 // ── open source ───────────────────────────────────────────────────────────────
 
+const GITHUB_REPO = 'https://github.com/dperezarbues/CVault'
+
 type OsRowProps = {
+  href: string
   title: string
   sub: string
   accent?: boolean
   icon: React.ReactNode
 }
 
-function OsRow({ title, sub, accent, icon }: OsRowProps) {
+function OsRow({ href, title, sub, accent, icon }: OsRowProps) {
   return (
-    <div
-      className="flex items-center gap-4 px-4 py-4 rounded-[4px]"
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-4 px-4 py-4 rounded-[4px] transition-opacity hover:opacity-85"
       style={{
         background: accent ? 'var(--c-accent)' : 'var(--c-card)',
         boxShadow: accent ? 'none' : 'inset 0 0 0 1px var(--c-line)',
+        textDecoration: 'none',
       }}
     >
       <div style={{ color: accent ? '#fff' : 'var(--c-ink)' }}>{icon}</div>
@@ -611,7 +623,7 @@ function OsRow({ title, sub, accent, icon }: OsRowProps) {
       >
         →
       </span>
-    </div>
+    </a>
   )
 }
 
@@ -701,16 +713,19 @@ function POpenSource() {
         </div>
         <div className="flex flex-col gap-3">
           <OsRow
+            href={GITHUB_REPO}
             title="Fork it on GitHub"
             sub="PolyForm Noncommercial · contributions welcome"
             icon={<ForkIcon />}
           />
           <OsRow
+            href={`${GITHUB_REPO}/issues/new`}
             title="Request a feature"
             sub="Tell us what you need — open an issue"
             icon={<ChatIcon />}
           />
           <OsRow
+            href={process.env.NEXT_PUBLIC_SUPPORT_URL ?? GITHUB_REPO}
             title="Support the project"
             sub="Keep Proof free, private, and ad-free"
             accent
