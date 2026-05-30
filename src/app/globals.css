@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* ── Viewport ── */
+@layer base {
+  :root {
+    --sidebar-w-tablet: 320px;
+    --sidebar-w-desktop: 380px;
+    --mobile-tabbar-h: 56px;
+  }
+}
+
 /* ── Proof design tokens ── */
 :root {
   --c-ink: #17130e;
@@ -31,6 +40,70 @@ body {
 }
 .mono-link:hover {
   color: var(--c-ink) !important;
+}
+
+/* ── Editor sidebar — responsive bottom-sheet on mobile ── */
+/*
+ * Mobile  (< 768px):   fixed bottom sheet that slides up from beneath the tab bar
+ * Tablet  (768-1023):  static left sidebar 320 px wide
+ * Desktop (≥ 1024px):  static left sidebar 380 px wide
+ */
+.editor-aside {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--mobile-tabbar-h);
+  height: 72dvh;
+  z-index: 40;
+  background: var(--c-paper);
+  border-top: 1.5px solid var(--c-line);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.2);
+  transform: translateY(110%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-aside[data-open="true"] {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .editor-aside {
+    position: static;
+    width: var(--sidebar-w-tablet);
+    height: 100%;
+    transform: none !important;
+    transition: none !important;
+    border-top: none;
+    border-radius: 0;
+    box-shadow: none;
+    border-right: 1px solid var(--c-line);
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .editor-aside {
+    width: var(--sidebar-w-desktop);
+  }
+}
+
+/* CV mockup inner card — responsive min-height */
+.cv-mockup-inner {
+  min-height: 300px;
+}
+@media (min-width: 640px) {
+  .cv-mockup-inner {
+    min-height: 380px;
+  }
+}
+@media (min-width: 1024px) {
+  .cv-mockup-inner {
+    min-height: 460px;
+  }
 }
 
 /* ── Print ── */

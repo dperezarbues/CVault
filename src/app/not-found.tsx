@@ -23,7 +23,7 @@ export default function NotFound() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 32,
+          padding: 'clamp(16px, 5vw, 32px)',
           overflow: 'hidden',
           background: 'var(--c-paper)',
           color: 'var(--c-ink)',

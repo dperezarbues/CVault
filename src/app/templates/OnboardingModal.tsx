@@ -28,16 +28,12 @@ type Props = {
 
 export default function OnboardingModal({ privateMode, onPrivateToggle, onDismiss }: Props) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
+        className="w-full sm:max-w-[448px] sm:mx-4 sm:rounded-[6px] rounded-t-[12px] max-h-[90dvh] overflow-y-auto"
         style={{
           background: 'var(--c-paper)',
-          borderRadius: 6,
           boxShadow: '0 40px 100px rgba(0,0,0,0.4)',
-          width: '100%',
-          maxWidth: 448,
-          margin: '0 1rem',
-          overflow: 'hidden',
         }}
       >
         {/* Header */}

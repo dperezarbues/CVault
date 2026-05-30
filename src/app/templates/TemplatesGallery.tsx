@@ -402,6 +402,13 @@ function TemplateTab({
 
 // ── main component ────────────────────────────────────────────────────────────
 
+const MOBILE_TABS: [Tab, string][] = [
+  ['data', 'Data'],
+  ['template', 'Template'],
+  ['layout', 'Layout'],
+  ['style', 'Style'],
+]
+
 export default function TemplatesGallery({
   templates,
   layoutData,
@@ -417,6 +424,7 @@ export default function TemplatesGallery({
   const [generateTrigger, setGenerateTrigger] = useState(0)
   const [compileState, setCompileState] = useState<CompileState>('idle')
   const [_compilerReady, setCompilerReady] = useState(false)
+  const [mobilePanel, setMobilePanel] = useState(false)
   const previewPdfRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -518,19 +526,45 @@ export default function TemplatesGallery({
 
   const isGenerateDisabled = !currentCv || compileState !== 'idle'
 
+  function openMobileTab(t: Tab) {
+    setActiveTab(t)
+    setMobilePanel(true)
+  }
+
+  function closeMobilePanel() {
+    setMobilePanel(false)
+  }
+
+  const generateLabel =
+    compileState === 'loading'
+      ? 'Loading…'
+      : compileState === 'compiling'
+        ? 'Compiling…'
+        : 'Generate PDF'
+
   return (
     <div
-      className="flex h-screen overflow-hidden"
+      className="flex flex-col md:flex-row h-[100dvh] overflow-hidden"
       style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
     >
-      {/* ── Left pane ─────────────────────────────────────────────────────── */}
-      <aside
-        className="shrink-0 flex flex-col"
-        style={{ width: 380, borderRight: '1px solid var(--c-line)' }}
-      >
-        {/* Brand header */}
+      {/* ── Mobile backdrop ───────────────────────────────────────────────── */}
+      {mobilePanel && (
         <div
-          className="px-4 py-3.5 flex flex-col gap-3"
+          className="md:hidden fixed inset-0 z-30 bg-black/50"
+          onClick={closeMobilePanel}
+          aria-hidden
+        />
+      )}
+
+      {/* ── Sidebar (editor-aside handles responsive CSS) ─────────────────── */}
+      <aside
+        className="editor-aside"
+        data-open={mobilePanel ? 'true' : 'false'}
+        style={{ background: 'var(--c-paper)' }}
+      >
+        {/* Brand header — desktop/tablet only */}
+        <div
+          className="hidden md:flex px-4 py-3.5 flex-col gap-3 shrink-0"
           style={{ borderBottom: '1px solid var(--c-line)' }}
         >
           <div className="flex items-center gap-2.5">
@@ -568,6 +602,28 @@ export default function TemplatesGallery({
           </div>
         </div>
 
+        {/* Mobile panel header */}
+        <div
+          className="md:hidden flex items-center justify-between px-4 py-2.5 shrink-0"
+          style={{ borderBottom: '1px solid var(--c-line)' }}
+        >
+          <span
+            className="font-mono text-[10px] tracking-[0.14em] uppercase"
+            style={{ color: 'var(--c-faint)' }}
+          >
+            Editor settings
+          </span>
+          <button
+            type="button"
+            onClick={closeMobilePanel}
+            className="w-7 h-7 flex items-center justify-center text-[17px] rounded-full transition-opacity hover:opacity-70"
+            style={{ boxShadow: 'inset 0 0 0 1px var(--c-line)', color: 'var(--c-sub)' }}
+            aria-label="Close panel"
+          >
+            ×
+          </button>
+        </div>
+
         {/* Step nav */}
         <StepNav active={activeTab} onChange={setActiveTab} />
 
@@ -598,7 +654,7 @@ export default function TemplatesGallery({
             />
           )}
 
-          {/* EditorShell is always mounted so the compiler stays alive for Generate button */}
+          {/* EditorShell always mounted to keep compiler alive */}
           <div
             style={{
               display: activeTab === 'layout' || activeTab === 'style' ? undefined : 'none',
@@ -617,6 +673,7 @@ export default function TemplatesGallery({
                 onPdfChange={(url) =>
                   setPreviewPdf((prev) => {
                     if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
+                    setMobilePanel(false) // show the result on mobile
                     return url
                   })
                 }
@@ -644,11 +701,7 @@ export default function TemplatesGallery({
             disabled={isGenerateDisabled}
             onClick={() => setGenerateTrigger((t) => t + 1)}
           >
-            {compileState === 'loading'
-              ? 'Loading compiler…'
-              : compileState === 'compiling'
-                ? 'Compiling…'
-                : 'Generate PDF'}
+            {generateLabel}
           </SbBtn>
           {!isSample && (
             <a
@@ -663,9 +716,9 @@ export default function TemplatesGallery({
           )}
         </div>
 
-        {/* Footer links */}
+        {/* Footer links — desktop/tablet only */}
         <div
-          className="px-4 py-3 flex items-center justify-between"
+          className="hidden md:flex shrink-0 px-4 py-3 items-center justify-between"
           style={{ borderTop: '1px solid var(--c-line2)' }}
         >
           <Link
@@ -705,20 +758,55 @@ export default function TemplatesGallery({
         </div>
       </aside>
 
-      {/* ── Right pane ────────────────────────────────────────────────────── */}
-      <PdfPreview
-        templateName={activeTemplate.name}
-        layoutName={activeLayout.name}
-        showLayoutSuffix={activeTemplate.layouts.length > 1}
-        currentPdf={currentPdf}
-        isSample={isSample}
-        isGenerating={isGenerating}
-        currentCv={currentCv}
-        onReset={() => setPreviewPdf(null)}
-        onGenerate={() => setGenerateTrigger((t) => t + 1)}
-        onNewCv={() => setCvModal({ mode: 'new' })}
-        onImport={() => importRef.current?.click()}
-      />
+      {/* ── Main area: PDF preview + mobile tab bar ───────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+        <PdfPreview
+          templateName={activeTemplate.name}
+          layoutName={activeLayout.name}
+          showLayoutSuffix={activeTemplate.layouts.length > 1}
+          currentPdf={currentPdf}
+          isSample={isSample}
+          isGenerating={isGenerating}
+          currentCv={currentCv}
+          onReset={() => setPreviewPdf(null)}
+          onGenerate={() => setGenerateTrigger((t) => t + 1)}
+          onNewCv={() => setCvModal({ mode: 'new' })}
+          onImport={() => importRef.current?.click()}
+        />
+
+        {/* Mobile bottom tab bar */}
+        <div
+          className="md:hidden shrink-0 flex h-14"
+          style={{ borderTop: '1px solid var(--c-line)', background: 'var(--c-paper)' }}
+        >
+          {MOBILE_TABS.map(([tab, label], i) => {
+            const on = mobilePanel && activeTab === tab
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => openMobileTab(tab)}
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors"
+                style={{ color: on ? 'var(--c-accent)' : 'var(--c-faint)' }}
+              >
+                <span className="font-mono text-[9px] tracking-wider">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="font-bold text-[10px] uppercase tracking-wide">{label}</span>
+              </button>
+            )
+          })}
+          <button
+            type="button"
+            onClick={() => setGenerateTrigger((t) => t + 1)}
+            disabled={isGenerateDisabled}
+            className="flex-1 flex items-center justify-center font-bold text-[11px] uppercase tracking-wider disabled:opacity-40"
+            style={{ background: 'var(--c-accent)', color: '#fff' }}
+          >
+            {compileState !== 'idle' ? '…' : 'Gen PDF'}
+          </button>
+        </div>
+      </div>
 
       {/* ── Modals ────────────────────────────────────────────────────────── */}
       {showWelcome && (

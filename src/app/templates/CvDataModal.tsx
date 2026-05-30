@@ -121,18 +121,13 @@ export default function CvDataModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    <div className="fixed inset-0 z-50 flex sm:items-center sm:justify-center bg-black/60">
       <div
+        className="flex flex-col w-full sm:max-w-[672px] sm:mx-4 sm:rounded-[6px]"
         style={{
           background: 'var(--c-paper)',
-          borderRadius: 6,
           boxShadow: '0 40px 100px rgba(0,0,0,0.4)',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          maxWidth: 672,
-          margin: '0 1rem',
-          height: '90vh',
+          height: '100dvh',
         }}
       >
         {/* Header */}
