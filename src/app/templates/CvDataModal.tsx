@@ -123,6 +123,9 @@ export default function CvDataModal({
   return (
     <div className="fixed inset-0 z-50 flex sm:items-center sm:justify-center bg-black/60">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cv-modal-title"
         className="flex flex-col w-full sm:max-w-[672px] sm:mx-4 sm:rounded-[6px]"
         style={{
           background: 'var(--c-paper)',
@@ -144,6 +147,7 @@ export default function CvDataModal({
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <MarkProof size={26} />
             <h2
+              id="cv-modal-title"
               style={{
                 fontFamily: 'var(--f-display)',
                 fontWeight: 900,

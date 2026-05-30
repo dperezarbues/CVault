@@ -15,7 +15,7 @@ import { expect, type Page, test } from '@playwright/test'
 
 async function gotoEditor(page: Page) {
   await page.goto('/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
+  await page.evaluate(() => localStorage.setItem('proof-onboarded', '1'))
   await page.reload()
 }
 
@@ -366,7 +366,7 @@ test.describe('Onboarding Modal — mobile (375×667)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(MOBILE)
     await page.goto('/editor')
-    await page.evaluate(() => localStorage.removeItem('cvault-onboarded'))
+    await page.evaluate(() => localStorage.removeItem('proof-onboarded'))
     await page.reload()
   })
 

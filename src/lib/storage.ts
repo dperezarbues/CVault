@@ -1,13 +1,24 @@
-// Unified storage abstraction for CVault.
+// Storage abstraction for Proof.
 // In normal mode  → localStorage  (persists across sessions)
 // In private mode → sessionStorage (auto-clears when tab closes)
 //
 // Private mode flag is stored in sessionStorage itself — it lives only for the
 // current tab and is never written to localStorage.
 
-const PRIVATE_FLAG = 'cvault-private'
+const PRIVATE_FLAG = 'proof-private'
 
 export const KEYS = {
+  cvs: 'proof-cvs',
+  currentCv: 'proof-current-cv',
+  styleOverrides: 'proof-style-overrides',
+  layoutOverrides: 'proof-layout-overrides',
+  saves: 'proof-saves',
+  onboarded: 'proof-onboarded',
+  supportPrompted: 'proof-support-prompted',
+} as const
+
+// Keys used in v0.1 under the old "cvault" brand — kept for data migration only.
+const LEGACY_KEYS: Record<keyof typeof KEYS, string> = {
   cvs: 'cvault-cvs',
   currentCv: 'cvault-current-cv',
   styleOverrides: 'cvault-style-overrides',
@@ -15,7 +26,7 @@ export const KEYS = {
   saves: 'cvault-saves',
   onboarded: 'cvault-onboarded',
   supportPrompted: 'cvault-support-prompted',
-} as const
+}
 
 function store(): Storage {
   if (typeof window === 'undefined')
@@ -99,9 +110,19 @@ export function disablePrivateMode(): void {
   }
 }
 
-/** Removes all CVault data from both localStorage and sessionStorage, including legacy keys. */
+/** Removes all Proof data from both localStorage and sessionStorage, including legacy keys. */
 export function clearAllData(): void {
-  Object.values(KEYS).forEach((k) => {
+  const allKeys = [
+    ...Object.values(KEYS),
+    ...Object.values(LEGACY_KEYS),
+    // Keys from before the cvault era
+    'cv-web-cvs',
+    'cv-web-current-cv',
+    'cv-web-style-overrides',
+    'cv-web-saves',
+    'cv-web-onboarded',
+  ]
+  allKeys.forEach((k) => {
     try {
       localStorage.removeItem(k)
     } catch (err) {
@@ -113,24 +134,29 @@ export function clearAllData(): void {
       devWarn('clearAllData(sessionStorage)', err)
     }
   })
-  // Also clear the old cv-web-* keys from before the rename
-  const legacyKeys = [
-    'cv-web-cvs',
-    'cv-web-current-cv',
-    'cv-web-style-overrides',
-    'cv-web-saves',
-    'cv-web-onboarded',
-  ]
-  legacyKeys.forEach((k) => {
-    try {
-      localStorage.removeItem(k)
-    } catch (err) {
-      devWarn('clearAllData(legacy/localStorage)', err)
+}
+
+/**
+ * One-shot migration from cvault-* keys (v0.1) to proof-* keys.
+ * Safe to call on every startup — only copies if the new key is absent.
+ */
+export function migrateFromLegacy(): void {
+  if (typeof window === 'undefined') return
+  for (const k of Object.keys(KEYS) as Array<keyof typeof KEYS>) {
+    const newKey = KEYS[k]
+    const oldKey = LEGACY_KEYS[k]
+    for (const storage of [localStorage, sessionStorage]) {
+      try {
+        if (!storage.getItem(newKey)) {
+          const legacy = storage.getItem(oldKey)
+          if (legacy !== null) {
+            storage.setItem(newKey, legacy)
+            storage.removeItem(oldKey)
+          }
+        }
+      } catch {
+        // Storage may be unavailable (private browsing quota, security policy, etc.)
+      }
     }
-    try {
-      sessionStorage.removeItem(k)
-    } catch (err) {
-      devWarn('clearAllData(legacy/sessionStorage)', err)
-    }
-  })
+  }
 }

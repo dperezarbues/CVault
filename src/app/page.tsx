@@ -616,7 +616,7 @@ function PPrivacy() {
 
 // ── open source ───────────────────────────────────────────────────────────────
 
-const GITHUB_REPO = 'https://github.com/dperezarbues/CVault'
+const GITHUB_REPO = 'https://github.com/dperezarbues/cvault'
 
 type OsRowProps = {
   href: string

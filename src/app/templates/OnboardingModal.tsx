@@ -30,6 +30,9 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboarding-title"
         className="w-full sm:max-w-[448px] sm:mx-4 sm:rounded-[6px] rounded-t-[12px] max-h-[90dvh] overflow-y-auto"
         style={{
           background: 'var(--c-paper)',
@@ -41,6 +44,7 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem' }}>
             <MarkProof size={26} />
             <span
+              id="onboarding-title"
               style={{
                 fontFamily: 'var(--f-display)',
                 fontWeight: 900,

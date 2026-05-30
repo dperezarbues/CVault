@@ -14,7 +14,7 @@ describe('initFormData', () => {
   it('returns parsed form data for valid JSON', () => {
     const result = initFormData(JSON.stringify({ identity: { name: 'Alice' } }))
     expect(result).not.toBeNull()
-    expect(result!.identity.name).toBe('Alice')
+    expect(result?.identity.name).toBe('Alice')
   })
 })
 

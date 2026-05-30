@@ -52,7 +52,7 @@ describe('normal mode', () => {
   it('setItem and getItem round-trip via localStorage', () => {
     setItem('k', 'v')
     expect(getItem('k')).toBe('v')
-    expect(mockSS._data['k']).toBeUndefined()
+    expect(mockSS._data.k).toBeUndefined()
   })
 
   it('getItem returns null for missing key', () => {
@@ -70,7 +70,7 @@ describe('normal mode', () => {
 
 describe('private mode', () => {
   beforeEach(() => {
-    mockSS._data['cvault-private'] = '1'
+    mockSS._data['proof-private'] = '1'
   })
 
   it('routes writes to sessionStorage', () => {
@@ -98,7 +98,7 @@ describe('isPrivateMode', () => {
   })
 
   it('returns false after disablePrivateMode', () => {
-    mockSS._data['cvault-private'] = '1'
+    mockSS._data['proof-private'] = '1'
     disablePrivateMode()
     expect(isPrivateMode()).toBe(false)
   })
@@ -108,11 +108,11 @@ describe('isPrivateMode', () => {
 
 describe('removeItem', () => {
   it('removes from both storages', () => {
-    mockLS._data['k'] = 'a'
-    mockSS._data['k'] = 'b'
+    mockLS._data.k = 'a'
+    mockSS._data.k = 'b'
     removeItem('k')
-    expect(mockLS._data['k']).toBeUndefined()
-    expect(mockSS._data['k']).toBeUndefined()
+    expect(mockLS._data.k).toBeUndefined()
+    expect(mockSS._data.k).toBeUndefined()
   })
 })
 
@@ -197,7 +197,7 @@ describe('error resilience', () => {
       throw new Error('failed')
     })
     setItem('k', 'v')
-    expect(mockLS._data['k']).toBe('v')
+    expect(mockLS._data.k).toBe('v')
   })
 
   it('enablePrivateMode does not propagate when sessionStorage throws', () => {

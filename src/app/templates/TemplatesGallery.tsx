@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkProof from '@/components/proof/MarkProof'
-import { getItem, KEYS, setItem } from '@/lib/storage'
+import { getItem, KEYS, migrateFromLegacy, setItem } from '@/lib/storage'
 import { initTypstWorker } from '@/lib/typst-compile'
 import CvDataModal, { type CvEntry } from './CvDataModal'
 import type { EditorTab } from './EditorShell'
@@ -423,7 +423,6 @@ export default function TemplatesGallery({
   const [isGenerating, setIsGenerating] = useState(false)
   const [generateTrigger, setGenerateTrigger] = useState(0)
   const [compileState, setCompileState] = useState<CompileState>('idle')
-  const [_compilerReady, setCompilerReady] = useState(false)
   const [mobilePanel, setMobilePanel] = useState(false)
   const previewPdfRef = useRef<string | null>(null)
 
@@ -444,6 +443,7 @@ export default function TemplatesGallery({
   const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    migrateFromLegacy()
     if (!getItem(KEYS.onboarded)) setShowWelcome(true)
     initTypstWorker(templates.map((t) => t.id))
   }, [templates])
@@ -490,6 +490,10 @@ export default function TemplatesGallery({
       const name = file.name.replace(/\.json$/i, '')
       setCvModal({ mode: 'import', content, name })
     }
+    reader.onerror = () => {
+      if (process.env.NODE_ENV === 'development')
+        console.warn('[import] FileReader error', reader.error)
+    }
     reader.readAsText(file)
     e.target.value = ''
   }
@@ -509,14 +513,12 @@ export default function TemplatesGallery({
   const handleCompileInfo = useCallback(
     ({
       compileState: cs,
-      compilerReady: cr,
     }: {
       compileState: CompileState
       compilerReady: boolean
       error: string | null
     }) => {
       setCompileState(cs)
-      setCompilerReady(cr)
     },
     [],
   )
