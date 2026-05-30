@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import CropMarks from '@/components/proof/CropMarks'
 import MarkProof from '@/components/proof/MarkProof'
@@ -456,17 +457,17 @@ function PMakeYours() {
 
 // ── templates ─────────────────────────────────────────────────────────────────
 
-const TEMPLATE_NAMES = [
-  'Default',
-  'Sidebar',
-  'Modern',
-  'Minimal',
-  'Banner',
-  'Timeline',
-  'Academic',
-  'Tech',
-  'Editorial',
-  'Compact',
+const TEMPLATES = [
+  { id: 'default', name: 'Default' },
+  { id: 'sidebar', name: 'Sidebar' },
+  { id: 'modern', name: 'Modern' },
+  { id: 'minimal', name: 'Minimal' },
+  { id: 'banner', name: 'Banner' },
+  { id: 'timeline', name: 'Timeline' },
+  { id: 'academic', name: 'Academic' },
+  { id: 'tech', name: 'Tech' },
+  { id: 'editorial', name: 'Editorial' },
+  { id: 'compact', name: 'Compact' },
 ]
 
 function PTemplates() {
@@ -496,35 +497,28 @@ function PTemplates() {
       </div>
 
       <div className="grid grid-cols-5 gap-4">
-        {TEMPLATE_NAMES.map((name, i) => (
+        {TEMPLATES.map((t, i) => (
           <Link
-            key={name}
+            key={t.id}
             href="/editor"
             className="group relative rounded-[3px] p-3 transition-shadow"
             style={{ background: '#fff', boxShadow: 'inset 0 0 0 1px var(--c-line)' }}
           >
-            {/* Template preview placeholder */}
             <div
-              className="h-36 overflow-hidden mb-2.5"
-              style={{ background: '#fff', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)' }}
+              className="h-36 overflow-hidden mb-2.5 relative"
+              style={{ background: '#f5f5f5', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }}
             >
-              <div className="p-3 space-y-1.5">
-                <div className="h-2 rounded-full w-2/3" style={{ background: 'var(--c-ink)' }} />
-                <div className="h-1.5 rounded-full w-1/2" style={{ background: 'var(--c-line)' }} />
-                <div className="mt-2 space-y-1">
-                  {(['70%', '75%', '80%', '85%'] as const).map((w) => (
-                    <div
-                      key={w}
-                      className="h-1 rounded-full"
-                      style={{ background: 'var(--c-line2)', width: w }}
-                    />
-                  ))}
-                </div>
-              </div>
+              <Image
+                src={`/thumbnails/${t.id}.png`}
+                alt={`${t.name} template preview`}
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1280px) 20vw, 200px"
+              />
             </div>
             <div className="flex justify-between items-center">
               <span className="font-bold text-[14px]" style={{ color: 'var(--c-ink)' }}>
-                {name}
+                {t.name}
               </span>
               {i === 0 && <MonoLabel style={{ color: 'var(--c-accent)' }}>Default</MonoLabel>}
             </div>
