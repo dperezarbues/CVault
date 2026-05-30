@@ -529,7 +529,10 @@ function PTemplates() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
+      <div
+        data-testid="template-grid"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4"
+      >
         {TEMPLATES.map((t, i) => (
           <Link
             key={t.id}

@@ -776,6 +776,7 @@ export default function TemplatesGallery({
 
         {/* Mobile bottom tab bar */}
         <div
+          data-testid="mobile-tabbar"
           className="md:hidden shrink-0 flex h-14"
           style={{ borderTop: '1px solid var(--c-line)', background: 'var(--c-paper)' }}
         >
@@ -785,6 +786,7 @@ export default function TemplatesGallery({
               <button
                 key={tab}
                 type="button"
+                data-testid={`mobile-tab-${tab}`}
                 onClick={() => openMobileTab(tab)}
                 className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors"
                 style={{ color: on ? 'var(--c-accent)' : 'var(--c-faint)' }}
