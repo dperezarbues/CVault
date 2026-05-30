@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import CropMarks from '@/components/proof/CropMarks'
 import MarkProof from '@/components/proof/MarkProof'
-import MonoLabel from '@/components/proof/MonoLabel'
+import RegMark from '@/components/proof/RegMark'
 
 export const metadata = {
   title: '404 — Proof',
@@ -9,68 +8,270 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-8"
-      style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
-    >
-      {/* Nav strip */}
+    <>
+      <style>{`
+        @keyframes scan {
+          0%, 100% { transform: translateY(-6px); opacity: 0.5; }
+          50%       { transform: translateY(6px);  opacity: 1;   }
+        }
+        .reg-animated { animation: scan 3s ease-in-out infinite; }
+      `}</style>
+
       <div
-        className="fixed top-0 inset-x-0 flex items-center px-10 py-4"
-        style={{ borderBottom: '1px solid var(--c-line)' }}
+        style={{
+          minHeight: '100svh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 32,
+          overflow: 'hidden',
+          background: 'var(--c-paper)',
+          color: 'var(--c-ink)',
+          fontFamily: 'var(--f-display)',
+        }}
       >
-        <Link href="/" className="flex items-center gap-2.5" style={{ textDecoration: 'none' }}>
-          <MarkProof size={26} />
-          <span
-            className="font-black text-[18px] tracking-[-0.02em]"
-            style={{ color: 'var(--c-ink)' }}
+        <div style={{ position: 'relative', maxWidth: 680, width: '100%', textAlign: 'center' }}>
+          {/* Crop marks */}
+          {(['tl', 'tr', 'bl', 'br'] as const).map((pos) => (
+            <span
+              key={pos}
+              aria-hidden
+              style={{
+                position: 'absolute',
+                width: 16,
+                height: 16,
+                ...(pos === 'tl' && {
+                  top: -24,
+                  left: -24,
+                  borderTop: '2px solid var(--c-ink)',
+                  borderLeft: '2px solid var(--c-ink)',
+                }),
+                ...(pos === 'tr' && {
+                  top: -24,
+                  right: -24,
+                  borderTop: '2px solid var(--c-ink)',
+                  borderRight: '2px solid var(--c-ink)',
+                }),
+                ...(pos === 'bl' && {
+                  bottom: -24,
+                  left: -24,
+                  borderBottom: '2px solid var(--c-ink)',
+                  borderLeft: '2px solid var(--c-ink)',
+                }),
+                ...(pos === 'br' && {
+                  bottom: -24,
+                  right: -24,
+                  borderBottom: '2px solid var(--c-ink)',
+                  borderRight: '2px solid var(--c-ink)',
+                }),
+              }}
+            />
+          ))}
+
+          {/* Big 404 + REJECTED stamp */}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <span
+              style={{
+                fontFamily: 'var(--f-display)',
+                fontWeight: 900,
+                fontSize: 'clamp(120px, 20vw, 220px)',
+                lineHeight: 0.85,
+                letterSpacing: '-0.04em',
+                color: 'var(--c-ink)',
+                textTransform: 'uppercase',
+                display: 'block',
+              }}
+            >
+              404
+            </span>
+
+            {/* Stamp */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%) rotate(-12deg)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                border: '3px solid var(--c-accent)',
+                boxShadow: 'inset 0 0 0 2px var(--c-accent)',
+                color: 'var(--c-accent)',
+                padding: '10px 22px',
+                borderRadius: 5,
+                pointerEvents: 'none',
+                opacity: 0.88,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--f-display)',
+                  fontWeight: 800,
+                  fontSize: 28,
+                  letterSpacing: '0.16em',
+                  lineHeight: 1,
+                }}
+              >
+                REJECTED
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--f-mono)',
+                  fontSize: 10,
+                  letterSpacing: '0.2em',
+                }}
+              >
+                REV 00
+              </span>
+            </div>
+          </div>
+
+          {/* Animated registration mark */}
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '28px 0 22px' }}>
+            <div className="reg-animated">
+              <RegMark size={28} color="var(--c-ink)" strokeWidth={1.6} />
+            </div>
+          </div>
+
+          {/* Copy */}
+          <div
+            style={{
+              fontFamily: 'var(--f-display)',
+              fontSize: 20,
+              fontWeight: 600,
+              color: 'var(--c-ink)',
+              marginBottom: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+            }}
           >
-            Proof
-          </span>
-        </Link>
-      </div>
+            This page didn&apos;t make the cut.
+          </div>
 
-      {/* Main content */}
-      <div className="relative flex flex-col items-center text-center max-w-lg">
-        <CropMarks color="var(--c-line)" gap={-20} len={22} strokeWidth={1.2} />
-
-        <MonoLabel style={{ color: 'var(--c-accent)', marginBottom: '1.5rem' }}>
-          Error · 404
-        </MonoLabel>
-
-        <h1
-          className="font-black uppercase leading-none tracking-[-0.04em]"
-          style={{ fontSize: 'clamp(96px, 20vw, 160px)', color: 'var(--c-ink)', lineHeight: 0.88 }}
-        >
-          404
-        </h1>
-
-        <p
-          className="text-[17px] leading-[1.6] mt-8 mb-10"
-          style={{ color: 'var(--c-sub)', maxWidth: 360 }}
-        >
-          This page doesn&apos;t exist — or was moved. The CV you&apos;re looking for is probably
-          still in your browser.
-        </p>
-
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="font-bold text-[14px] px-6 py-3 rounded-[3px] uppercase tracking-wider transition-opacity hover:opacity-80"
-            style={{ background: 'var(--c-ink)', color: 'var(--c-paper)' }}
+          <p
+            style={{
+              fontFamily: 'var(--f-display)',
+              fontSize: 15,
+              color: 'var(--c-sub)',
+              lineHeight: 1.5,
+              maxWidth: 420,
+              margin: '0 auto 32px',
+            }}
           >
-            ← Home
-          </Link>
-          <Link
-            href="/editor"
-            className="font-bold text-[14px] px-6 py-3 rounded-[3px] uppercase tracking-wider transition-opacity hover:opacity-80"
-            style={{ background: 'var(--c-accent)', color: '#fff' }}
+            The page you&apos;re looking for doesn&apos;t exist, was moved, or failed quality
+            control. Let&apos;s get you back to something real.
+          </p>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link
+              href="/"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 9,
+                fontFamily: 'var(--f-display)',
+                fontWeight: 700,
+                fontSize: 14,
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                padding: '14px 24px',
+                borderRadius: 3,
+                textDecoration: 'none',
+                background: 'var(--c-accent)',
+                color: '#fff',
+              }}
+            >
+              <svg
+                width={16}
+                height={16}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <title>Up</title>
+                <path d="M5 12l7-7 7 7" />
+                <path d="M12 5v14" />
+              </svg>
+              Back to home
+            </Link>
+            <Link
+              href="/editor"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 9,
+                fontFamily: 'var(--f-display)',
+                fontWeight: 700,
+                fontSize: 14,
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                padding: '14px 24px',
+                borderRadius: 3,
+                textDecoration: 'none',
+                background: 'transparent',
+                color: 'var(--c-ink)',
+                boxShadow: 'inset 0 0 0 1.5px var(--c-ink)',
+              }}
+            >
+              Open the editor
+            </Link>
+          </div>
+
+          {/* Meta */}
+          <div
+            style={{
+              marginTop: 40,
+              fontFamily: 'var(--f-mono)',
+              fontSize: 11,
+              letterSpacing: '0.06em',
+              color: 'var(--c-faint)',
+              textTransform: 'uppercase',
+            }}
           >
-            Open editor
-          </Link>
+            Error 404 ·{' '}
+            <a
+              href="https://github.com/dperezarbues/CVault/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--c-accent)', textDecoration: 'none' }}
+            >
+              Report an issue
+            </a>
+          </div>
+
+          {/* Proof mark */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              marginTop: 36,
+            }}
+          >
+            <MarkProof size={26} />
+            <span
+              style={{
+                fontFamily: 'var(--f-display)',
+                fontWeight: 800,
+                fontSize: 18,
+                letterSpacing: '-0.02em',
+                color: 'var(--c-ink)',
+              }}
+            >
+              Proof
+            </span>
+          </div>
         </div>
-
-        <MonoLabel className="mt-12">Nothing stored · Nothing lost</MonoLabel>
       </div>
-    </div>
+    </>
   )
 }
