@@ -92,6 +92,7 @@ export default function SectionCard({
         </label>
         <button
           type="button"
+          data-testid="remove-section"
           onClick={onRemove}
           className="opacity-0 group-hover:opacity-100 transition-opacity leading-none"
           style={{ color: 'var(--c-line)' }}

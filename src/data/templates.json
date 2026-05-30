@@ -425,12 +425,45 @@
       ],
       "styleParams": [
         {
+          "group": "Typography",
+          "key": "headline_size",
+          "label": "Headline",
+          "type": "range",
+          "min": 8.0,
+          "max": 14.0,
+          "step": 0.5,
+          "unit": "pt",
+          "default": 10.0
+        },
+        {
           "group": "Colors",
           "key": "accent_color",
           "label": "Accent",
           "type": "color",
           "default": "#334155",
           "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -447,6 +480,17 @@
       ],
       "styleParams": [
         {
+          "group": "Typography",
+          "key": "headline_size",
+          "label": "Headline",
+          "type": "range",
+          "min": 8.0,
+          "max": 14.0,
+          "step": 0.5,
+          "unit": "pt",
+          "default": 10.0
+        },
+        {
           "group": "Header",
           "key": "header_bg",
           "label": "Header background",
@@ -461,6 +505,28 @@
           "type": "color",
           "default": "#2bb0a4",
           "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -477,12 +543,45 @@
       ],
       "styleParams": [
         {
+          "group": "Typography",
+          "key": "headline_size",
+          "label": "Headline",
+          "type": "range",
+          "min": 8.0,
+          "max": 14.0,
+          "step": 0.5,
+          "unit": "pt",
+          "default": 10.0
+        },
+        {
           "group": "Colors",
           "key": "accent_color",
           "label": "Accent",
           "type": "color",
           "default": "#0f766e",
           "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -497,7 +596,49 @@
           "description": "Centred header, appointments, education, selected work"
         }
       ],
-      "styleParams": []
+      "styleParams": [
+        {
+          "group": "Typography",
+          "key": "headline_size",
+          "label": "Headline",
+          "type": "range",
+          "min": 8.0,
+          "max": 14.0,
+          "step": 0.5,
+          "unit": "pt",
+          "default": 10.0
+        },
+        {
+          "group": "Colors",
+          "key": "accent_color",
+          "label": "Links / accent",
+          "type": "color",
+          "default": "#1a56db",
+          "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
+        }
+      ]
     },
     {
       "id": "tech",
@@ -512,12 +653,45 @@
       ],
       "styleParams": [
         {
+          "group": "Typography",
+          "key": "headline_size",
+          "label": "Headline",
+          "type": "range",
+          "min": 8.0,
+          "max": 14.0,
+          "step": 0.5,
+          "unit": "pt",
+          "default": 10.0
+        },
+        {
           "group": "Colors",
           "key": "accent_color",
           "label": "Accent",
           "type": "color",
           "default": "#0e9f6e",
           "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -540,6 +714,28 @@
           "type": "color",
           "default": "#9b3a2e",
           "canonical": "cv_accent"
+        },
+        {
+          "group": "Spacing",
+          "key": "section_pre",
+          "label": "Before section",
+          "type": "range",
+          "min": 0.2,
+          "max": 0.9,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.5
+        },
+        {
+          "group": "Spacing",
+          "key": "section_post",
+          "label": "After rule",
+          "type": "range",
+          "min": 0.05,
+          "max": 0.4,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     }

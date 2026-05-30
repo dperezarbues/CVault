@@ -337,6 +337,7 @@ function TemplateTab({
             <button
               key={t.id}
               type="button"
+              data-testid={`template-btn-${t.id}`}
               onClick={() => onSelectTemplate(t)}
               className="relative rounded-[3px] p-2 text-left transition-shadow"
               style={{
@@ -380,6 +381,7 @@ function TemplateTab({
               <button
                 key={l.id}
                 type="button"
+                data-testid={`layout-btn-${l.id}`}
                 onClick={() => onSelectLayout(l)}
                 className="flex-1 py-2 rounded-[3px] font-bold text-[12px] uppercase tracking-[0.02em] transition-opacity"
                 style={{
