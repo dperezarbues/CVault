@@ -169,6 +169,8 @@
     "addYourCV": "Add your CV to generate your own PDF",
     "generatePDF": "Generate PDF",
     "newCV": "+ New CV",
+    "viewPDF": "Open PDF ↗",
+    "pdfReadyMobile": "Your PDF is ready",
     "import": "↑ Import"
   },
   "supportPrompt": {

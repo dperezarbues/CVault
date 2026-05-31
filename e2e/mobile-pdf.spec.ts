@@ -21,18 +21,14 @@ async function gotoEditorMobile(page: Page) {
 }
 
 async function createCvOnMobile(page: Page, name: string) {
-  // Open Data panel via mobile tab bar
-  await page.getByTestId('mobile-tab-data').click()
-  await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
-
+  // Create the CV at desktop width where the sidebar is always visible,
+  // then switch back to mobile to test the mobile PDF generation flow.
+  await page.setViewportSize({ width: 1280, height: 800 })
   await page.getByTitle('New CV').click()
   await page.getByRole('textbox', { name: 'Name', exact: true }).fill(name)
   await page.getByRole('button', { name: 'Save', exact: true }).click()
   await expect(page.getByRole('button', { name: name })).toBeVisible()
-
-  // Close the panel so the PDF preview is accessible
-  await page.getByRole('button', { name: 'Close panel' }).click()
-  await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'false')
+  await page.setViewportSize(MOBILE)
 }
 
 // ── Gen PDF via tab bar ───────────────────────────────────────────────────────
@@ -42,81 +38,67 @@ test.describe('Mobile PDF generation — tab bar button', () => {
     await gotoEditorMobile(page)
   })
 
-  test('Gen PDF tab-bar button generates a PDF and shows blob URL', async ({ page }) => {
+  test('Gen PDF tab-bar button generates a PDF and shows View PDF link', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 20_000)
 
     await createCvOnMobile(page, 'Mobile Gen CV')
 
-    const initialSrc = await page.locator('iframe').getAttribute('src')
-    expect(initialSrc).toMatch(/\.pdf$/) // starts as sample
+    // Mobile uses a link instead of an iframe (Android can't render PDFs inline)
+    const viewLink = page.getByRole('link', { name: /Open PDF/i })
+    await expect(viewLink).not.toBeVisible()
 
-    // Tap the mobile tab-bar Gen PDF button
     const genBtn = page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i })
     await expect(genBtn).toBeEnabled()
     await genBtn.click()
 
-    // Wait for blob URL
-    await expect(async () => {
-      const src = await page.locator('iframe').getAttribute('src')
-      expect(src).toMatch(/^blob:/)
-    }).toPass({ timeout: GENERATE_TIMEOUT, intervals: [500] })
+    // Wait for the "Open PDF" link to appear (driven by blob URL state)
+    await expect(viewLink).toBeVisible({ timeout: GENERATE_TIMEOUT })
+    const href = await viewLink.getAttribute('href')
+    expect(href).toMatch(/^blob:/)
   })
 
-  test('Download button appears in preview after mobile PDF generation', async ({ page }) => {
+  test('Download button appears in preview header after mobile PDF generation', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 20_000)
 
     await createCvOnMobile(page, 'Mobile Download CV')
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
 
-    await expect(async () => {
-      const src = await page.locator('iframe').getAttribute('src')
-      expect(src).toMatch(/^blob:/)
-    }).toPass({ timeout: GENERATE_TIMEOUT, intervals: [500] })
-
-    await expect(page.getByRole('button', { name: 'Download' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
+    await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible()
   })
 
-  test('PDF iframe remains visible and fills screen after mobile generation', async ({ page }) => {
+  test('mobile preview area fills screen above tab bar after generation', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 20_000)
 
     await createCvOnMobile(page, 'Mobile Layout CV')
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
+    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
 
-    await expect(async () => {
-      const src = await page.locator('iframe').getAttribute('src')
-      expect(src).toMatch(/^blob:/)
-    }).toPass({ timeout: GENERATE_TIMEOUT, intervals: [500] })
-
-    const iframeBox = await page.locator('iframe').boundingBox()
+    // The pdf-preview-area div should occupy most of the screen above the tab bar
+    const previewArea = page.getByTestId('pdf-preview-area')
     const tabbarBox = await page.getByTestId('mobile-tabbar').boundingBox()
+    const previewBox = await previewArea.boundingBox()
 
-    expect(iframeBox).not.toBeNull()
+    expect(previewBox).not.toBeNull()
     expect(tabbarBox).not.toBeNull()
-    // iframe should still sit above the tab bar
-    expect(iframeBox!.y + iframeBox!.height).toBeLessThanOrEqual(tabbarBox!.y + 2)
-    // and still occupy most of the screen
-    expect(iframeBox!.height).toBeGreaterThan(MOBILE.height * 0.6)
+    expect(previewBox!.height).toBeGreaterThan(MOBILE.height * 0.6)
+    expect(previewBox!.y + previewBox!.height).toBeLessThanOrEqual(tabbarBox!.y + 2)
   })
 
-  test('Reset returns to sample PDF on mobile', async ({ page }) => {
+  test('Reset returns to sample state on mobile', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 20_000)
 
     await createCvOnMobile(page, 'Mobile Reset CV')
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
+    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
 
-    await expect(async () => {
-      const src = await page.locator('iframe').getAttribute('src')
-      expect(src).toMatch(/^blob:/)
-    }).toPass({ timeout: GENERATE_TIMEOUT, intervals: [500] })
+    await page.getByRole('button', { name: 'Reset', exact: true }).click()
 
-    await page.getByRole('button', { name: 'Reset' }).click()
-
-    const src = await page.locator('iframe').getAttribute('src')
-    expect(src).toMatch(/\.pdf$/) // back to sample
-    await expect(page.getByRole('button', { name: 'Download' })).not.toBeVisible()
+    await expect(page.getByRole('link', { name: /Open PDF/i })).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Download', exact: true })).not.toBeVisible()
   })
 
   test('Gen PDF button is disabled before a CV is created', async ({ page }) => {

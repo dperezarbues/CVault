@@ -225,20 +225,20 @@ test.describe('Editor — mobile (375×667)', () => {
     await expect(aside.getByRole('button', { name: /Generate PDF/i })).toBeVisible()
   })
 
-  test('PDF preview iframe takes up most of the screen above the tab bar', async ({ page }) => {
-    const iframe = page.locator('iframe')
+  test('PDF preview area takes up most of the screen above the tab bar', async ({ page }) => {
+    // On mobile, Android cannot render PDFs in iframes, so the app renders a
+    // placeholder div instead. Use the data-testid on the container.
+    const previewArea = page.getByTestId('pdf-preview-area')
     const tabbar = page.getByTestId('mobile-tabbar')
 
-    const iframeBox = await iframe.boundingBox()
+    const previewBox = await previewArea.boundingBox()
     const tabbarBox = await tabbar.boundingBox()
 
-    expect(iframeBox).not.toBeNull()
+    expect(previewBox).not.toBeNull()
     expect(tabbarBox).not.toBeNull()
 
-    // iframe should be above the tab bar
-    expect(iframeBox!.y + iframeBox!.height).toBeLessThanOrEqual(tabbarBox!.y + 2)
-    // iframe should occupy a significant portion of the screen height
-    expect(iframeBox!.height).toBeGreaterThan(MOBILE.height * 0.6)
+    expect(previewBox!.y + previewBox!.height).toBeLessThanOrEqual(tabbarBox!.y + 2)
+    expect(previewBox!.height).toBeGreaterThan(MOBILE.height * 0.6)
   })
 })
 

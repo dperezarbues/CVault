@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { KEYS } from '@/lib/storage'
 import type { CvEntry } from './CvDataModal'
 import SupportPrompt from './components/SupportPrompt'
@@ -53,6 +53,13 @@ export default function PdfPreview({
 }: Props) {
   const t = useTranslations('pdfPreview')
   const [showSupport, setShowSupport] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const downloadUrl = currentPdf.split('?')[0]
 
@@ -127,14 +134,40 @@ export default function PdfPreview({
         </div>
       </div>
 
-      <div className="flex-1 relative min-h-0">
-        <iframe
-          key={currentPdf}
-          src={currentPdf}
-          className="w-full h-full border-0"
-          style={{ background: 'var(--c-paper-deep)' }}
-          title={`${templateName} preview`}
-        />
+      <div className="flex-1 relative min-h-0" data-testid="pdf-preview-area">
+        {isMobile ? (
+          // Android/mobile browsers can't render PDFs inline in iframes.
+          // Show a "View PDF" link that opens in the system PDF viewer.
+          <div
+            className="w-full h-full flex flex-col items-center justify-center gap-4 p-6"
+            style={{ background: 'var(--c-paper-deep)' }}
+          >
+            {!isSample && !isGenerating && (
+              <>
+                <p className="text-sm font-medium" style={{ color: 'var(--c-ink2)' }}>
+                  {t('pdfReadyMobile')}
+                </p>
+                <a
+                  href={currentPdf}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 rounded-[3px] font-bold text-sm"
+                  style={{ background: 'var(--c-accent)', color: 'var(--c-paper)' }}
+                >
+                  {t('viewPDF')}
+                </a>
+              </>
+            )}
+          </div>
+        ) : (
+          <iframe
+            key={currentPdf}
+            src={currentPdf}
+            className="w-full h-full border-0"
+            style={{ background: 'var(--c-paper-deep)' }}
+            title={`${templateName} preview`}
+          />
+        )}
 
         {isGenerating && (
           <div
