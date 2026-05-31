@@ -34,16 +34,16 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
-    "@biomejs/biome": "^2.4.15",
+    "@biomejs/biome": "^2.4.16",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^4.1.7",
-    "lefthook": "^2.1.8",
+    "lefthook": "^2.1.9",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^6",
     "vitest": "^4.1.7"
   }
 }
