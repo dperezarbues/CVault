@@ -50,14 +50,16 @@ async function waitForNewPdf(page: Page, oldSrc: string) {
 
 async function setRange(page: Page, id: string, value: number) {
   await page.locator(`input#${id}`).evaluate((el: HTMLInputElement, v) => {
-    el.value = String(v)
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+    setter.call(el, String(v))
     el.dispatchEvent(new Event('input', { bubbles: true }))
   }, value)
 }
 
 async function setColor(page: Page, id: string, hex: string) {
   await page.locator(`input#${id}`).evaluate((el: HTMLInputElement, v) => {
-    el.value = v
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+    setter.call(el, v)
     el.dispatchEvent(new Event('input', { bubbles: true }))
     el.dispatchEvent(new Event('change', { bubbles: true }))
   }, hex)
