@@ -11,12 +11,13 @@ test.describe('Support prompt (pre-download modal)', () => {
       sessionStorage.removeItem('cvault-support-prompted')
     })
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 
     // Create a CV so Generate PDF becomes available
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Support Test CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Support Test CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Support Test CV' })).toBeVisible()
   })
 
   test('support prompt is shown before download when configured', async ({ page }) => {

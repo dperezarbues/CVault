@@ -7,8 +7,12 @@ test.describe('DnD — section reorder via pointer', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    // Suppress Next.js dev overlay so it doesn't intercept pointer events
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    // Switch to Layout tab so section drag handles are rendered
+    await page.getByRole('tab', { name: /Layout/i }).click()
     // Wait for LayoutEditor to finish loading
-    await expect(page.getByRole('button', { name: 'Generate PDF' })).toBeVisible({
+    await expect(page.getByRole('button', { name: 'Generate PDF' }).first()).toBeVisible({
       timeout: 10_000,
     })
   })

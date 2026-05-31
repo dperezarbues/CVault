@@ -5,6 +5,7 @@ test.describe('CV data modal — form editor', () => {
     await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
     await page.getByTitle('New CV').click()
     await expect(page.getByRole('heading', { name: 'New CV' })).toBeVisible()
   })
@@ -40,7 +41,7 @@ test.describe('CV data modal — form editor', () => {
     await page.locator('textarea[spellcheck="false"]').fill('{ this is not : valid json }')
     await page.getByRole('button', { name: 'Editor' }).click()
     // Error message is rendered below the content area
-    await expect(page.locator('p.text-red-500')).toBeVisible()
+    await expect(page.locator('p').filter({ hasText: /invalid|unexpected|json/i })).toBeVisible()
     // Should stay on JSON tab
     await expect(page.locator('textarea[spellcheck="false"]')).toBeVisible()
   })
@@ -74,7 +75,7 @@ test.describe('CV data modal — form editor', () => {
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Editor Mode CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'New CV' })).not.toBeVisible()
-    await expect(page.getByText('Editor Mode CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Editor Mode CV' })).toBeVisible()
   })
 
   test('saves from JSON mode and CV appears in sidebar list', async ({ page }) => {
@@ -82,13 +83,13 @@ test.describe('CV data modal — form editor', () => {
     await page.getByRole('button', { name: 'JSON', exact: true }).click()
     await page.getByRole('button', { name: 'Save', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'New CV' })).not.toBeVisible()
-    await expect(page.getByText('JSON Mode CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'JSON Mode CV' })).toBeVisible()
   })
 
   test('requires CV name to save', async ({ page }) => {
     // Name field is empty by default for a new CV
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.locator('p.text-red-500')).toContainText('Name is required')
+    await expect(page.getByText('Name is required')).toBeVisible()
     // Modal stays open
     await expect(page.getByRole('heading', { name: 'New CV' })).toBeVisible()
   })
@@ -99,11 +100,12 @@ test.describe('CV data modal — edit existing CV', () => {
     await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
     // Create a CV first
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Original CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Original CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Original CV' })).toBeVisible()
   })
 
   test('edit modal opens with existing content pre-populated', async ({ page }) => {
@@ -121,7 +123,7 @@ test.describe('CV data modal — edit existing CV', () => {
     await page.getByTitle('Edit').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Renamed CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Renamed CV')).toBeVisible()
-    await expect(page.getByText('Original CV')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Renamed CV' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Original CV' })).not.toBeVisible()
   })
 })

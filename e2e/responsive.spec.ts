@@ -17,6 +17,8 @@ async function gotoEditor(page: Page) {
   await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('proof-onboarded', '1'))
   await page.reload()
+  // Suppress Next.js dev overlay so it doesn't intercept pointer events on fixed UI
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 }
 
 const MOBILE = { width: 375, height: 667 }

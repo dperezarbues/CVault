@@ -10,12 +10,13 @@ test.describe('PDF generation (WASM)', () => {
       localStorage.setItem('cvault-onboarded', '1')
     })
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 
     // Create a CV so Generate PDF is available
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('WASM Test CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('WASM Test CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'WASM Test CV' })).toBeVisible()
   })
 
   test('Generate PDF produces a preview blob URL', async ({ page }) => {

@@ -10,8 +10,11 @@ test.describe('Layout import', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
-    // Wait for LayoutEditor dynamic import to finish
-    await expect(page.getByRole('button', { name: 'Generate PDF' })).toBeVisible({
+    // Suppress Next.js dev overlay so it doesn't intercept pointer events
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    // Switch to Layout tab so the layout panel (and its Import button) is rendered
+    await page.getByRole('tab', { name: /Layout/i }).click()
+    await expect(page.getByRole('button', { name: 'Generate PDF' }).first()).toBeVisible({
       timeout: 10_000,
     })
   })
@@ -32,7 +35,7 @@ test.describe('Layout import', () => {
     // Trigger the hidden file input via filechooser event
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
-      page.getByRole('button', { name: /Import ↑/i }).click(),
+      page.getByRole('button', { name: /↑ Import/i }).click(),
     ])
     await fileChooser.setFiles(tmp)
     fs.unlinkSync(tmp)
@@ -65,7 +68,7 @@ test.describe('Layout import', () => {
 
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser'),
-      page.getByRole('button', { name: /Import ↑/i }).click(),
+      page.getByRole('button', { name: /↑ Import/i }).click(),
     ])
     await fileChooser.setFiles(tmp)
     fs.unlinkSync(tmp)

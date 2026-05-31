@@ -11,13 +11,14 @@ async function openEditor(page: Page) {
   await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
   await page.reload()
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 }
 
 async function setupWithPdf(page: Page): Promise<string> {
   await page.getByTitle('New CV').click()
   await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Shared Params CV')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
-  await expect(page.getByText('Shared Params CV')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Shared Params CV' })).toBeVisible()
   await page.getByRole('tab', { name: /Layout/i }).click()
   await page.getByRole('button', { name: 'Generate PDF' }).first().click()
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })

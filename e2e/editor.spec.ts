@@ -7,18 +7,19 @@ test.describe('Editor — initial load', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.clear())
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
   test('shows welcome modal on first visit', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Welcome to Proof' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).toBeVisible()
     await expect(page.getByText('A privacy-first CV editor')).toBeVisible()
   })
 
   test('dismisses welcome modal and shows editor', async ({ page }) => {
     await page.getByRole('button', { name: 'Get started' }).click()
-    await expect(page.getByRole('heading', { name: 'Welcome to Proof' })).not.toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).not.toBeVisible()
     // Proof brand mark is visible in the left pane
-    await expect(page.locator('aside').getByText('Proof')).toBeVisible()
+    await expect(page.locator('aside').getByText('Proof', { exact: true })).toBeVisible()
   })
 
   test('shows sample PDF banner when no CV exists', async ({ page }) => {
@@ -36,7 +37,7 @@ test.describe('Editor — initial load', () => {
   test('? button reopens welcome modal', async ({ page }) => {
     await page.getByRole('button', { name: 'Get started' }).click()
     await page.getByTitle('Help').click()
-    await expect(page.getByRole('heading', { name: 'Welcome to Proof' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).toBeVisible()
   })
 })
 
@@ -45,6 +46,7 @@ test.describe('Editor — template and layout selection', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
   test('shows template grid in template tab', async ({ page }) => {
@@ -73,6 +75,7 @@ test.describe('Editor — CV management', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
   test('opens New CV modal', async ({ page }) => {
@@ -94,7 +97,7 @@ test.describe('Editor — CV management', () => {
     await page.getByRole('button', { name: 'Save', exact: true }).click()
 
     await expect(page.getByRole('heading', { name: 'New CV' })).not.toBeVisible()
-    await expect(page.getByText('E2E Test CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'E2E Test CV' })).toBeVisible()
     await expect(page.getByText('Add your CV to generate your own PDF')).not.toBeVisible()
   })
 
@@ -111,7 +114,13 @@ test.describe('Editor — layout and style tabs', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
-    await expect(page.getByRole('button', { name: 'Generate PDF' })).toBeVisible({
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    // Create a CV so Generate PDF becomes enabled
+    await page.getByTitle('New CV').click()
+    await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Tab Test CV')
+    await page.getByRole('button', { name: 'Save', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Tab Test CV' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Generate PDF' }).first()).toBeVisible({
       timeout: 10_000,
     })
   })

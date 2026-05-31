@@ -9,7 +9,7 @@ test.describe('Private mode — data isolation', () => {
     await page.evaluate(() => localStorage.clear())
     await page.reload()
 
-    await expect(page.getByRole('heading', { name: 'Welcome to CVault' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).toBeVisible()
 
     // Enable private mode before dismissing
     const toggle = page.getByRole('checkbox', { name: /shared computer/i })
@@ -17,17 +17,17 @@ test.describe('Private mode — data isolation', () => {
     await expect(toggle).toBeChecked()
 
     await page.getByRole('button', { name: 'Get started' }).click()
-    await expect(page.getByRole('heading', { name: 'Welcome to CVault' })).not.toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).not.toBeVisible()
 
     // Create a new CV
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Private CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Private CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Private CV' })).toBeVisible()
 
     // Data must be in sessionStorage, not localStorage
-    const inSession = await page.evaluate(() => window.sessionStorage.getItem('cvault-cvs'))
-    const inLocal = await page.evaluate(() => window.localStorage.getItem('cvault-cvs'))
+    const inSession = await page.evaluate(() => window.sessionStorage.getItem('proof-cvs'))
+    const inLocal = await page.evaluate(() => window.localStorage.getItem('proof-cvs'))
 
     expect(inSession).not.toBeNull()
     const parsed = JSON.parse(inSession!) as Array<{ name: string }>
@@ -48,11 +48,11 @@ test.describe('Private mode — data isolation', () => {
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Normal CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Normal CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Normal CV' })).toBeVisible()
 
     // Data must be in localStorage, NOT in sessionStorage
-    const inLocal = await page.evaluate(() => window.localStorage.getItem('cvault-cvs'))
-    const inSession = await page.evaluate(() => window.sessionStorage.getItem('cvault-cvs'))
+    const inLocal = await page.evaluate(() => window.localStorage.getItem('proof-cvs'))
+    const inSession = await page.evaluate(() => window.sessionStorage.getItem('proof-cvs'))
 
     expect(inLocal).not.toBeNull()
     expect(inSession).toBeNull()

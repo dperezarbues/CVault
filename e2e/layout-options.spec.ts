@@ -11,13 +11,14 @@ async function openEditor(page: Page) {
   await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
   await page.reload()
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 }
 
 async function setupWithPdf(page: Page): Promise<string> {
   await page.getByTitle('New CV').click()
   await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Layout Test CV')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
-  await expect(page.getByText('Layout Test CV')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Layout Test CV' })).toBeVisible()
 
   // Layout tab is the starting point — EditorShell must be mounted
   await page.getByRole('tab', { name: /Layout/i }).click()

@@ -16,13 +16,14 @@ async function openEditor(page: Page) {
   await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
   await page.reload()
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 }
 
 async function createCv(page: Page) {
   await page.getByTitle('New CV').click()
   await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Template Param CV')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
-  await expect(page.getByText('Template Param CV')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Template Param CV' })).toBeVisible()
 }
 
 async function selectTemplate(page: Page, id: string) {
