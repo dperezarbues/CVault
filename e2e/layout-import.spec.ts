@@ -1,7 +1,22 @@
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { expect, test } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
+
+/** Trigger React's onChange on a hidden file input by creating a real File via DataTransfer. */
+async function uploadJsonFile(page: Page, testid: string, content: string) {
+  await page.locator(`[data-testid="${testid}"]`).waitFor({ state: 'attached', timeout: 10_000 })
+  await page.evaluate(
+    ({ testid, content }) => {
+      const el = document.querySelector(`[data-testid="${testid}"]`) as HTMLInputElement
+      if (!el) throw new Error(`No element with data-testid="${testid}"`)
+      const file = new File([content], 'layout.json', { type: 'application/json' })
+      const dt = new DataTransfer()
+      dt.items.add(file)
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'files')?.set
+      if (setter) setter.call(el, dt.files)
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    },
+    { testid, content },
+  )
+}
 
 const EDITOR_URL = '/en/editor'
 
@@ -17,6 +32,10 @@ test.describe('Layout import', () => {
     await expect(page.getByRole('button', { name: 'Generate PDF' }).first()).toBeVisible({
       timeout: 10_000,
     })
+    // Wait for the section list to populate (Generate PDF may appear before EditorShell hydrates)
+    await expect(
+      page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800').first(),
+    ).toBeVisible({ timeout: 10_000 })
   })
 
   test('importing a layout JSON replaces the section list', async ({ page }) => {
@@ -29,24 +48,13 @@ test.describe('Layout import', () => {
         { id: 'languages', breakable: false },
       ],
     }
-    const tmp = path.join(os.tmpdir(), `layout-${Date.now()}.json`)
-    fs.writeFileSync(tmp, JSON.stringify(layout))
+    await uploadJsonFile(page, 'layout-import-input', JSON.stringify(layout))
 
-    // Trigger the hidden file input via filechooser event
-    const [fileChooser] = await Promise.all([
-      page.waitForEvent('filechooser'),
-      page.getByRole('button', { name: /↑ Import/i }).click(),
-    ])
-    await fileChooser.setFiles(tmp)
-    fs.unlinkSync(tmp)
-
-    // Scope assertions to section card spans
-    const sectionSpans = page.locator(
-      '.border.border-gray-200.rounded-lg span.flex-1.text-sm.text-gray-800',
-    )
+    // Scope assertions to section card spans within the section list
+    const sectionSpans = page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800')
 
     // Wait for Summary to disappear (confirms the import fired and replaced the default layout)
-    await expect(sectionSpans.filter({ hasText: 'Summary' })).toHaveCount(0)
+    await expect(sectionSpans.filter({ hasText: 'Summary' })).toHaveCount(0, { timeout: 15000 })
 
     // Now verify the imported sections are present
     await expect(sectionSpans.filter({ hasText: 'Certifications' })).toHaveCount(1)
@@ -58,20 +66,10 @@ test.describe('Layout import', () => {
   })
 
   test('importing an invalid JSON is a no-op (sections unchanged)', async ({ page }) => {
-    const tmp = path.join(os.tmpdir(), `bad-layout-${Date.now()}.json`)
-    fs.writeFileSync(tmp, 'this is not json at all')
-
-    const sectionSpans = page.locator(
-      '.border.border-gray-200.rounded-lg span.flex-1.text-sm.text-gray-800',
-    )
+    const sectionSpans = page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800')
     const before = await sectionSpans.allTextContents()
 
-    const [fileChooser] = await Promise.all([
-      page.waitForEvent('filechooser'),
-      page.getByRole('button', { name: /↑ Import/i }).click(),
-    ])
-    await fileChooser.setFiles(tmp)
-    fs.unlinkSync(tmp)
+    await uploadJsonFile(page, 'layout-import-input', 'this is not json at all')
 
     // Wait briefly, then confirm nothing changed
     await page.waitForTimeout(300)

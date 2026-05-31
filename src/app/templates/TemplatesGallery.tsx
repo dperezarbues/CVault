@@ -60,6 +60,7 @@ function SbBtn({
   disabled,
   title,
   type = 'button',
+  ...rest
 }: {
   children: React.ReactNode
   variant?: 'primary' | 'dark' | 'ghost'
@@ -68,6 +69,7 @@ function SbBtn({
   disabled?: boolean
   title?: string
   type?: 'button' | 'submit'
+  [key: `data-${string}`]: string | undefined
 }) {
   const base = `${full ? 'flex w-full' : 'inline-flex'} items-center justify-center gap-1.5 px-3.5 py-2.5 font-bold text-[12px] rounded-[3px] uppercase tracking-[0.03em] whitespace-nowrap transition-opacity disabled:opacity-40`
   const variants: Record<string, React.CSSProperties> = {
@@ -83,6 +85,7 @@ function SbBtn({
       onClick={onClick}
       disabled={disabled}
       title={title}
+      {...rest}
     >
       {children}
     </button>
@@ -183,7 +186,7 @@ function DataTab({
               onChange={onImportFile}
             />
             <SbBtn onClick={() => importRef.current?.click()}>{t('import')}</SbBtn>
-            <SbBtn variant="dark" onClick={onNewCv} title={t('newCV')}>
+            <SbBtn variant="dark" onClick={onNewCv} title={t('newCV')} data-testid="new-cv-btn">
               {t('newCV')}
             </SbBtn>
           </div>

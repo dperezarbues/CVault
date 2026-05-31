@@ -107,6 +107,25 @@ export default function EditorShell({
                 />
               </div>
             )}
+
+            <div className="mt-3 pt-3 flex gap-2" style={{ borderTop: '1px solid var(--c-line)' }}>
+              <input
+                ref={saved.importRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={saved.handleImport}
+                data-testid="layout-import-input"
+              />
+              <button
+                type="button"
+                onClick={() => saved.importRef.current?.click()}
+                className="text-[11px] px-2.5 py-1 rounded-[3px] transition-opacity hover:opacity-70"
+                style={{ color: 'var(--c-ink2)', boxShadow: 'inset 0 0 0 1.3px var(--c-line)' }}
+              >
+                Import ↑
+              </button>
+            </div>
           </div>
         )}
 

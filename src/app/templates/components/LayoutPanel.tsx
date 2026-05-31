@@ -159,7 +159,7 @@ export default function LayoutPanel({
             items={layout.sections.map((s) => s.key)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-1.5">
+            <div className="space-y-1.5" data-testid="section-list">
               {layout.sections.map((item) => (
                 <SortableCard
                   key={item.key}

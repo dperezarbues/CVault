@@ -39,7 +39,14 @@ export default function ActionsBar({
         >
           Import ↑
         </button>
-        <input ref={importRef} type="file" accept=".json" className="hidden" onChange={onImport} />
+        <input
+          ref={importRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={onImport}
+          data-testid="layout-import-input"
+        />
       </div>
       <button
         type="button"

@@ -208,8 +208,10 @@ test.describe('Editor — mobile (375×667)', () => {
     await page.getByTestId('mobile-tab-data').click()
     await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
 
-    // Click the semi-transparent backdrop (aria-hidden overlay behind the panel)
-    await page.locator('.md\\:hidden.fixed.inset-0.z-30').click()
+    // Click the semi-transparent backdrop above the panel.
+    // On mobile the aside (z-40, 72dvh from bottom) slides up from ~y=131 on a 667px viewport.
+    // Clicking at y=60 hits the backdrop area that is NOT covered by the aside.
+    await page.mouse.click(187, 60)
     await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'false')
   })
 
@@ -325,9 +327,9 @@ test.describe('CV Data Modal — mobile (375×667)', () => {
 
   test('modal is full-screen on mobile', async ({ page }) => {
     await page.getByTestId('mobile-tab-data').click()
-    // The brand-header "New CV" button is hidden on mobile (inside hidden md:flex);
-    // filter to the visible instance inside the data tab.
-    await page.locator('.editor-aside').getByTitle('New CV').filter({ visible: true }).click()
+    // The brand-header "New CV" button is hidden on mobile (inside hidden md:flex).
+    // Use the data tab's dedicated new-cv-btn which is always visible when the panel is open.
+    await page.getByTestId('new-cv-btn').click()
     await expect(page.getByRole('heading', { name: 'New CV' })).toBeVisible()
 
     // The modal inner container should fill the viewport height

@@ -60,6 +60,7 @@ export default function SectionCard({
       <div className="flex items-center gap-2 px-2 py-2">
         <button
           type="button"
+          data-testid="section-drag-handle"
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing select-none text-base leading-none px-0.5"
