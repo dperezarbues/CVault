@@ -22,14 +22,14 @@ async function setupWithPdf(page: Page): Promise<string> {
   await page.getByRole('tab', { name: /Layout/i }).click()
   await page.getByRole('button', { name: 'Generate PDF' }).first().click()
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
-  const src = await page.locator('iframe').getAttribute('src')
+  const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
   expect(src).toMatch(/^blob:/)
   return src as string
 }
 
 async function waitForNewPdf(page: Page, oldSrc: string) {
   await expect(async () => {
-    const src = await page.locator('iframe').getAttribute('src')
+    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     expect(src).toMatch(/^blob:/)
     expect(src).not.toEqual(oldSrc)
   }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
@@ -216,7 +216,7 @@ test.describe('Shared style — Reset', () => {
     await openStyleTab(page)
     await setRange(page, 'name_size', 22)
     await waitForNewPdf(page, old)
-    const changed = await page.locator('iframe').getAttribute('src')
+    const changed = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
 
     await page.getByRole('button', { name: /Reset to defaults/i }).click()
     await waitForNewPdf(page, changed as string)

@@ -36,9 +36,9 @@ for (const { locale, tabData, tabTemplate, nameLabel, save, getStarted, genPDFMo
     })
 
     test(`[${locale}] editor loads without error`, async ({ page }) => {
-      const iframe = page.locator('iframe')
-      await expect(iframe).toBeVisible()
-      const src = await iframe.getAttribute('src')
+      const viewer = page.locator('[data-testid="pdfjs-viewer"]')
+      await expect(viewer).toBeVisible()
+      const src = await viewer.getAttribute('data-pdf-src')
       expect(src).toMatch(/\.pdf/)
     })
 

@@ -21,8 +21,8 @@ test.describe('PDF generation (WASM)', () => {
 
   test('Generate PDF produces a preview blob URL', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 10_000)
-    const iframe = page.locator('iframe')
-    const initialSrc = await iframe.getAttribute('src')
+    const iframe = page.locator('[data-testid="pdfjs-viewer"]')
+    const initialSrc = await iframe.getAttribute('data-pdf-src')
     expect(initialSrc).toMatch(/\.pdf$/) // starts as sample
 
     // Click Generate PDF in the layout editor panel
@@ -34,7 +34,7 @@ test.describe('PDF generation (WASM)', () => {
     })
 
     // iframe src should now be a blob URL
-    const newSrc = await iframe.getAttribute('src')
+    const newSrc = await iframe.getAttribute('data-pdf-src')
     expect(newSrc).toMatch(/^blob:/)
 
     // "preview" badge should appear
@@ -55,7 +55,7 @@ test.describe('PDF generation (WASM)', () => {
 
     // Reset
     await page.getByRole('button', { name: 'Reset' }).click()
-    const src = await page.locator('iframe').getAttribute('src')
+    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     expect(src).toMatch(/\.pdf$/) // back to sample
     await expect(page.getByText('preview', { exact: true })).not.toBeVisible()
   })

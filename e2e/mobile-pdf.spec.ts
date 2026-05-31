@@ -1,6 +1,6 @@
 /**
  * Verifies the mobile PDF generation flow end-to-end:
- * create a CV → tap the tab-bar "Gen PDF" button → blob URL appears in iframe.
+ * create a CV → tap the tab-bar "Gen PDF" button → PDF.js renders canvases.
  *
  * This covers the specific regression path that was missing: the existing
  * responsive tests only checked layout with the sample PDF (no CV created,
@@ -38,23 +38,22 @@ test.describe('Mobile PDF generation — tab bar button', () => {
     await gotoEditorMobile(page)
   })
 
-  test('Gen PDF tab-bar button generates a PDF and shows View PDF link', async ({ page }) => {
+  test('Gen PDF tab-bar button generates a PDF and renders canvases', async ({ page }) => {
     test.setTimeout(GENERATE_TIMEOUT + 20_000)
 
     await createCvOnMobile(page, 'Mobile Gen CV')
 
-    // Mobile uses a link instead of an iframe (Android can't render PDFs inline)
-    const viewLink = page.getByRole('link', { name: /Open PDF/i })
-    await expect(viewLink).not.toBeVisible()
+    const firstCanvas = page
+      .getByTestId('pdf-preview-area')
+      .locator('canvas')
+      .first()
 
     const genBtn = page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i })
     await expect(genBtn).toBeEnabled()
     await genBtn.click()
 
-    // Wait for the "Open PDF" link to appear (driven by blob URL state)
-    await expect(viewLink).toBeVisible({ timeout: GENERATE_TIMEOUT })
-    const href = await viewLink.getAttribute('href')
-    expect(href).toMatch(/^blob:/)
+    // Wait for PDF.js to render at least one canvas page
+    await expect(firstCanvas).toBeVisible({ timeout: GENERATE_TIMEOUT })
   })
 
   test('Download button appears in preview header after mobile PDF generation', async ({ page }) => {
@@ -64,7 +63,9 @@ test.describe('Mobile PDF generation — tab bar button', () => {
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
 
-    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
+    await expect(
+      page.getByTestId('pdf-preview-area').locator('canvas').first(),
+    ).toBeVisible({ timeout: GENERATE_TIMEOUT })
     await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible()
   })
 
@@ -74,7 +75,9 @@ test.describe('Mobile PDF generation — tab bar button', () => {
     await createCvOnMobile(page, 'Mobile Layout CV')
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
-    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
+    await expect(
+      page.getByTestId('pdf-preview-area').locator('canvas').first(),
+    ).toBeVisible({ timeout: GENERATE_TIMEOUT })
 
     // The pdf-preview-area div should occupy most of the screen above the tab bar
     const previewArea = page.getByTestId('pdf-preview-area')
@@ -93,11 +96,13 @@ test.describe('Mobile PDF generation — tab bar button', () => {
     await createCvOnMobile(page, 'Mobile Reset CV')
 
     await page.getByTestId('mobile-tabbar').getByRole('button', { name: /Gen PDF/i }).click()
-    await expect(page.getByRole('link', { name: /Open PDF/i })).toBeVisible({ timeout: GENERATE_TIMEOUT })
+    await expect(
+      page.getByTestId('pdf-preview-area').locator('canvas').first(),
+    ).toBeVisible({ timeout: GENERATE_TIMEOUT })
 
     await page.getByRole('button', { name: 'Reset', exact: true }).click()
 
-    await expect(page.getByRole('link', { name: /Open PDF/i })).not.toBeVisible()
+    // After reset the Download button should be gone (back to sample state)
     await expect(page.getByRole('button', { name: 'Download', exact: true })).not.toBeVisible()
   })
 

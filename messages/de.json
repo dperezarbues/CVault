@@ -169,8 +169,6 @@
     "addYourCV": "Fügen Sie Ihren Lebenslauf hinzu, um Ihr eigenes PDF zu generieren",
     "generatePDF": "PDF generieren",
     "newCV": "+ Neuer Lebenslauf",
-    "viewPDF": "PDF öffnen ↗",
-    "pdfReadyMobile": "Ihr PDF ist bereit",
     "import": "↑ Importieren"
   },
   "supportPrompt": {

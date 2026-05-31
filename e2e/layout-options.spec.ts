@@ -25,14 +25,14 @@ async function setupWithPdf(page: Page): Promise<string> {
   await page.getByRole('button', { name: 'Generate PDF' }).first().click()
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
 
-  const src = await page.locator('iframe').getAttribute('src')
+  const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
   expect(src).toMatch(/^blob:/)
   return src as string
 }
 
 async function waitForNewPdf(page: Page, oldSrc: string) {
   await expect(async () => {
-    const src = await page.locator('iframe').getAttribute('src')
+    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     expect(src).toMatch(/^blob:/)
     expect(src).not.toEqual(oldSrc)
   }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
@@ -56,7 +56,7 @@ test.describe('Layout — header style', () => {
     await page.getByRole('button', { name: 'stacked', exact: true }).click()
     await waitForNewPdf(page, old)
 
-    const stackedSrc = await page.locator('iframe').getAttribute('src')
+    const stackedSrc = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     await page.getByRole('button', { name: 'split', exact: true }).click()
     await waitForNewPdf(page, stackedSrc as string)
   })
@@ -81,7 +81,7 @@ test.describe('Layout — section remove and add', () => {
     await page.locator('button[data-testid="remove-section"]').first().click()
     await waitForNewPdf(page, old)
 
-    const afterRemove = await page.locator('iframe').getAttribute('src')
+    const afterRemove = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     const addDropdown = page.locator('select').filter({ hasText: '+ add section' })
     await addDropdown.selectOption({ index: 1 })
     await waitForNewPdf(page, afterRemove as string)
@@ -119,7 +119,7 @@ test.describe('Layout — variant selection (default template)', () => {
     await page.getByRole('button', { name: 'Generate PDF' }).first().click()
     await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
 
-    const src = await page.locator('iframe').getAttribute('src')
+    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     expect(src).toMatch(/^blob:/)
     // The blob URL after switching layout should be different from the Split-layout blob
     expect(src).not.toEqual(old)

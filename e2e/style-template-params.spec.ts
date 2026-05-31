@@ -35,14 +35,14 @@ async function generatePdf(page: Page): Promise<string> {
   await page.getByRole('tab', { name: /Layout/i }).click()
   await page.getByRole('button', { name: 'Generate PDF' }).first().click()
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
-  const src = await page.locator('iframe').getAttribute('src')
+  const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
   expect(src).toMatch(/^blob:/)
   return src as string
 }
 
 async function waitForNewPdf(page: Page, oldSrc: string) {
   await expect(async () => {
-    const src = await page.locator('iframe').getAttribute('src')
+    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
     expect(src).toMatch(/^blob:/)
     expect(src).not.toEqual(oldSrc)
   }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })

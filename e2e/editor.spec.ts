@@ -54,10 +54,10 @@ test.describe('Editor — template and layout selection', () => {
     await expect(page.getByText('Choose a template')).toBeVisible()
   })
 
-  test('PDF preview iframe is rendered with sample PDF', async ({ page }) => {
-    const iframe = page.locator('iframe')
-    await expect(iframe).toBeVisible()
-    const src = await iframe.getAttribute('src')
+  test('PDF preview viewer is rendered with sample PDF', async ({ page }) => {
+    const viewer = page.locator('[data-testid="pdfjs-viewer"]')
+    await expect(viewer).toBeVisible()
+    const src = await viewer.getAttribute('data-pdf-src')
     expect(src).toMatch(/\.pdf/)
   })
 

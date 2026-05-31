@@ -281,12 +281,12 @@ test.describe('Editor — tablet (768×1024)', () => {
 
   test('PDF preview is to the right of the sidebar', async ({ page }) => {
     const aside = page.locator('.editor-aside')
-    const iframe = page.locator('iframe')
+    const previewArea = page.getByTestId('pdf-preview-area')
 
     const asideBox = await aside.boundingBox()
-    const iframeBox = await iframe.boundingBox()
+    const previewBox = await previewArea.boundingBox()
 
-    expect(iframeBox!.x).toBeGreaterThan(asideBox!.x + asideBox!.width - 5)
+    expect(previewBox!.x).toBeGreaterThan(asideBox!.x + asideBox!.width - 5)
   })
 })
 
