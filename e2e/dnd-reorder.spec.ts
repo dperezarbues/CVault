@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const EDITOR_URL = '/editor'
+const EDITOR_URL = '/en/editor'
 
 test.describe('DnD — section reorder via pointer', () => {
   test.beforeEach(async ({ page }) => {

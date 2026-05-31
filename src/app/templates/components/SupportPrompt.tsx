@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 type Props = {
   supportUrl: string
   downloadUrl: string
@@ -7,6 +9,8 @@ type Props = {
 }
 
 export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Props) {
+  const t = useTranslations('supportPrompt')
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -26,7 +30,7 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
             className="text-lg font-black uppercase tracking-tight mb-1"
             style={{ color: 'var(--c-ink)' }}
           >
-            Your PDF is ready
+            {t('ready')}
           </p>
           <p className="text-xs font-mono mb-5" style={{ color: 'var(--c-sub)' }}>
             cv.pdf · A4
@@ -39,7 +43,7 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
             style={{ background: 'var(--c-accent)', color: 'white' }}
           >
             <span>↓</span>
-            <span>Download PDF</span>
+            <span>{t('downloadPDF')}</span>
           </a>
         </div>
 
@@ -52,10 +56,10 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
             <span style={{ color: 'var(--c-accent)' }}>♥</span>
             <div className="flex flex-col gap-1">
               <p className="text-sm font-bold" style={{ color: 'white' }}>
-                Proof is free &amp; open source
+                {t('supportTitle')}
               </p>
               <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                If it saved you time, consider supporting the project — it keeps development going.
+                {t('supportBody')}
               </p>
             </div>
           </div>
@@ -68,7 +72,7 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
               className="flex-1 text-xs font-bold text-center px-3 py-2 rounded-[4px] transition-colors"
               style={{ background: 'var(--c-accent)', color: 'white' }}
             >
-              Sponsor on GitHub
+              {t('sponsorGitHub')}
             </a>
             <a
               href={supportUrl}
@@ -78,7 +82,7 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
               className="text-xs font-bold text-center px-3 py-2 rounded-[4px] transition-colors"
               style={{ color: 'white', boxShadow: 'inset 0 0 0 1.3px rgba(255,255,255,0.35)' }}
             >
-              Star
+              {t('star')}
             </a>
           </div>
         </div>
@@ -91,7 +95,7 @@ export default function SupportPrompt({ supportUrl, downloadUrl, onDismiss }: Pr
             className="text-xs font-mono transition-colors"
             style={{ color: 'var(--c-faint)' }}
           >
-            Maybe later
+            {t('maybeLater')}
           </button>
         </div>
       </div>

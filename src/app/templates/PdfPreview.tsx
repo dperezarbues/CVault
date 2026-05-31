@@ -1,11 +1,11 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { KEYS } from '@/lib/storage'
 import type { CvEntry } from './CvDataModal'
 import SupportPrompt from './components/SupportPrompt'
 
-// Set NEXT_PUBLIC_SUPPORT_URL in .env.local to your GitHub Sponsors / Ko-fi / etc. link.
 const SUPPORT_URL = process.env.NEXT_PUBLIC_SUPPORT_URL ?? ''
 
 function getSupportPrompted(): boolean {
@@ -51,6 +51,7 @@ export default function PdfPreview({
   onNewCv,
   onImport,
 }: Props) {
+  const t = useTranslations('pdfPreview')
   const [showSupport, setShowSupport] = useState(false)
 
   const downloadUrl = currentPdf.split('?')[0]
@@ -98,7 +99,7 @@ export default function PdfPreview({
               className="text-xs px-1.5 py-0.5 rounded font-mono uppercase"
               style={{ color: 'var(--c-accent)', boxShadow: 'inset 0 0 0 1.2px var(--c-accent)' }}
             >
-              preview
+              {t('preview')}
             </span>
           )}
         </div>
@@ -110,7 +111,7 @@ export default function PdfPreview({
               className="text-xs"
               style={{ color: 'var(--c-faint)' }}
             >
-              Reset
+              {t('reset')}
             </button>
           )}
           {!isSample && (
@@ -120,7 +121,7 @@ export default function PdfPreview({
               className="text-sm px-3 py-1.5 rounded-[3px] transition-colors"
               style={{ background: 'var(--c-ink)', color: 'var(--c-paper)' }}
             >
-              Download
+              {t('download')}
             </button>
           )}
         </div>
@@ -145,10 +146,10 @@ export default function PdfPreview({
               style={{ borderColor: 'var(--c-accent)', borderTopColor: 'transparent' }}
             />
             <p className="text-sm font-medium" style={{ color: 'var(--c-ink2)' }}>
-              Generating PDF…
+              {t('generatingPDF')}
             </p>
             <p className="text-xs" style={{ color: 'var(--c-sub)' }}>
-              Running Typst compiler
+              {t('runningTypst')}
             </p>
           </div>
         )}
@@ -163,12 +164,10 @@ export default function PdfPreview({
                 className="text-xs px-1.5 py-0.5 rounded font-mono uppercase"
                 style={{ color: 'var(--c-accent)', boxShadow: 'inset 0 0 0 1.2px var(--c-accent)' }}
               >
-                Sample
+                {t('sample')}
               </span>
               <p className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                {currentCv
-                  ? 'Hit Generate PDF to preview your CV'
-                  : 'Add your CV to generate your own PDF'}
+                {currentCv ? t('hitGenerate') : t('addYourCV')}
               </p>
             </div>
             {currentCv ? (
@@ -178,7 +177,7 @@ export default function PdfPreview({
                 className="text-xs px-3 py-1.5 rounded-[3px] transition-colors shrink-0 ml-4"
                 style={{ background: 'var(--c-accent)', color: 'var(--c-paper)' }}
               >
-                Generate PDF
+                {t('generatePDF')}
               </button>
             ) : (
               <div className="flex items-center gap-2 shrink-0 ml-4">
@@ -188,7 +187,7 @@ export default function PdfPreview({
                   className="text-xs px-3 py-1.5 rounded-[3px] transition-colors"
                   style={{ background: 'var(--c-accent)', color: 'var(--c-paper)' }}
                 >
-                  + New CV
+                  {t('newCV')}
                 </button>
                 <button
                   type="button"
@@ -199,7 +198,7 @@ export default function PdfPreview({
                     boxShadow: 'inset 0 0 0 1.3px rgba(255,255,255,0.35)',
                   }}
                 >
-                  ↑ Import
+                  {t('import')}
                 </button>
               </div>
             )}

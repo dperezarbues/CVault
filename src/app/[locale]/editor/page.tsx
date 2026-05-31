@@ -1,0 +1,49 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { setRequestLocale } from 'next-intl/server'
+import { type Locale, routing } from '@/i18n/routing'
+import TemplatesGallery from '../../templates/TemplatesGallery'
+import type { StyleParam, Template } from '../../templates/types'
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
+function readJson<T>(filePath: string): T {
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T
+}
+
+function readLayout(templateId: string, layoutId: string): Record<string, unknown> | null {
+  const filename = templateId === 'default' ? layoutId : `${templateId}-${layoutId}`
+  try {
+    return readJson(path.join(process.cwd(), 'src', 'layouts', `${filename}.json`))
+  } catch {
+    return null
+  }
+}
+
+export default async function EditorPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale as Locale)
+
+  const { sharedStyleParams, templates } = readJson<{
+    sharedStyleParams: StyleParam[]
+    templates: Template[]
+  }>(path.join(process.cwd(), 'src', 'data', 'templates.json'))
+
+  const templatesData: Template[] = templates.map((t) => ({
+    ...t,
+    styleParams: [...sharedStyleParams, ...(t.styleParams ?? [])],
+  }))
+
+  const layoutData: Record<string, Record<string, Record<string, unknown>>> = {}
+  for (const t of templatesData) {
+    layoutData[t.id] = {}
+    for (const l of t.layouts) {
+      const raw = readLayout(t.id, l.id)
+      if (raw) layoutData[t.id][l.id] = raw
+    }
+  }
+
+  return <TemplatesGallery templates={templatesData} layoutData={layoutData} />
+}

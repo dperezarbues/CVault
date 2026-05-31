@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import LayoutPanel from './components/LayoutPanel'
 import { SavedList, SaveModal } from './components/SavedConfigs'
@@ -38,6 +39,7 @@ export default function EditorShell({
   onGenerating,
   onCompileInfo,
 }: Props) {
+  const t = useTranslations('editor')
   const { editor, style, compiler, saved } = useLayoutEditor({
     initialLayout,
     templateId,
@@ -95,7 +97,7 @@ export default function EditorShell({
                   className="font-mono text-[9.5px] tracking-[0.12em] uppercase mb-3"
                   style={{ color: 'var(--c-accent)' }}
                 >
-                  Saved layouts
+                  {t('savedLayouts')}
                 </div>
                 <SavedList
                   saves={saved.saves}
@@ -121,7 +123,7 @@ export default function EditorShell({
 
         {activeTab === 'style' && styleParams.length === 0 && (
           <div className="p-6 text-center" style={{ color: 'var(--c-faint)' }}>
-            <p className="font-mono text-[11px] tracking-widest uppercase">No style params</p>
+            <p className="font-mono text-[11px] tracking-widest uppercase">{t('noStyleParams')}</p>
           </div>
         )}
       </div>

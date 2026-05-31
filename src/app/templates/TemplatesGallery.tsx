@@ -2,9 +2,10 @@
 
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkProof from '@/components/proof/MarkProof'
+import { Link } from '@/i18n/navigation'
 import { getItem, KEYS, migrateFromLegacy, setItem } from '@/lib/storage'
 import { initTypstWorker } from '@/lib/typst-compile'
 import CvDataModal, { type CvEntry } from './CvDataModal'
@@ -91,11 +92,12 @@ function SbBtn({
 // ── step nav ──────────────────────────────────────────────────────────────────
 
 function StepNav({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
+  const t = useTranslations('editor')
   const steps: [Tab, string][] = [
-    ['data', 'Data'],
-    ['template', 'Template'],
-    ['layout', 'Layout'],
-    ['style', 'Style'],
+    ['data', t('tabData')],
+    ['template', t('tabTemplate')],
+    ['layout', t('tabLayout')],
+    ['style', t('tabStyle')],
   ]
   return (
     <div
@@ -165,12 +167,13 @@ function DataTab({
   onDownloadCv: (e: CvEntry) => void
   onDeleteCv: (id: string) => void
 }) {
+  const t = useTranslations('editor')
   return (
     <div className="p-4 space-y-4">
       {/* CV list */}
       <div>
         <div className="flex items-center justify-between mb-2.5">
-          <AccentTag>Your CVs</AccentTag>
+          <AccentTag>{t('yourCVs')}</AccentTag>
           <div className="flex gap-2">
             <input
               ref={importRef}
@@ -179,16 +182,16 @@ function DataTab({
               className="hidden"
               onChange={onImportFile}
             />
-            <SbBtn onClick={() => importRef.current?.click()}>↑ Import</SbBtn>
-            <SbBtn variant="dark" onClick={onNewCv} title="New CV">
-              + New
+            <SbBtn onClick={() => importRef.current?.click()}>{t('import')}</SbBtn>
+            <SbBtn variant="dark" onClick={onNewCv} title={t('newCV')}>
+              {t('newCV')}
             </SbBtn>
           </div>
         </div>
 
         {hydrated && cvList.length === 0 ? (
           <p className="text-[12px] py-4 text-center" style={{ color: 'var(--c-faint)' }}>
-            No CVs yet — create or import one.
+            {t('noCVsYet')}
           </p>
         ) : (
           <div className="space-y-1">
@@ -221,7 +224,7 @@ function DataTab({
                   <button
                     type="button"
                     onClick={() => onEditCv(entry)}
-                    title="Edit CV data"
+                    title={t('editCVDataTitle')}
                     className="px-1.5 py-2 text-[13px] opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ color: 'var(--c-sub)' }}
                   >
@@ -230,7 +233,7 @@ function DataTab({
                   <button
                     type="button"
                     onClick={() => onDownloadCv(entry)}
-                    title="Download JSON"
+                    title={t('downloadJSON')}
                     className="px-1.5 py-2 text-[13px] opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ color: 'var(--c-sub)' }}
                   >
@@ -239,7 +242,7 @@ function DataTab({
                   <button
                     type="button"
                     onClick={() => onDeleteCv(entry.id)}
-                    title="Delete"
+                    title={t('delete')}
                     className="px-1.5 py-2 text-[13px] opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ color: 'var(--c-sub)' }}
                   >
@@ -259,7 +262,7 @@ function DataTab({
       >
         <AccentTag>01</AccentTag>
         <div className="font-bold text-[13px] mt-1 mb-2" style={{ color: 'var(--c-ink)' }}>
-          Get the schema
+          {t('getSchema')}
         </div>
         <div
           className="flex items-center gap-2 rounded-[3px] px-2.5 py-2 mb-2.5"
@@ -278,7 +281,7 @@ function DataTab({
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 font-bold text-[12px] rounded-[3px] uppercase tracking-wider"
             style={{ background: 'var(--c-ink)', color: 'var(--c-paper)' }}
           >
-            ↓ Download
+            {t('download')}
           </Link>
           <a
             href="/llms-full.txt"
@@ -296,7 +299,7 @@ function DataTab({
           className="font-mono text-[10.5px] tracking-[0.02em]"
           style={{ color: 'var(--c-faint)' }}
         >
-          PROCESSED LOCALLY · NOTHING UPLOADED
+          {t('processedLocally')}
         </span>
       </div>
     </div>
@@ -318,16 +321,17 @@ function TemplateTab({
   onSelectTemplate: (t: Template) => void
   onSelectLayout: (l: Layout) => void
 }) {
+  const t = useTranslations('editor')
   return (
     <div className="p-4">
       <div
         className="font-bold text-[15px] uppercase tracking-[0.01em] mb-1"
         style={{ color: 'var(--c-ink)' }}
       >
-        Choose a template
+        {t('chooseTemplate')}
       </div>
       <p className="text-[12px] mb-4" style={{ color: 'var(--c-sub)' }}>
-        {templates.length} templates — more on the way.
+        {templates.length} {t('templatesMoreOnWay')}
       </p>
 
       <div className="grid grid-cols-2 gap-3">
@@ -375,7 +379,7 @@ function TemplateTab({
 
       {activeTemplate.layouts.length > 1 && (
         <div className="mt-5">
-          <AccentTag>Layout variant</AccentTag>
+          <AccentTag>{t('layoutVariant')}</AccentTag>
           <div className="flex gap-2 mt-2.5">
             {activeTemplate.layouts.map((l) => (
               <button
@@ -402,13 +406,6 @@ function TemplateTab({
 
 // ── main component ────────────────────────────────────────────────────────────
 
-const MOBILE_TABS: [Tab, string][] = [
-  ['data', 'Data'],
-  ['template', 'Template'],
-  ['layout', 'Layout'],
-  ['style', 'Style'],
-]
-
 export default function TemplatesGallery({
   templates,
   layoutData,
@@ -416,6 +413,7 @@ export default function TemplatesGallery({
   templates: Template[]
   layoutData: Record<string, Record<string, Record<string, unknown>>>
 }) {
+  const t = useTranslations('editor')
   const [activeTab, setActiveTab] = useState<Tab>('data')
   const [activeTemplate, setActiveTemplate] = useState<Template>(templates[0])
   const [activeLayout, setActiveLayout] = useState<Layout>(templates[0].layouts[0])
@@ -476,7 +474,7 @@ export default function TemplatesGallery({
   }
 
   function handleClearData() {
-    if (!confirm('Delete all CV data stored in this browser? This cannot be undone.')) return
+    if (!confirm(t('clearDataConfirm'))) return
     repo.clearData()
     setPreviewPdf(null)
   }
@@ -539,10 +537,10 @@ export default function TemplatesGallery({
 
   const generateLabel =
     compileState === 'loading'
-      ? 'Loading…'
+      ? t('loading')
       : compileState === 'compiling'
-        ? 'Compiling…'
-        : 'Generate PDF'
+        ? t('compiling')
+        : t('generatePDF')
 
   return (
     <div
@@ -578,7 +576,7 @@ export default function TemplatesGallery({
               Proof
             </span>
             <div className="flex-1" />
-            <MonoTag>Beta</MonoTag>
+            <MonoTag>{t('beta')}</MonoTag>
           </div>
 
           {/* CV switcher */}
@@ -595,7 +593,7 @@ export default function TemplatesGallery({
                 className="flex-1 text-[12.5px] font-semibold truncate"
                 style={{ color: 'var(--c-ink)' }}
               >
-                {currentCv ? currentCv.name : 'No CV loaded'}
+                {currentCv ? currentCv.name : t('noCVLoaded')}
               </span>
             </div>
             <SbBtn variant="dark" onClick={() => setCvModal({ mode: 'new' })} title="New CV">
@@ -613,14 +611,14 @@ export default function TemplatesGallery({
             className="font-mono text-[10px] tracking-[0.14em] uppercase"
             style={{ color: 'var(--c-faint)' }}
           >
-            Editor settings
+            {t('editorSettings')}
           </span>
           <button
             type="button"
             onClick={closeMobilePanel}
             className="w-7 h-7 flex items-center justify-center text-[17px] rounded-full transition-opacity hover:opacity-70"
             style={{ boxShadow: 'inset 0 0 0 1px var(--c-line)', color: 'var(--c-sub)' }}
-            aria-label="Close panel"
+            aria-label={t('closePanelAria')}
           >
             ×
           </button>
@@ -685,7 +683,7 @@ export default function TemplatesGallery({
             ) : (
               <div className="p-6 text-center" style={{ color: 'var(--c-faint)' }}>
                 <p className="font-mono text-[11px] tracking-widest uppercase">
-                  No layout for this template
+                  {t('noLayoutForTemplate')}
                 </p>
               </div>
             )}
@@ -728,7 +726,7 @@ export default function TemplatesGallery({
             className="font-mono text-[11px] transition-opacity hover:opacity-70"
             style={{ color: 'var(--c-faint)' }}
           >
-            ← Home
+            {t('home')}
           </Link>
           <div className="flex items-center gap-3">
             {privateMode && (
@@ -736,7 +734,7 @@ export default function TemplatesGallery({
                 className="font-mono text-[10px] tracking-widest uppercase"
                 style={{ color: 'var(--c-accent)' }}
               >
-                Private
+                {t('private')}
               </span>
             )}
             <button
@@ -745,7 +743,7 @@ export default function TemplatesGallery({
               className="font-mono text-[11px] transition-opacity hover:opacity-70"
               style={{ color: 'var(--c-faint)' }}
             >
-              Clear data
+              {t('clearData')}
             </button>
             <button
               type="button"
@@ -782,7 +780,14 @@ export default function TemplatesGallery({
           className="md:hidden shrink-0 flex h-14"
           style={{ borderTop: '1px solid var(--c-line)', background: 'var(--c-paper)' }}
         >
-          {MOBILE_TABS.map(([tab, label], i) => {
+          {(
+            [
+              ['data', t('tabData')],
+              ['template', t('tabTemplate')],
+              ['layout', t('tabLayout')],
+              ['style', t('tabStyle')],
+            ] as [Tab, string][]
+          ).map(([tab, label], i) => {
             const on = mobilePanel && activeTab === tab
             return (
               <button
@@ -807,7 +812,7 @@ export default function TemplatesGallery({
             className="flex-1 flex items-center justify-center font-bold text-[11px] uppercase tracking-wider disabled:opacity-40"
             style={{ background: 'var(--c-accent)', color: '#fff' }}
           >
-            {compileState !== 'idle' ? '…' : 'Gen PDF'}
+            {compileState !== 'idle' ? '…' : t('genPDFMobile')}
           </button>
         </div>
       </div>

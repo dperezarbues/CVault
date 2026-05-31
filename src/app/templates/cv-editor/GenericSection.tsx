@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import type { GenericItem } from './types'
 import { emptyGenericItem } from './types'
@@ -24,6 +25,7 @@ type ItemEditorProps = {
 }
 
 function ItemEditor({ item, fields, onChange }: ItemEditorProps) {
+  const t = useTranslations('cvEditor')
   const set =
     (k: keyof GenericItem) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       onChange({ ...item, [k]: e.target.value })
@@ -62,7 +64,7 @@ function ItemEditor({ item, fields, onChange }: ItemEditorProps) {
       {fields.highlights !== undefined && (
         <label className="block text-xs text-gray-500">
           {fields.highlights}
-          <span className="text-gray-400 font-normal"> · one per line</span>
+          <span className="text-gray-400 font-normal"> · {t('onePerLine')}</span>
           <textarea
             value={item.highlights}
             onChange={set('highlights')}
@@ -74,7 +76,7 @@ function ItemEditor({ item, fields, onChange }: ItemEditorProps) {
       {fields.tags !== undefined && (
         <label className="block text-xs text-gray-500">
           {fields.tags}
-          <span className="text-gray-400 font-normal"> · comma-separated</span>
+          <span className="text-gray-400 font-normal"> · {t('commaSeparated')}</span>
           <input value={item.tags} onChange={set('tags')} className={INPUT} />
         </label>
       )}
@@ -91,6 +93,7 @@ type Props = {
 }
 
 export function GenericSection({ items, fields, addLabel, getTitle, onChange }: Props) {
+  const t = useTranslations('cvEditor')
   const [open, setOpen] = useState<Set<number>>(new Set(items.length > 0 ? [0] : []))
 
   const toggle = (i: number) =>
@@ -146,14 +149,14 @@ export function GenericSection({ items, fields, addLabel, getTitle, onChange }: 
             >
               <span className="flex-1 text-xs font-medium text-gray-700 truncate min-w-0">
                 {getTitle(item) || (
-                  <span className="text-gray-400 font-normal italic">New entry</span>
+                  <span className="text-gray-400 font-normal italic">{t('newEntry')}</span>
                 )}
               </span>
               <span className="text-gray-400 text-[10px] shrink-0">{open.has(i) ? '▲' : '▼'}</span>
             </button>
             <button
               type="button"
-              aria-label="Move up"
+              aria-label={t('moveUp')}
               onClick={() => move(i, -1)}
               disabled={i === 0}
               className="text-gray-300 hover:text-gray-500 disabled:opacity-30 text-xs px-0.5 py-1.5"
@@ -162,7 +165,7 @@ export function GenericSection({ items, fields, addLabel, getTitle, onChange }: 
             </button>
             <button
               type="button"
-              aria-label="Move down"
+              aria-label={t('moveDown')}
               onClick={() => move(i, 1)}
               disabled={i === items.length - 1}
               className="text-gray-300 hover:text-gray-500 disabled:opacity-30 text-xs px-0.5 py-1.5"
@@ -171,7 +174,7 @@ export function GenericSection({ items, fields, addLabel, getTitle, onChange }: 
             </button>
             <button
               type="button"
-              aria-label="Remove"
+              aria-label={t('remove')}
               onClick={() => remove(i)}
               className="text-gray-300 hover:text-red-400 text-sm px-0.5 py-1.5"
             >

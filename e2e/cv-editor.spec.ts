@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test.describe('CV data modal — form editor', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
     await page.getByTitle('New CV').click()
@@ -96,7 +96,7 @@ test.describe('CV data modal — form editor', () => {
 
 test.describe('CV data modal — edit existing CV', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
     // Create a CV first

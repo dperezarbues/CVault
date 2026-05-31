@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { expect, test } from '@playwright/test'
 
-const EDITOR_URL = '/editor'
+const EDITOR_URL = '/en/editor'
 
 test.describe('Layout import', () => {
   test.beforeEach(async ({ page }) => {

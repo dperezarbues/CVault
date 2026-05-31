@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { SkillGroup } from './types'
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export function SkillsSection({ skills, onChange }: Props) {
+  const t = useTranslations('cvEditor')
   const add = () => onChange([...skills, { name: '', entries: '' }])
 
   const remove = (i: number) => onChange(skills.filter((_, j) => j !== i))
@@ -29,12 +31,12 @@ export function SkillsSection({ skills, onChange }: Props) {
             <input
               value={group.name}
               onChange={set(i, 'name')}
-              placeholder="Category (e.g. Languages & Frameworks)"
+              placeholder={t('skillCategoryPlaceholder')}
               className="flex-1 text-xs border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
             />
             <button
               type="button"
-              aria-label="Remove skill group"
+              aria-label={t('skillRemove')}
               onClick={() => remove(i)}
               className="text-gray-300 hover:text-red-400 text-sm"
             >
@@ -44,11 +46,11 @@ export function SkillsSection({ skills, onChange }: Props) {
           <textarea
             value={group.entries}
             onChange={set(i, 'entries')}
-            placeholder="TypeScript, React, Node.js, …"
+            placeholder={t('skillEntriesPlaceholder')}
             rows={2}
             className="w-full text-xs border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none bg-white"
           />
-          <p className="text-[10px] text-gray-400">comma-separated</p>
+          <p className="text-[10px] text-gray-400">{t('skillCommaSeparated')}</p>
         </div>
       ))}
       <button
@@ -56,7 +58,7 @@ export function SkillsSection({ skills, onChange }: Props) {
         onClick={add}
         className="w-full text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 hover:bg-gray-50 transition-colors"
       >
-        + Add skill group
+        {t('skillAdd')}
       </button>
     </div>
   )

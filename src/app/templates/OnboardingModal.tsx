@@ -1,24 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import MarkProof from '@/components/proof/MarkProof'
-
-const STEPS = [
-  {
-    step: '1',
-    title: 'Add your CV',
-    body: 'Use "+ New" to create a CV from the template, or "↑ Import" to load an existing JSON file. You can have multiple CVs and switch between them.',
-  },
-  {
-    step: '2',
-    title: 'Pick a template & customise',
-    body: 'Select a template from the list. The middle panel lets you reorder sections, toggle page breaks, and adjust colors, fonts, and spacing.',
-  },
-  {
-    step: '3',
-    title: 'Generate your PDF',
-    body: 'Hit "Generate PDF" in the editor panel. Your CV is compiled with Typst and the PDF appears in the preview. Download whenever you\'re happy.',
-  },
-] as const
 
 type Props = {
   privateMode: boolean
@@ -27,6 +10,14 @@ type Props = {
 }
 
 export default function OnboardingModal({ privateMode, onPrivateToggle, onDismiss }: Props) {
+  const t = useTranslations('onboarding')
+
+  const steps = [
+    { step: '1', title: t('step1Title'), body: t('step1Body') },
+    { step: '2', title: t('step2Title'), body: t('step2Body') },
+    { step: '3', title: t('step3Title'), body: t('step3Body') },
+  ]
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
@@ -54,18 +45,17 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
                 color: 'var(--c-ink)',
               }}
             >
-              Welcome to Proof
+              {t('title')}
             </span>
           </div>
           <p
             style={{ fontSize: 13, color: 'var(--c-sub)', lineHeight: 1.6, marginBottom: '1.5rem' }}
           >
-            A privacy-first CV editor. Your data is stored in this browser — nothing is saved
-            server-side.
+            {t('subtitle')}
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {STEPS.map((s) => (
+            {steps.map((s) => (
               <div key={s.step} style={{ display: 'flex', gap: 14 }}>
                 <div
                   style={{
@@ -128,11 +118,9 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
               htmlFor="private-mode-toggle"
               style={{ fontSize: 12, color: 'var(--c-sub)', lineHeight: 1.6, cursor: 'pointer' }}
             >
-              <span style={{ fontWeight: 700, color: 'var(--c-ink)' }}>
-                I&apos;m on a shared computer
-              </span>
+              <span style={{ fontWeight: 700, color: 'var(--c-ink)' }}>{t('sharedComputer')}</span>
               <br />
-              Data will be stored in session storage and cleared automatically when this tab closes.
+              {t('sharedComputerNote')}
             </label>
           </div>
         </div>
@@ -157,7 +145,7 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
               color: 'var(--c-faint)',
             }}
           >
-            Reopen via the ? button
+            {t('reopenHint')}
           </p>
           <button
             type="button"
@@ -176,7 +164,7 @@ export default function OnboardingModal({ privateMode, onPrivateToggle, onDismis
               cursor: 'pointer',
             }}
           >
-            Get started
+            {t('getStarted')}
           </button>
         </div>
       </div>

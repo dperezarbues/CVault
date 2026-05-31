@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import MarkProof from '@/components/proof/MarkProof'
 import cvStarter from '@/data/cv.starter.json'
@@ -43,6 +44,7 @@ export default function CvDataModal({
   onSave,
   onCancel,
 }: Props) {
+  const t = useTranslations('cvModal')
   const defaultContent = entry?.content ?? initialContent ?? CV_TEMPLATE
   const defaultName = entry?.name ?? initialName ?? ''
 
@@ -157,7 +159,7 @@ export default function CvDataModal({
                 color: 'var(--c-ink)',
               }}
             >
-              {entry ? 'Edit CV data' : 'New CV'}
+              {entry ? t('titleEdit') : t('titleNew')}
             </h2>
           </div>
           <button
@@ -172,7 +174,7 @@ export default function CvDataModal({
               cursor: 'pointer',
               padding: '2px 4px',
             }}
-            aria-label="Close"
+            aria-label={t('close')}
           >
             ×
           </button>
@@ -200,14 +202,14 @@ export default function CvDataModal({
               flexShrink: 0,
             }}
           >
-            Name
+            {t('nameLabel')}
           </label>
           <input
             id="cv-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="My CV"
+            placeholder={t('namePlaceholder')}
             style={{
               flex: 1,
               fontSize: 13,
@@ -245,7 +247,7 @@ export default function CvDataModal({
                 transition: 'background 0.15s, color 0.15s',
               }}
             >
-              Editor
+              {t('editorTab')}
             </button>
             <button
               type="button"
@@ -263,7 +265,7 @@ export default function CvDataModal({
                 transition: 'background 0.15s, color 0.15s',
               }}
             >
-              JSON
+              {t('jsonTab')}
             </button>
           </div>
         </div>
@@ -299,7 +301,7 @@ export default function CvDataModal({
                     cursor: 'pointer',
                   }}
                 >
-                  Format
+                  {t('format')}
                 </button>
               </div>
               <textarea
@@ -364,7 +366,7 @@ export default function CvDataModal({
               color: 'var(--c-faint)',
             }}
           >
-            Data stays in your browser
+            {t('dataStays')}
           </p>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
@@ -382,7 +384,7 @@ export default function CvDataModal({
                 cursor: 'pointer',
               }}
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="button"
@@ -401,7 +403,7 @@ export default function CvDataModal({
                 cursor: 'pointer',
               }}
             >
-              Save
+              {t('save')}
             </button>
           </div>
         </div>

@@ -14,7 +14,7 @@ import { expect, type Page, test } from '@playwright/test'
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 async function gotoEditor(page: Page) {
-  await page.goto('/editor')
+  await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('proof-onboarded', '1'))
   await page.reload()
 }
@@ -28,7 +28,7 @@ const DESKTOP = { width: 1280, height: 800 }
 test.describe('Landing — mobile (375×667)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(MOBILE)
-    await page.goto('/')
+    await page.goto('/en/')
   })
 
   test('nav links are hidden, mobile CTA is shown', async ({ page }) => {
@@ -96,7 +96,7 @@ test.describe('Landing — mobile (375×667)', () => {
 test.describe('Landing — tablet (768×1024)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(TABLET)
-    await page.goto('/')
+    await page.goto('/en/')
   })
 
   test('nav links are visible at tablet width', async ({ page }) => {
@@ -137,7 +137,7 @@ test.describe('Landing — tablet (768×1024)', () => {
 test.describe('Landing — desktop (1280×800)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(DESKTOP)
-    await page.goto('/')
+    await page.goto('/en/')
   })
 
   test('all nav links and full open-editor CTA are visible', async ({ page }) => {
@@ -365,7 +365,7 @@ test.describe('CV Data Modal — tablet (768×1024)', () => {
 test.describe('Onboarding Modal — mobile (375×667)', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(MOBILE)
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.removeItem('proof-onboarded'))
     await page.reload()
   })

@@ -8,7 +8,7 @@ const DISABLED_RULES = ['color-contrast']
 
 test.describe('Accessibility — axe-core regression', () => {
   test('landing page has no structural violations', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/en/')
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .disableRules(DISABLED_RULES)
@@ -17,7 +17,7 @@ test.describe('Accessibility — axe-core regression', () => {
   })
 
   test('editor page (onboarded) has no structural violations', async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
     const results = await new AxeBuilder({ page })
@@ -30,7 +30,7 @@ test.describe('Accessibility — axe-core regression', () => {
   })
 
   test('CV data modal (Editor tab) has no structural violations', async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
     await page.getByTitle('New CV').click()
@@ -45,7 +45,7 @@ test.describe('Accessibility — axe-core regression', () => {
   })
 
   test('CV data modal (JSON tab) has no structural violations', async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
     await page.getByTitle('New CV').click()
@@ -63,7 +63,7 @@ test.describe('Accessibility — axe-core regression', () => {
   test('layout editor panel (DnD drag handles, section toggles) has no structural violations', async ({
     page,
   }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
 

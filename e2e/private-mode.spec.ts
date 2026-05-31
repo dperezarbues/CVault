@@ -5,7 +5,7 @@ test.describe('Private mode — data isolation', () => {
     page,
   }) => {
     // First visit — welcome modal appears
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.clear())
     await page.reload()
 
@@ -36,7 +36,7 @@ test.describe('Private mode — data isolation', () => {
   })
 
   test('disabling private mode on a fresh visit leaves localStorage empty', async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => localStorage.clear())
     await page.reload()
 

@@ -5,7 +5,7 @@ const GENERATE_TIMEOUT = 60_000
 
 test.describe('Support prompt (pre-download modal)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => {
       localStorage.setItem('cvault-onboarded', '1')
       sessionStorage.removeItem('cvault-support-prompted')

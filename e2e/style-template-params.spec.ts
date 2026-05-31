@@ -13,7 +13,7 @@ import { expect, type Page, test } from '@playwright/test'
 const COMPILE_TIMEOUT = 60_000
 
 async function openEditor(page: Page) {
-  await page.goto('/editor')
+  await page.goto('/en/editor')
   await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
   await page.reload()
 }
