@@ -19,8 +19,8 @@ test.describe('Landing page', () => {
     await expect(page.getByRole('link', { name: /Schema reference/i })).toBeVisible()
   })
 
-  test('shows CVault brand in nav', async ({ page }) => {
+  test('shows Proof brand in nav', async ({ page }) => {
     await page.goto('/en/')
-    await expect(page.getByRole('navigation').getByText('CVault')).toBeVisible()
+    await expect(page.getByRole('navigation').getByText('Proof', { exact: true })).toBeVisible()
   })
 })
