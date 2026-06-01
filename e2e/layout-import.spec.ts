@@ -34,7 +34,7 @@ test.describe('Layout import', () => {
     })
     // Wait for the section list to populate (Generate PDF may appear before EditorShell hydrates)
     await expect(
-      page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800').first(),
+      page.getByTestId('section-list').getByTestId('section-label').first(),
     ).toBeVisible({ timeout: 10_000 })
   })
 
@@ -51,7 +51,7 @@ test.describe('Layout import', () => {
     await uploadJsonFile(page, 'layout-import-input', JSON.stringify(layout))
 
     // Scope assertions to section card spans within the section list
-    const sectionSpans = page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800')
+    const sectionSpans = page.getByTestId('section-list').locator('[data-testid="section-label"]')
 
     // Wait for Summary to disappear (confirms the import fired and replaced the default layout)
     await expect(sectionSpans.filter({ hasText: 'Summary' })).toHaveCount(0, { timeout: 15000 })
@@ -66,13 +66,14 @@ test.describe('Layout import', () => {
   })
 
   test('importing an invalid JSON is a no-op (sections unchanged)', async ({ page }) => {
-    const sectionSpans = page.getByTestId('section-list').locator('span.flex-1.text-sm.text-gray-800')
+    const sectionSpans = page.getByTestId('section-list').locator('[data-testid="section-label"]')
     const before = await sectionSpans.allTextContents()
 
     await uploadJsonFile(page, 'layout-import-input', 'this is not json at all')
 
-    // Wait briefly, then confirm nothing changed
-    await page.waitForTimeout(300)
+    // A known default section still present confirms the import was rejected.
+    // Using a deterministic assertion avoids an arbitrary waitForTimeout.
+    await expect(sectionSpans.filter({ hasText: 'Summary' })).toHaveCount(1, { timeout: 2000 })
     const after = await sectionSpans.allTextContents()
     expect(after).toEqual(before)
   })

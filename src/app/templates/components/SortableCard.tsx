@@ -28,7 +28,11 @@ export default function SortableCard({
     return (
       <SectionCard
         sortableId={item.key}
-        label={<span className="flex-1 text-sm text-gray-800">{getLabel(item.id)}</span>}
+        label={
+          <span className="flex-1 text-sm text-gray-800" data-testid="section-label">
+            {getLabel(item.id)}
+          </span>
+        }
         breakable={item.breakable}
         preSpacing={item.pre_spacing}
         postSpacing={item.post_spacing}
