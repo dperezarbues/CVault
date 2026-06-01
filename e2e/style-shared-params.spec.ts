@@ -4,15 +4,15 @@
  */
 
 import { expect, type Page, test } from '@playwright/test'
-
-const COMPILE_TIMEOUT = 60_000
-
-async function openEditor(page: Page) {
-  await page.goto('/en/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
-  await page.reload()
-  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
-}
+import {
+  COMPILE_TIMEOUT,
+  expandGroup,
+  openEditor,
+  openStyleTab,
+  setColor,
+  setRange,
+  waitForNewPdf,
+} from './helpers'
 
 async function setupWithPdf(page: Page): Promise<string> {
   await page.getByTitle('New CV').click()
@@ -23,46 +23,9 @@ async function setupWithPdf(page: Page): Promise<string> {
   await page.getByRole('button', { name: 'Generate PDF' }).first().click()
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
   const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
+  if (!src) throw new Error('data-pdf-src attribute not found after initial compile')
   expect(src).toMatch(/^blob:/)
-  return src as string
-}
-
-async function waitForNewPdf(page: Page, oldSrc: string) {
-  const viewer = page.locator('[data-testid="pdfjs-viewer"]')
-  await expect(async () => {
-    const src = await viewer.getAttribute('data-pdf-src')
-    expect(src).toMatch(/^blob:/)
-    expect(src).not.toEqual(oldSrc)
-  }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
-  // Also wait for the text layer to finish rendering so subsequent assertions
-  // on PDF content are reliable.
-  await expect(viewer).toHaveAttribute('data-render-state', 'ready', { timeout: 15_000 })
-}
-
-async function setRange(page: Page, id: string, value: number) {
-  await page.locator(`input#${id}`).evaluate((el: HTMLInputElement, v) => {
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-    setter.call(el, String(v))
-    el.dispatchEvent(new Event('input', { bubbles: true }))
-  }, value)
-}
-
-async function setColor(page: Page, id: string, hex: string) {
-  await page.locator(`input#${id}`).evaluate((el: HTMLInputElement, v) => {
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-    setter.call(el, v)
-    el.dispatchEvent(new Event('input', { bubbles: true }))
-    el.dispatchEvent(new Event('change', { bubbles: true }))
-  }, hex)
-}
-
-async function openStyleTab(page: Page) {
-  await page.getByRole('tab', { name: /Style/i }).click()
-}
-
-async function expandGroup(page: Page, title: string) {
-  const btn = page.locator('button').filter({ hasText: title }).filter({ hasText: '▼' })
-  if ((await btn.count()) > 0) await btn.first().click()
+  return src
 }
 
 // ── Typography ────────────────────────────────────────────────────────────────

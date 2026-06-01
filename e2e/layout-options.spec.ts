@@ -4,15 +4,7 @@
  */
 
 import { expect, type Page, test } from '@playwright/test'
-
-const COMPILE_TIMEOUT = 60_000
-
-async function openEditor(page: Page) {
-  await page.goto('/en/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
-  await page.reload()
-  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
-}
+import { COMPILE_TIMEOUT, openEditor, waitForNewPdf } from './helpers'
 
 async function setupWithPdf(page: Page): Promise<string> {
   await page.getByTitle('New CV').click()
@@ -26,16 +18,9 @@ async function setupWithPdf(page: Page): Promise<string> {
   await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: COMPILE_TIMEOUT })
 
   const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
+  if (!src) throw new Error('data-pdf-src attribute not found after initial compile')
   expect(src).toMatch(/^blob:/)
-  return src as string
-}
-
-async function waitForNewPdf(page: Page, oldSrc: string) {
-  await expect(async () => {
-    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
-    expect(src).toMatch(/^blob:/)
-    expect(src).not.toEqual(oldSrc)
-  }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
+  return src
 }
 
 // ── Header style ──────────────────────────────────────────────────────────────
@@ -57,8 +42,9 @@ test.describe('Layout — header style', () => {
     await waitForNewPdf(page, old)
 
     const stackedSrc = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
+    if (!stackedSrc) throw new Error('data-pdf-src not found after stacked compile')
     await page.getByRole('button', { name: 'split', exact: true }).click()
-    await waitForNewPdf(page, stackedSrc as string)
+    await waitForNewPdf(page, stackedSrc)
   })
 })
 
@@ -82,9 +68,10 @@ test.describe('Layout — section remove and add', () => {
     await waitForNewPdf(page, old)
 
     const afterRemove = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
+    if (!afterRemove) throw new Error('data-pdf-src not found after remove compile')
     const addDropdown = page.locator('select').filter({ hasText: '+ add section' })
     await addDropdown.selectOption({ index: 1 })
-    await waitForNewPdf(page, afterRemove as string)
+    await waitForNewPdf(page, afterRemove)
   })
 })
 
