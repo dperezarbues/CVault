@@ -33,15 +33,39 @@ test.describe('PDF generation (WASM)', () => {
       timeout: GENERATE_TIMEOUT,
     })
 
-    // iframe src should now be a blob URL
+    // src should now be a blob URL and the text layer should be ready
     const newSrc = await iframe.getAttribute('data-pdf-src')
     expect(newSrc).toMatch(/^blob:/)
+    await expect(iframe).toHaveAttribute('data-render-state', 'ready', { timeout: 15_000 })
 
     // "preview" badge should appear
     await expect(page.getByText('preview', { exact: true })).toBeVisible()
 
     // Download button should appear
     await expect(page.getByRole('button', { name: 'Download' })).toBeVisible()
+  })
+
+  test('PDF.js text layer is populated after generation (enables getByText in the viewer)', async ({
+    page,
+  }) => {
+    test.setTimeout(GENERATE_TIMEOUT + 15_000)
+    const viewer = page.locator('[data-testid="pdfjs-viewer"]')
+
+    // Generate from the test CV
+    await page.getByRole('button', { name: 'Generate PDF' }).first().click()
+    await expect(page.getByText('Generating PDF…')).not.toBeVisible({ timeout: GENERATE_TIMEOUT })
+
+    // Wait for render to finish — not just for a new URL but for canvas + text layer to paint.
+    await expect(viewer).toHaveAttribute('data-render-state', 'ready', { timeout: 15_000 })
+
+    // The text layer should contain at least one populated span.
+    const textSpans = viewer.locator('.textLayer span').filter({ hasText: /\S/ })
+    await expect(textSpans.first()).toBeVisible()
+
+    // Collect all text to show the content is queryable.
+    const texts = await textSpans.allTextContents()
+    expect(texts.length).toBeGreaterThan(0)
+    expect(texts.join(' ').trim().length).toBeGreaterThan(0)
   })
 
   test('Reset clears generated preview back to sample', async ({ page }) => {

@@ -28,11 +28,15 @@ async function setupWithPdf(page: Page): Promise<string> {
 }
 
 async function waitForNewPdf(page: Page, oldSrc: string) {
+  const viewer = page.locator('[data-testid="pdfjs-viewer"]')
   await expect(async () => {
-    const src = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
+    const src = await viewer.getAttribute('data-pdf-src')
     expect(src).toMatch(/^blob:/)
     expect(src).not.toEqual(oldSrc)
   }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
+  // Also wait for the text layer to finish rendering so subsequent assertions
+  // on PDF content are reliable.
+  await expect(viewer).toHaveAttribute('data-render-state', 'ready', { timeout: 15_000 })
 }
 
 async function setRange(page: Page, id: string, value: number) {

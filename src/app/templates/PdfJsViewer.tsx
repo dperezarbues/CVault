@@ -37,31 +37,54 @@ export default function PdfJsViewer({ src }: { src: string }) {
 
         const containerWidth = container.clientWidth || 600
         const dpr = window.devicePixelRatio || 1
-        const canvases: HTMLCanvasElement[] = []
+        const pages: HTMLDivElement[] = []
 
         for (let i = 1; i <= pdf.numPages; i++) {
           if (renderGenRef.current !== gen) return
           const page = await pdf.getPage(i)
           const baseViewport = page.getViewport({ scale: 1 })
           const cssScale = containerWidth / baseViewport.width
-          const renderScale = cssScale * dpr
-          const viewport = page.getViewport({ scale: renderScale })
+          // Canvas is rendered at device-pixel-ratio scale for sharpness; the
+          // text layer uses CSS-pixel scale so its coordinates match layout.
+          const cssViewport = page.getViewport({ scale: cssScale })
+          const renderViewport = page.getViewport({ scale: cssScale * dpr })
 
+          // Page wrapper — positions the text layer absolutely over the canvas.
+          const wrapper = document.createElement('div')
+          wrapper.style.cssText = `position:relative;width:100%;height:${Math.floor(cssViewport.height)}px;${i > 1 ? 'margin-top:8px' : ''}`
+
+          // Canvas
           const canvas = document.createElement('canvas')
-          canvas.width = Math.floor(viewport.width)
-          canvas.height = Math.floor(viewport.height)
-          canvas.style.width = '100%'
-          canvas.style.display = 'block'
-          if (i > 1) canvas.style.marginTop = '8px'
+          canvas.width = Math.floor(renderViewport.width)
+          canvas.height = Math.floor(renderViewport.height)
+          canvas.style.cssText = 'width:100%;display:block;'
+          wrapper.appendChild(canvas)
+
+          // Text layer — invisible but DOM-queryable for selection and tests.
+          const textLayerDiv = document.createElement('div')
+          textLayerDiv.className = 'textLayer'
+          wrapper.appendChild(textLayerDiv)
 
           const ctx = canvas.getContext('2d')!
-          await page.render({ canvasContext: ctx, viewport }).promise
+          await page.render({ canvasContext: ctx, viewport: renderViewport }).promise
           if (renderGenRef.current !== gen) return
-          canvases.push(canvas)
+
+          const textContent = await page.getTextContent()
+          if (renderGenRef.current !== gen) return
+
+          const textLayer = new pdfjs.TextLayer({
+            textContentSource: textContent,
+            container: textLayerDiv,
+            viewport: cssViewport,
+          })
+          await textLayer.render()
+          if (renderGenRef.current !== gen) return
+
+          pages.push(wrapper)
         }
 
         if (renderGenRef.current !== gen) return
-        container.replaceChildren(...canvases)
+        container.replaceChildren(...pages)
         setRenderState('ready')
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return
@@ -84,8 +107,9 @@ export default function PdfJsViewer({ src }: { src: string }) {
       style={{ background: 'var(--c-paper-deep)' }}
       data-testid="pdfjs-viewer"
       data-pdf-src={src}
+      data-render-state={renderState}
     >
-      {/* Imperatively managed canvas mount point — React never renders children here */}
+      {/* Imperatively managed page mount point — React never renders children here */}
       <div ref={containerRef} />
 
       {renderState === 'loading' && (
