@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
 import MarkProof from '@/components/proof/MarkProof'
 import { Link } from '@/i18n/navigation'
 import { getItem, KEYS, migrateFromLegacy, setItem } from '@/lib/storage'
@@ -789,7 +788,6 @@ export default function TemplatesGallery({
                 {t('private')}
               </span>
             )}
-            <LanguageSwitcher />
             <button
               type="button"
               onClick={handleClearData}

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { KEYS } from '@/lib/storage'
 import type { CvEntry } from './CvDataModal'
 import SupportPrompt from './components/SupportPrompt'
@@ -105,6 +106,7 @@ export default function PdfPreview({
           )}
         </div>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           {!isSample && (
             <button
               type="button"
