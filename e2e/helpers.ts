@@ -12,7 +12,7 @@ export const COMPILE_TIMEOUT = 60_000
 
 export async function openEditor(page: Page) {
   await page.goto('/en/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
+  await page.evaluate(() => localStorage.setItem('proof-onboarded', '1'))
   await page.reload()
   await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 }

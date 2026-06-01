@@ -424,6 +424,7 @@ export default function TemplatesGallery({
   const [isGenerating, setIsGenerating] = useState(false)
   const [generateTrigger, setGenerateTrigger] = useState(0)
   const [compileState, setCompileState] = useState<CompileState>('idle')
+  const [compileError, setCompileError] = useState<string | null>(null)
   const [mobilePanel, setMobilePanel] = useState(false)
   const previewPdfRef = useRef<string | null>(null)
   const prevFocusRef = useRef<HTMLElement | null>(null)
@@ -516,12 +517,14 @@ export default function TemplatesGallery({
   const handleCompileInfo = useCallback(
     ({
       compileState: cs,
+      error: e,
     }: {
       compileState: CompileState
       compilerReady: boolean
       error: string | null
     }) => {
       setCompileState(cs)
+      setCompileError(e)
     },
     [],
   )
@@ -599,13 +602,18 @@ export default function TemplatesGallery({
           style={{ borderBottom: '1px solid var(--c-line)' }}
         >
           <div className="flex items-center gap-2.5">
-            <MarkProof size={26} />
-            <span
-              className="font-black text-[19px] tracking-[-0.02em]"
-              style={{ color: 'var(--c-ink)' }}
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
             >
-              Proof
-            </span>
+              <MarkProof size={26} />
+              <span
+                className="font-black text-[19px] tracking-[-0.02em]"
+                style={{ color: 'var(--c-ink)' }}
+              >
+                Proof
+              </span>
+            </Link>
             <div className="flex-1" />
             <MonoTag>{t('beta')}</MonoTag>
           </div>
@@ -724,27 +732,38 @@ export default function TemplatesGallery({
 
         {/* Actions bar */}
         <div
-          className="shrink-0 p-3.5 flex gap-2.5"
+          className="shrink-0 p-3.5 flex flex-col gap-2"
           style={{ borderTop: '1px solid var(--c-line)' }}
         >
-          <SbBtn
-            variant="primary"
-            full
-            disabled={isGenerateDisabled}
-            onClick={() => setGenerateTrigger((t) => t + 1)}
-          >
-            {generateLabel}
-          </SbBtn>
-          {!isSample && (
-            <a
-              href={currentPdf.split('?')[0]}
-              download
-              className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-[3px] font-bold text-[12px] transition-opacity hover:opacity-80"
-              style={{ boxShadow: 'inset 0 0 0 1.3px var(--c-line)', color: 'var(--c-ink2)' }}
-              title="Download PDF"
+          <div className="flex gap-2.5">
+            <SbBtn
+              variant="primary"
+              full
+              disabled={isGenerateDisabled}
+              onClick={() => setGenerateTrigger((t) => t + 1)}
             >
-              ↓
-            </a>
+              {generateLabel}
+            </SbBtn>
+            {!isSample && (
+              <a
+                href={currentPdf.split('?')[0]}
+                download
+                className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-[3px] font-bold text-[12px] transition-opacity hover:opacity-80"
+                style={{ boxShadow: 'inset 0 0 0 1.3px var(--c-line)', color: 'var(--c-ink2)' }}
+                title="Download PDF"
+              >
+                ↓
+              </a>
+            )}
+          </div>
+          {compileError && (
+            <p
+              className="font-mono text-[10px] truncate"
+              style={{ color: 'var(--c-accent)' }}
+              title={compileError}
+            >
+              ⚠ {compileError}
+            </p>
           )}
         </div>
 
