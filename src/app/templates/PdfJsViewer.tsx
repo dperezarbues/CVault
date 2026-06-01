@@ -65,7 +65,8 @@ export default function PdfJsViewer({ src }: { src: string }) {
           textLayerDiv.className = 'textLayer'
           wrapper.appendChild(textLayerDiv)
 
-          const ctx = canvas.getContext('2d')!
+          const ctx = canvas.getContext('2d')
+          if (!ctx) throw new Error('canvas 2d context unavailable')
           await page.render({ canvasContext: ctx, viewport: renderViewport }).promise
           if (renderGenRef.current !== gen) return
 
