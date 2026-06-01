@@ -186,8 +186,8 @@ test.describe('Shared style — Reset', () => {
     await setRange(page, 'name_size', 22)
     await waitForNewPdf(page, old)
     const changed = await page.locator('[data-testid="pdfjs-viewer"]').getAttribute('data-pdf-src')
-
+    if (!changed) throw new Error('data-pdf-src not found after name_size change')
     await page.getByRole('button', { name: /Reset to defaults/i }).click()
-    await waitForNewPdf(page, changed as string)
+    await waitForNewPdf(page, changed)
   })
 })
