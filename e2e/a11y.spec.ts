@@ -80,4 +80,22 @@ test.describe('Accessibility — axe-core regression', () => {
       .analyze()
     expect(results.violations).toEqual([])
   })
+
+  test('mobile panel (dialog role, aria-modal) has no structural violations', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.goto('/en/editor')
+    await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
+    await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    // Open the panel so the dialog role and aria-modal are active during the scan
+    await page.getByTestId('mobile-tab-data').click()
+    await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
+
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .disableRules(DISABLED_RULES)
+      .exclude('[data-testid="pdfjs-viewer"]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
 })

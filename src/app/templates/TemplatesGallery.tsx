@@ -426,6 +426,8 @@ export default function TemplatesGallery({
   const [compileState, setCompileState] = useState<CompileState>('idle')
   const [mobilePanel, setMobilePanel] = useState(false)
   const previewPdfRef = useRef<string | null>(null)
+  const prevFocusRef = useRef<HTMLElement | null>(null)
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     previewPdfRef.current = previewPdf
@@ -530,6 +532,7 @@ export default function TemplatesGallery({
   const isGenerateDisabled = !currentCv || compileState !== 'idle'
 
   function openMobileTab(t: Tab) {
+    prevFocusRef.current = document.activeElement as HTMLElement
     setActiveTab(t)
     setMobilePanel(true)
   }
@@ -537,6 +540,25 @@ export default function TemplatesGallery({
   function closeMobilePanel() {
     setMobilePanel(false)
   }
+
+  // Focus the close button when the panel opens; restore focus to the trigger when it closes.
+  useEffect(() => {
+    if (mobilePanel) {
+      closeBtnRef.current?.focus()
+    } else {
+      prevFocusRef.current?.focus()
+    }
+  }, [mobilePanel])
+
+  // Dismiss with Escape key.
+  useEffect(() => {
+    if (!mobilePanel) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setMobilePanel(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [mobilePanel])
 
   const generateLabel =
     compileState === 'loading'
@@ -553,6 +575,7 @@ export default function TemplatesGallery({
       {/* ── Mobile backdrop ───────────────────────────────────────────────── */}
       {mobilePanel && (
         <div
+          data-testid="editor-backdrop"
           className="md:hidden fixed inset-0 z-30 bg-black/50"
           onClick={closeMobilePanel}
           aria-hidden
@@ -564,6 +587,11 @@ export default function TemplatesGallery({
         className="editor-aside"
         data-open={mobilePanel ? 'true' : 'false'}
         style={{ background: 'var(--c-paper)' }}
+        {...(mobilePanel && {
+          role: 'dialog',
+          'aria-modal': true,
+          'aria-label': t('editorSettings'),
+        })}
       >
         {/* Brand header — desktop/tablet only */}
         <div
@@ -617,6 +645,7 @@ export default function TemplatesGallery({
             {t('editorSettings')}
           </span>
           <button
+            ref={closeBtnRef}
             type="button"
             onClick={closeMobilePanel}
             className="w-7 h-7 flex items-center justify-center text-[17px] rounded-full transition-opacity hover:opacity-70"

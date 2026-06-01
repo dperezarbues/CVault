@@ -208,11 +208,34 @@ test.describe('Editor — mobile (375×667)', () => {
     await page.getByTestId('mobile-tab-data').click()
     await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
 
-    // Click the semi-transparent backdrop above the panel.
-    // On mobile the aside (z-40, 72dvh from bottom) slides up from ~y=131 on a 667px viewport.
-    // Clicking at y=60 hits the backdrop area that is NOT covered by the aside.
-    await page.mouse.click(187, 60)
+    // Dispatch click directly on the backdrop element — bypasses z-index so we test the
+    // handler, not pixel geometry that changes when layout changes.
+    await page.getByTestId('editor-backdrop').dispatchEvent('click')
     await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'false')
+  })
+
+  test('Escape key hides the panel', async ({ page }) => {
+    await page.getByTestId('mobile-tab-data').click()
+    await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
+
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'false')
+  })
+
+  test('opening the panel moves focus to the close button', async ({ page }) => {
+    await page.getByTestId('mobile-tab-data').click()
+    await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
+
+    await expect(page.getByRole('button', { name: 'Close panel' })).toBeFocused()
+  })
+
+  test('closing the panel restores focus to the tab that opened it', async ({ page }) => {
+    const trigger = page.getByTestId('mobile-tab-data')
+    await trigger.click()
+    await expect(page.locator('.editor-aside')).toHaveAttribute('data-open', 'true')
+
+    await page.getByRole('button', { name: 'Close panel' }).click()
+    await expect(trigger).toBeFocused()
   })
 
   test('Gen PDF button is visible in tab bar', async ({ page }) => {
