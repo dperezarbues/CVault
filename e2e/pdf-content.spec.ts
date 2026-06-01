@@ -117,6 +117,25 @@ function textLayerSpan(page: Page, pattern: string | RegExp): Locator {
     .first()
 }
 
+/**
+ * Counts how many text-layer spans have a font size within ±tol of targetPt.
+ *
+ * Useful for verifying font-size params whose text content may be split into
+ * individual character spans (e.g. section headings rendered with heavy
+ * letter-tracking) so the full word cannot be matched by a text filter.
+ */
+async function countSpansAtSize(page: Page, targetPt: number, tol = 0.3): Promise<number> {
+  return page.evaluate(
+    ({ target, tolerance }) =>
+      Array.from(document.querySelectorAll('[data-testid="pdfjs-viewer"] .textLayer span'))
+        .filter((el) => {
+          const match = (el as HTMLElement).style.fontSize.match(/([\d.]+)px\s*\)/)
+          return match ? Math.abs(parseFloat(match[1]) - target) <= tolerance : false
+        }).length,
+    { target: targetPt, tolerance: tol },
+  )
+}
+
 // ── color tests ───────────────────────────────────────────────────────────────
 
 test.describe('PDF content — colours', () => {
@@ -246,5 +265,32 @@ test.describe('PDF content — font sizes', () => {
     await expect(newSpan).toBeVisible()
     const largeSize = await getSpanFontSizePx(newSpan)
     expect(largeSize).toBeGreaterThan(defaultSize * 1.20)
+  })
+
+  test('section label size change is reflected in the section heading spans', async ({ page }) => {
+    test.setTimeout(COMPILE_TIMEOUT * 2 + 20_000)
+    const old = await setupWithPdf(page)
+
+    // Section headings use fs-xs = section_heading_size = 7.5 pt (default).
+    // This size is unique in the layout:
+    //   fs-2xl 17 pt | fs-xl ~10 pt | fs-lg 9.5 pt | fs-md 8.5 pt | fs-sm 8.0 pt |
+    //   fs-xs 7.5 pt ← section headings | fs-2xs 6.5 pt
+    // Typst applies heavy letter-tracking to section headings, which typically
+    // splits the text across individual character spans in PDF.js.  We count
+    // spans by font size rather than by text content to avoid that brittle match.
+    const beforeCount = await countSpansAtSize(page, 7.5)
+    expect(beforeCount, 'section heading spans should exist at default 7.5 pt').toBeGreaterThan(0)
+
+    // Change to maximum 10 pt — a ~33 % increase.
+    await openStyleTab(page)
+    await expandGroup(page, 'Typography')
+    await setRange(page, 'section_heading_size', 10)
+    await waitForNewPdf(page, old)
+
+    // The 7.5 pt spans should have moved to 10 pt.
+    const afterAt10 = await countSpansAtSize(page, 10)
+    expect(afterAt10, 'section heading spans should exist at new 10 pt').toBeGreaterThan(0)
+    const afterAt7_5 = await countSpansAtSize(page, 7.5)
+    expect(afterAt7_5, 'no spans should remain at old 7.5 pt').toBe(0)
   })
 })

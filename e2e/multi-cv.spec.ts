@@ -5,13 +5,7 @@
  */
 
 import { expect, type Page, test } from '@playwright/test'
-
-async function openEditor(page: Page) {
-  await page.goto('/en/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
-  await page.reload()
-  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
-}
+import { openEditor } from './helpers'
 
 async function createCv(page: Page, name: string) {
   await page.getByTitle('New CV').click()

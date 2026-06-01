@@ -55,9 +55,19 @@ export async function setColor(page: Page, id: string, hex: string) {
   }, hex)
 }
 
+/**
+ * Opens a named style accordion group if it is collapsed.
+ *
+ * Checks whether the toggle button currently shows ▲ (open) or ▼ (closed)
+ * and clicks only when needed.  After the call, asserts the group IS open so
+ * the test fails immediately with a clear message rather than silently no-oping
+ * and timing out 60 s later on a hidden input.
+ */
 export async function expandGroup(page: Page, title: string) {
-  const btn = page.locator('button').filter({ hasText: title }).filter({ hasText: '▼' })
-  if ((await btn.count()) > 0) await btn.first().click()
+  const grpBtn = page.locator('button').filter({ hasText: title }).first()
+  const text = await grpBtn.textContent({ timeout: 5_000 })
+  if (!text?.includes('▲')) await grpBtn.click()
+  await expect(grpBtn).toContainText('▲')
 }
 
 export async function openStyleTab(page: Page) {
