@@ -192,10 +192,12 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'heading_color', '#cc0000')
     await waitForNewPdf(page, old)
 
-    const { r, g, b } = await pdfDominantFillColor(page, 'r')
-    const label = `rgb(${r},${g},${b})`
-    expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(g + 10)
-    expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(b + 10)
+    await expect(async () => {
+      const { r, g, b } = await pdfDominantFillColor(page, 'r')
+      const label = `rgb(${r},${g},${b})`
+      expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(g + 10)
+      expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(b + 10)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [1000] })
   })
 
   test('body colour is applied to body text', async ({ page }) => {
@@ -207,10 +209,12 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'body_color', '#0000cc')
     await waitForNewPdf(page, old)
 
-    const { r, g, b } = await pdfDominantFillColor(page, 'b')
-    const label = `rgb(${r},${g},${b})`
-    expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(r + 10)
-    expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(g + 10)
+    await expect(async () => {
+      const { r, g, b } = await pdfDominantFillColor(page, 'b')
+      const label = `rgb(${r},${g},${b})`
+      expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(r + 10)
+      expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(g + 10)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [1000] })
   })
 
   test('muted colour is applied to period / meta text', async ({ page }) => {
@@ -224,10 +228,12 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'muted_color', '#009900')
     await waitForNewPdf(page, old)
 
-    const { r, g, b } = await pdfDominantFillColor(page, 'g')
-    const label = `rgb(${r},${g},${b})`
-    expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(r + 20)
-    expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(b + 20)
+    await expect(async () => {
+      const { r, g, b } = await pdfDominantFillColor(page, 'g')
+      const label = `rgb(${r},${g},${b})`
+      expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(r + 20)
+      expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(b + 20)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [1000] })
   })
 })
 
@@ -251,10 +257,12 @@ test.describe('PDF content — font sizes', () => {
     await setRange(page, 'name_size', 24)
     await waitForNewPdf(page, old)
 
-    const newSpan = textLayerSpan(page, /Your Name/)
-    await expect(newSpan).toBeVisible()
-    const largeSize = await getSpanFontSizePx(newSpan)
-    expect(largeSize).toBeGreaterThan(defaultSize * 1.25)
+    await expect(async () => {
+      const span = textLayerSpan(page, /Your Name/)
+      await expect(span).toBeVisible()
+      const largeSize = await getSpanFontSizePx(span)
+      expect(largeSize).toBeGreaterThan(defaultSize * 1.25)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
   })
 
   test('body text size change is reflected in summary text span', async ({ page }) => {
@@ -271,10 +279,12 @@ test.describe('PDF content — font sizes', () => {
     await setRange(page, 'body_size', 11)
     await waitForNewPdf(page, old)
 
-    const newSpan = textLayerSpan(page, /Your professional summary/)
-    await expect(newSpan).toBeVisible()
-    const largeSize = await getSpanFontSizePx(newSpan)
-    expect(largeSize).toBeGreaterThan(defaultSize * 1.20)
+    await expect(async () => {
+      const span = textLayerSpan(page, /Your professional summary/)
+      await expect(span).toBeVisible()
+      const largeSize = await getSpanFontSizePx(span)
+      expect(largeSize).toBeGreaterThan(defaultSize * 1.20)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
   })
 
   test('entry title size change is reflected in the job title span', async ({ page }) => {
@@ -292,10 +302,12 @@ test.describe('PDF content — font sizes', () => {
     await setRange(page, 'entry_size', 12)
     await waitForNewPdf(page, old)
 
-    const newSpan = textLayerSpan(page, /Job Title/)
-    await expect(newSpan).toBeVisible()
-    const largeSize = await getSpanFontSizePx(newSpan)
-    expect(largeSize).toBeGreaterThan(defaultSize * 1.20)
+    await expect(async () => {
+      const span = textLayerSpan(page, /Job Title/)
+      await expect(span).toBeVisible()
+      const largeSize = await getSpanFontSizePx(span)
+      expect(largeSize).toBeGreaterThan(defaultSize * 1.20)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
   })
 
   test('section label size change is reflected in the section heading spans', async ({ page }) => {
@@ -318,10 +330,11 @@ test.describe('PDF content — font sizes', () => {
     await setRange(page, 'section_heading_size', 10)
     await waitForNewPdf(page, old)
 
-    // The 7.5 pt spans should have moved to 10 pt.
-    const afterAt10 = await countSpansAtSize(page, 10)
-    expect(afterAt10, 'section heading spans should exist at new 10 pt').toBeGreaterThan(0)
-    const afterAt7_5 = await countSpansAtSize(page, 7.5)
-    expect(afterAt7_5, 'no spans should remain at old 7.5 pt').toBe(0)
+    await expect(async () => {
+      const afterAt10 = await countSpansAtSize(page, 10)
+      expect(afterAt10, 'section heading spans should exist at new 10 pt').toBeGreaterThan(0)
+      const afterAt7_5 = await countSpansAtSize(page, 7.5)
+      expect(afterAt7_5, 'no spans should remain at old 7.5 pt').toBe(0)
+    }).toPass({ timeout: COMPILE_TIMEOUT, intervals: [500] })
   })
 })
