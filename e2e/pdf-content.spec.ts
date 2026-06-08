@@ -2,7 +2,7 @@
  * Verifies that configured style params are actually applied in the rendered PDF —
  * not just that a new compilation was triggered.
  *
- * Colors       → canvas getImageData() at coordinates derived from text-layer span positions.
+ * Colors       → pdfjs getOperatorList() scans fill-colour operators in the compiled PDF blob.
  * Font sizes   → before/after comparison of text-layer span inline fontSize style.
  * Font family  → NOT tested here.  Only "New Computer Modern" fonts are bundled in
  *                /public/fonts/, so all font-family options produce identical output.
@@ -46,48 +46,67 @@ async function setupWithPdf(page: Page): Promise<string> {
 // ── content helpers ───────────────────────────────────────────────────────────
 
 /**
- * Samples the canvas pixel colour at a point within a text-layer span.
+ * Scans every fill-colour operator in the compiled PDF and returns the one
+ * where `channel` most dominates the other two.  This avoids canvas pixel
+ * sampling entirely — we read the colour values directly from the PDF
+ * operator stream via pdfjs `page.getOperatorList()`.
  *
- * The bounding box and getImageData call are batched into a single page.evaluate
- * so scroll position cannot shift the element between the two measurements.
- *
- * The darkest pixel in a 5×5 sample area is returned — this hits the glyph body
- * rather than an anti-aliased edge or inter-character gap.  For anti-aliased text
- * on a light background, the sampled pixel is a blend of the text colour and the
- * background; use channel-dominance assertions rather than hard channel cutoffs.
+ * pdfjs OPS.setFillRGBColor args are [r, g, b] floats in the 0–1 range.
+ * We convert to 0–255 integers before returning so callers can use the same
+ * `> n` assertions as before.
  */
-/**
- * Scans the full page canvas for the pixel where `channel` dominates the
- * other two channels the most.  This is robust against coordinate misalignment
- * (we don't rely on the span position) and against other coloured elements on
- * the page (a blue hyperlink won't beat green muted text when we're looking for
- * green dominance).
- */
-async function sampleColorAtSpan(
+async function pdfDominantFillColor(
   page: Page,
-  span: Locator,
   channel: 'r' | 'g' | 'b',
 ): Promise<{ r: number; g: number; b: number }> {
-  await span.scrollIntoViewIfNeeded()
+  const src = await page
+    .locator('[data-testid="pdfjs-viewer"]')
+    .getAttribute('data-pdf-src')
+  if (!src) throw new Error('data-pdf-src not found on viewer')
 
-  return span.evaluate((el, ch) => {
-    const canvas =
-      el.closest('.textLayer')?.parentElement?.querySelector<HTMLCanvasElement>('canvas') ??
-      document.querySelector<HTMLCanvasElement>('[data-testid="pdfjs-viewer"] canvas')
-    if (!canvas) throw new Error('PDF canvas not found')
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('2d context unavailable')
+  return page.evaluate(
+    async ({ blobUrl, ch }) => {
+      // Re-apply the same Map polyfill that PdfJsViewer.tsx uses so pdfjs
+      // loads without throwing in this evaluate context.
+      // biome-ignore lint/suspicious/noExplicitAny: polyfill
+      const proto = Map.prototype as any
+      if (typeof proto.getOrInsertComputed !== 'function') {
+        proto.getOrInsertComputed = function <K, V>(key: K, cb: (k: K) => V): V {
+          if (!this.has(key)) this.set(key, cb(key))
+          return this.get(key)
+        }
+      }
 
-    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    let best = { r: 255, g: 255, b: 255, dom: -999 }
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i], g = data[i + 1], b = data[i + 2]
-      const dom =
-        ch === 'r' ? r - Math.max(g, b) : ch === 'g' ? g - Math.max(r, b) : b - Math.max(r, g)
-      if (dom > best.dom) best = { r, g, b, dom }
-    }
-    return { r: best.r, g: best.g, b: best.b }
-  }, channel)
+      const resp = await fetch(blobUrl)
+      const data = await resp.arrayBuffer()
+
+      const pdfjs = await import('pdfjs-dist')
+      pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
+      const pdf = await pdfjs.getDocument({ data }).promise
+
+      const SET_FILL_RGB = pdfjs.OPS.setFillRGBColor
+
+      let best = { r: 255, g: 255, b: 255, dom: -999 }
+
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const pg = await pdf.getPage(p)
+        const ops = await pg.getOperatorList()
+        for (let i = 0; i < ops.fnArray.length; i++) {
+          if (ops.fnArray[i] !== SET_FILL_RGB) continue
+          const [rf, gf, bf] = ops.argsArray[i] as [number, number, number]
+          const r = Math.round(rf * 255)
+          const g = Math.round(gf * 255)
+          const b = Math.round(bf * 255)
+          const dom =
+            ch === 'r' ? r - Math.max(g, b) : ch === 'g' ? g - Math.max(r, b) : b - Math.max(r, g)
+          if (dom > best.dom) best = { r, g, b, dom }
+        }
+      }
+
+      return { r: best.r, g: best.g, b: best.b }
+    },
+    { blobUrl: src, ch: channel },
+  )
 }
 
 /**
@@ -153,12 +172,8 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'heading_color', '#cc0000')
     await waitForNewPdf(page, old)
 
-    const span = textLayerSpan(page, /Your Name/)
-    await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span, 'r')
+    const { r, g, b } = await pdfDominantFillColor(page, 'r')
     const label = `rgb(${r},${g},${b})`
-    // Assert channel dominance rather than hard bounds — anti-aliasing blends the
-    // text colour with the background but red is always the dominant channel.
     expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(g + 10)
     expect(r, `red dominant for #cc0000: ${label}`).toBeGreaterThan(b + 10)
   })
@@ -172,10 +187,7 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'body_color', '#0000cc')
     await waitForNewPdf(page, old)
 
-    // Use the start of the sentence to avoid matching a split span mid-word.
-    const span = textLayerSpan(page, /Your professional summary/)
-    await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span, 'b')
+    const { r, g, b } = await pdfDominantFillColor(page, 'b')
     const label = `rgb(${r},${g},${b})`
     expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(r + 10)
     expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(g + 10)
@@ -192,10 +204,7 @@ test.describe('PDF content — colours', () => {
     await setColor(page, 'muted_color', '#009900')
     await waitForNewPdf(page, old)
 
-    // Full period string from the starter experience entry — unique in the document.
-    const span = textLayerSpan(page, /2020/)
-    await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span, 'g')
+    const { r, g, b } = await pdfDominantFillColor(page, 'g')
     const label = `rgb(${r},${g},${b})`
     expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(r + 20)
     expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(b + 20)
