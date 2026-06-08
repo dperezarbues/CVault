@@ -57,19 +57,20 @@ async function setupWithPdf(page: Page): Promise<string> {
  * background; use channel-dominance assertions rather than hard channel cutoffs.
  */
 /**
- * Returns the most-saturated pixel on the page canvas that contains the given
- * span.  Scanning the full canvas (rather than a small region around the span)
- * is robust against text-layer/canvas coordinate misalignment introduced by
- * pdfjs v6 CSS transforms, and avoids multi-page confusion (one canvas per
- * page — we walk up from the span's .textLayer to find the right one).
+ * Scans the full page canvas for the pixel where `channel` dominates the
+ * other two channels the most.  This is robust against coordinate misalignment
+ * (we don't rely on the span position) and against other coloured elements on
+ * the page (a blue hyperlink won't beat green muted text when we're looking for
+ * green dominance).
  */
 async function sampleColorAtSpan(
   page: Page,
   span: Locator,
+  channel: 'r' | 'g' | 'b',
 ): Promise<{ r: number; g: number; b: number }> {
   await span.scrollIntoViewIfNeeded()
 
-  return span.evaluate((el) => {
+  return span.evaluate((el, ch) => {
     const canvas =
       el.closest('.textLayer')?.parentElement?.querySelector<HTMLCanvasElement>('canvas') ??
       document.querySelector<HTMLCanvasElement>('[data-testid="pdfjs-viewer"] canvas')
@@ -77,18 +78,16 @@ async function sampleColorAtSpan(
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('2d context unavailable')
 
-    // Scan the full page canvas for the most-saturated pixel.
-    // Coloured text stands out from the white/grey PDF background regardless
-    // of where on the page the glyph was rendered.
     const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    let best = { r: 255, g: 255, b: 255, sat: 0 }
+    let best = { r: 255, g: 255, b: 255, dom: -999 }
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i + 1], b = data[i + 2]
-      const sat = Math.max(r, g, b) - Math.min(r, g, b)
-      if (sat > best.sat) best = { r, g, b, sat }
+      const dom =
+        ch === 'r' ? r - Math.max(g, b) : ch === 'g' ? g - Math.max(r, b) : b - Math.max(r, g)
+      if (dom > best.dom) best = { r, g, b, dom }
     }
     return { r: best.r, g: best.g, b: best.b }
-  })
+  }, channel)
 }
 
 /**
@@ -156,7 +155,7 @@ test.describe('PDF content — colours', () => {
 
     const span = textLayerSpan(page, /Your Name/)
     await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span)
+    const { r, g, b } = await sampleColorAtSpan(page, span, 'r')
     const label = `rgb(${r},${g},${b})`
     // Assert channel dominance rather than hard bounds — anti-aliasing blends the
     // text colour with the background but red is always the dominant channel.
@@ -176,7 +175,7 @@ test.describe('PDF content — colours', () => {
     // Use the start of the sentence to avoid matching a split span mid-word.
     const span = textLayerSpan(page, /Your professional summary/)
     await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span)
+    const { r, g, b } = await sampleColorAtSpan(page, span, 'b')
     const label = `rgb(${r},${g},${b})`
     expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(r + 10)
     expect(b, `blue dominant for #0000cc: ${label}`).toBeGreaterThan(g + 10)
@@ -196,7 +195,7 @@ test.describe('PDF content — colours', () => {
     // Full period string from the starter experience entry — unique in the document.
     const span = textLayerSpan(page, /2020/)
     await expect(span).toBeVisible()
-    const { r, g, b } = await sampleColorAtSpan(page, span)
+    const { r, g, b } = await sampleColorAtSpan(page, span, 'g')
     const label = `rgb(${r},${g},${b})`
     expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(r + 20)
     expect(g, `green dominant for #009900: ${label}`).toBeGreaterThan(b + 20)
