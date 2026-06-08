@@ -13,6 +13,7 @@
  * "2020 – Present" (muted / period), "Job Title" (entry title).
  */
 
+import { inflateRawSync, inflateSync } from 'node:zlib'
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import {
   COMPILE_TIMEOUT,
@@ -46,14 +47,14 @@ async function setupWithPdf(page: Page): Promise<string> {
 // ── content helpers ───────────────────────────────────────────────────────────
 
 /**
- * Scans every fill-colour operator in the compiled PDF and returns the one
- * where `channel` most dominates the other two.  This avoids canvas pixel
- * sampling entirely — we read the colour values directly from the PDF
- * operator stream via pdfjs `page.getOperatorList()`.
+ * Scans every `r g b rg` fill-colour operator in the compiled PDF and returns
+ * the one where `channel` most dominates the other two.
  *
- * pdfjs OPS.setFillRGBColor args are [r, g, b] floats in the 0–1 range.
- * We convert to 0–255 integers before returning so callers can use the same
- * `> n` assertions as before.
+ * Approach: fetch the blob in the browser (only place a blob: URL is accessible),
+ * return as base64, then decompress PDF FlateDecode content streams in Node.js
+ * using node:zlib and regex-scan for the `rg` PDF operator.  This avoids any
+ * pdfjs dependency in the evaluate context — bare npm specifiers can't be
+ * resolved inside page.evaluate.
  */
 async function pdfDominantFillColor(
   page: Page,
@@ -64,49 +65,67 @@ async function pdfDominantFillColor(
     .getAttribute('data-pdf-src')
   if (!src) throw new Error('data-pdf-src not found on viewer')
 
-  return page.evaluate(
-    async ({ blobUrl, ch }) => {
-      // Re-apply the same Map polyfill that PdfJsViewer.tsx uses so pdfjs
-      // loads without throwing in this evaluate context.
-      // biome-ignore lint/suspicious/noExplicitAny: polyfill
-      const proto = Map.prototype as any
-      if (typeof proto.getOrInsertComputed !== 'function') {
-        proto.getOrInsertComputed = function <K, V>(key: K, cb: (k: K) => V): V {
-          if (!this.has(key)) this.set(key, cb(key))
-          return this.get(key)
-        }
-      }
+  // Transfer PDF bytes from browser to Node.js as base64.
+  const base64: string = await page.evaluate(async (blobUrl) => {
+    const buf = await (await fetch(blobUrl)).arrayBuffer()
+    const bytes = new Uint8Array(buf)
+    let binary = ''
+    const CHUNK = 8192
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + CHUNK, bytes.length)))
+    }
+    return btoa(binary)
+  }, src)
 
-      const resp = await fetch(blobUrl)
-      const data = await resp.arrayBuffer()
+  const pdfBytes = Buffer.from(base64, 'base64')
 
-      const pdfjs = await import('pdfjs-dist')
-      pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
-      const pdf = await pdfjs.getDocument({ data }).promise
+  // Scan all FlateDecode content streams for `r g b rg` (DeviceRGB fill colour).
+  const RG_PATTERN = /([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+rg/g
+  const STREAM_LF = Buffer.from('stream\n')
+  const STREAM_CRLF = Buffer.from('stream\r\n')
+  const ENDSTREAM = Buffer.from('endstream')
 
-      const SET_FILL_RGB = pdfjs.OPS.setFillRGBColor
+  let best = { r: 255, g: 255, b: 255, dom: -999 }
+  let pos = 0
 
-      let best = { r: 255, g: 255, b: 255, dom: -999 }
+  while (pos < pdfBytes.length) {
+    const i1 = pdfBytes.indexOf(STREAM_LF, pos)
+    const i2 = pdfBytes.indexOf(STREAM_CRLF, pos)
+    if (i1 === -1 && i2 === -1) break
 
-      for (let p = 1; p <= pdf.numPages; p++) {
-        const pg = await pdf.getPage(p)
-        const ops = await pg.getOperatorList()
-        for (let i = 0; i < ops.fnArray.length; i++) {
-          if (ops.fnArray[i] !== SET_FILL_RGB) continue
-          const [rf, gf, bf] = ops.argsArray[i] as [number, number, number]
-          const r = Math.round(rf * 255)
-          const g = Math.round(gf * 255)
-          const b = Math.round(bf * 255)
-          const dom =
-            ch === 'r' ? r - Math.max(g, b) : ch === 'g' ? g - Math.max(r, b) : b - Math.max(r, g)
-          if (dom > best.dom) best = { r, g, b, dom }
-        }
-      }
+    let dataStart: number
+    if (i1 !== -1 && (i2 === -1 || i1 <= i2)) {
+      dataStart = i1 + STREAM_LF.length
+      pos = i1 + 1
+    } else {
+      dataStart = i2 + STREAM_CRLF.length
+      pos = i2 + 1
+    }
 
-      return { r: best.r, g: best.g, b: best.b }
-    },
-    { blobUrl: src, ch: channel },
-  )
+    const endIdx = pdfBytes.indexOf(ENDSTREAM, dataStart)
+    if (endIdx === -1) break
+
+    const raw = pdfBytes.subarray(dataStart, endIdx)
+    let text: string
+    try {
+      text = inflateSync(raw).toString('latin1')
+    } catch {
+      try { text = inflateRawSync(raw).toString('latin1') } catch { continue }
+    }
+
+    RG_PATTERN.lastIndex = 0
+    let m: RegExpExecArray | null
+    while ((m = RG_PATTERN.exec(text)) !== null) {
+      const r = Math.round(parseFloat(m[1]) * 255)
+      const g = Math.round(parseFloat(m[2]) * 255)
+      const b = Math.round(parseFloat(m[3]) * 255)
+      const dom =
+        channel === 'r' ? r - Math.max(g, b) : channel === 'g' ? g - Math.max(r, b) : b - Math.max(r, g)
+      if (dom > best.dom) best = { r, g, b, dom }
+    }
+  }
+
+  return { r: best.r, g: best.g, b: best.b }
 }
 
 /**
