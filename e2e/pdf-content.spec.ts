@@ -69,9 +69,11 @@ async function sampleColorAtSpan(
     const vx = box.left + box.width * 0.3
     const vy = box.top + box.height * 0.45
 
-    const canvas = document.querySelector<HTMLCanvasElement>(
-      '[data-testid="pdfjs-viewer"] canvas',
-    )
+    // Use the canvas in the same page wrapper as this span's text layer,
+    // not the first canvas in the viewer — multi-page PDFs have one canvas per page.
+    const canvas =
+      el.closest('.textLayer')?.parentElement?.querySelector<HTMLCanvasElement>('canvas') ??
+      document.querySelector<HTMLCanvasElement>('[data-testid="pdfjs-viewer"] canvas')
     if (!canvas) throw new Error('PDF canvas not found')
     const rect = canvas.getBoundingClientRect()
     const dpr = window.devicePixelRatio || 1
