@@ -7,7 +7,7 @@ test.describe('Support prompt (pre-download modal)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/en/editor')
     await page.evaluate(() => {
-      localStorage.setItem('cvault-onboarded', '1')
+      localStorage.setItem('proof-onboarded', '1')
       sessionStorage.removeItem('cvault-support-prompted')
     })
     await page.reload()
