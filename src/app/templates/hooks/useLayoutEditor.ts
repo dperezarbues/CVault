@@ -101,8 +101,8 @@ export function useLayoutEditor({
     [allMainIds, usedInMain, sidebarSet],
   )
   const availableSb = useMemo(
-    () => allSidebarIds.filter((id) => !sidebarSet.has(id)),
-    [allSidebarIds, sidebarSet],
+    () => allSidebarIds.filter((id) => !sidebarSet.has(id) && !usedInMain.has(id)),
+    [allSidebarIds, sidebarSet, usedInMain],
   )
 
   return {
