@@ -7,7 +7,7 @@ test.describe('PDF generation (WASM)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/en/editor')
     await page.evaluate(() => {
-      localStorage.setItem('cvault-onboarded', '1')
+      localStorage.setItem('proof-onboarded', '1')
     })
     await page.reload()
     await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
