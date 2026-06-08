@@ -104,8 +104,10 @@ async function sampleColorAtSpan(
  */
 async function getSpanFontSizePx(span: Locator): Promise<number> {
   return span.evaluate((el: HTMLElement) => {
-    const match = el.style.fontSize.match(/([\d.]+)px\s*\)/)
-    if (!match) throw new Error(`unexpected fontSize format: "${el.style.fontSize}"`)
+    // pdfjs v6 sets --font-height inline (PDF pt value labelled as px); v4 set fontSize directly
+    const val = el.style.getPropertyValue('--font-height') || el.style.fontSize
+    const match = val.match(/([\d.]+)/)
+    if (!match) throw new Error(`unexpected fontSize: fontSize="${el.style.fontSize}" --font-height="${val}"`)
     return parseFloat(match[1])
   })
 }
@@ -129,7 +131,10 @@ async function countSpansAtSize(page: Page, targetPt: number, tol = 0.3): Promis
     ({ target, tolerance }) =>
       Array.from(document.querySelectorAll('[data-testid="pdfjs-viewer"] .textLayer span'))
         .filter((el) => {
-          const match = (el as HTMLElement).style.fontSize.match(/([\d.]+)px\s*\)/)
+          const htmlEl = el as HTMLElement
+          // pdfjs v6: --font-height stores the PDF pt value; v4: fontSize inline style
+          const val = htmlEl.style.getPropertyValue('--font-height') || htmlEl.style.fontSize
+          const match = val.match(/([\d.]+)/)
           return match ? Math.abs(parseFloat(match[1]) - target) <= tolerance : false
         }).length,
     { target: targetPt, tolerance: tol },

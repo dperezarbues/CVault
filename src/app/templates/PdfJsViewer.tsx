@@ -60,7 +60,7 @@ export default function PdfJsViewer({ src }: { src: string }) {
           const renderViewport = page.getViewport({ scale: cssScale * dpr })
 
           const wrapper = document.createElement('div')
-          wrapper.style.cssText = `position:relative;width:${Math.floor(cssViewport.width)}px;height:${Math.floor(cssViewport.height)}px;margin:${i > 1 ? '8' : '0'}px auto 0`
+          wrapper.style.cssText = `position:relative;width:${Math.floor(cssViewport.width)}px;height:${Math.floor(cssViewport.height)}px;margin:${i > 1 ? '8' : '0'}px auto 0;--total-scale-factor:${((cssScale * 96) / 72).toFixed(6)};--scale-round-x:1px;--scale-round-y:1px`
 
           const canvas = document.createElement('canvas')
           canvas.width = Math.floor(renderViewport.width)
