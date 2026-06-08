@@ -34,11 +34,11 @@
       "key": "name_size",
       "label": "Name",
       "type": "range",
-      "min": 12.0,
-      "max": 24.0,
+      "min": 12,
+      "max": 24,
       "step": 0.5,
       "unit": "pt",
-      "default": 17.0
+      "default": 17
     },
     {
       "group": "Typography",
@@ -46,7 +46,7 @@
       "label": "Entry titles",
       "type": "range",
       "min": 8.5,
-      "max": 12.0,
+      "max": 12,
       "step": 0.5,
       "unit": "pt",
       "default": 9.5
@@ -57,7 +57,7 @@
       "label": "Body text",
       "type": "range",
       "min": 7.5,
-      "max": 11.0,
+      "max": 11,
       "step": 0.5,
       "unit": "pt",
       "default": 8.5
@@ -67,8 +67,8 @@
       "key": "section_heading_size",
       "label": "Section labels",
       "type": "range",
-      "min": 6.0,
-      "max": 10.0,
+      "min": 6,
+      "max": 10,
       "step": 0.5,
       "unit": "pt",
       "default": 7.5
@@ -106,17 +106,6 @@
       "default": 0.7
     },
     {
-      "group": "Spacing",
-      "key": "section_rule_gap",
-      "label": "Title \u2192 rule",
-      "type": "range",
-      "min": 0.0,
-      "max": 0.5,
-      "step": 0.05,
-      "unit": "em",
-      "default": 0.2
-    },
-    {
       "group": "Extras",
       "key": "show_footer",
       "label": "Page footer",
@@ -135,8 +124,9 @@
       "key": "qr_url",
       "label": "QR target URL",
       "type": "text",
-      "placeholder": "linkedin.com/in/\u2026  (leave empty for LinkedIn)",
-      "default": ""
+      "placeholder": "linkedin.com/in/…  (leave empty for LinkedIn)",
+      "default": "",
+      "channel": "client"
     },
     {
       "group": "Extras",
@@ -181,11 +171,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Colors",
@@ -216,18 +206,29 @@
           "step": 0.05,
           "unit": "em",
           "default": 0.2
+        },
+        {
+          "group": "Spacing",
+          "key": "section_rule_gap",
+          "label": "Title → rule",
+          "type": "range",
+          "min": 0,
+          "max": 0.5,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
     {
       "id": "modern",
       "name": "Modern",
-      "description": "Full-width dark header band with name and contact in white. Bold entry into any page.",
+      "description": "White background with a 4pt accent keyline at top. Two-tone name, split header, accent-bar section headings and filled pills.",
       "layouts": [
         {
           "id": "default",
           "name": "Default",
-          "description": "Dark charcoal header band, clean body"
+          "description": "Accent keyline header, clean white body"
         }
       ],
       "styleParams": [
@@ -236,23 +237,15 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
-          "group": "Header",
-          "key": "header_bg",
-          "label": "Background",
-          "type": "color",
-          "default": "#111827",
-          "canonical": "cv_dark_bg"
-        },
-        {
-          "group": "Header",
-          "key": "accent",
+          "group": "Colors",
+          "key": "accent_color",
           "label": "Accent / links",
           "type": "color",
           "default": "#3b82f6",
@@ -383,7 +376,7 @@
           "label": "Width",
           "type": "range",
           "min": 4.5,
-          "max": 9.0,
+          "max": 9,
           "step": 0.5,
           "unit": "cm",
           "default": 6.5
@@ -409,6 +402,17 @@
           "step": 0.05,
           "unit": "em",
           "default": 0.2
+        },
+        {
+          "group": "Spacing",
+          "key": "section_rule_gap",
+          "label": "Title → rule",
+          "type": "range",
+          "min": 0,
+          "max": 0.5,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -429,11 +433,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Colors",
@@ -484,11 +488,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Header",
@@ -547,11 +551,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Colors",
@@ -582,6 +586,17 @@
           "step": 0.05,
           "unit": "em",
           "default": 0.2
+        },
+        {
+          "group": "Spacing",
+          "key": "section_rule_gap",
+          "label": "Title → rule",
+          "type": "range",
+          "min": 0,
+          "max": 0.5,
+          "step": 0.05,
+          "unit": "em",
+          "default": 0.2
         }
       ]
     },
@@ -602,11 +617,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Colors",
@@ -657,11 +672,11 @@
           "key": "headline_size",
           "label": "Headline",
           "type": "range",
-          "min": 8.0,
-          "max": 14.0,
+          "min": 8,
+          "max": 14,
           "step": 0.5,
           "unit": "pt",
-          "default": 10.0
+          "default": 10
         },
         {
           "group": "Colors",

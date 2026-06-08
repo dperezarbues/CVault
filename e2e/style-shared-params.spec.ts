@@ -151,14 +151,6 @@ test.describe('Shared style — Spacing', () => {
     await waitForNewPdf(page, old)
   })
 
-  test('section rule gap triggers recompile', async ({ page }) => {
-    test.setTimeout(COMPILE_TIMEOUT * 2)
-    const old = await setupWithPdf(page)
-    await openStyleTab(page)
-    await expandGroup(page, 'Spacing')
-    await setRange(page, 'section_rule_gap', 0.4)
-    await waitForNewPdf(page, old)
-  })
 })
 
 // ── Extras (toggles) ──────────────────────────────────────────────────────────

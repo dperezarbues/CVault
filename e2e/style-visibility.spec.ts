@@ -44,7 +44,6 @@ const SHARED_LABELS = [
   'Body text',
   'Section labels',
   'Line height',
-  'Title → rule',
   'Page footer',
   'QR code',
   'QR target URL',
@@ -74,16 +73,16 @@ test.describe('Style visibility — shared params present on all templates', () 
 })
 
 test.describe('Style visibility — template-specific params', () => {
-  test('Default — headline_size, accent_color, section_pre/post', async ({ page }) => {
+  test('Default — headline_size, accent_color, section_pre/post, section_rule_gap', async ({ page }) => {
     await openEditorStyleTab(page, 'Default')
     await expandAllGroups(page)
-    await expectLabels(page, ['Headline', 'Links / accent', 'Before section', 'After rule'])
+    await expectLabels(page, ['Headline', 'Links / accent', 'Before section', 'After rule', 'Title → rule'])
   })
 
-  test('Modern — headline_size, header_bg, accent, section_pre/post', async ({ page }) => {
+  test('Modern — headline_size, accent, section_pre/post', async ({ page }) => {
     await openEditorStyleTab(page, 'Modern')
     await expandAllGroups(page)
-    await expectLabels(page, ['Headline', 'Background', 'Accent / links', 'Before section', 'After rule'])
+    await expectLabels(page, ['Headline', 'Accent / links', 'Before section', 'After rule'])
   })
 
   test('Minimal — accent_color, section_pre/post', async ({ page }) => {
@@ -104,6 +103,7 @@ test.describe('Style visibility — template-specific params', () => {
       'Width',
       'Before section',
       'After rule',
+      'Title → rule',
     ])
   })
 
@@ -119,10 +119,10 @@ test.describe('Style visibility — template-specific params', () => {
     await expectLabels(page, ['Headline', 'Header background', 'Accent', 'Before section', 'After rule'])
   })
 
-  test('Timeline — headline_size, accent_color, section_pre/post', async ({ page }) => {
+  test('Timeline — headline_size, accent_color, section_pre/post, section_rule_gap', async ({ page }) => {
     await openEditorStyleTab(page, 'Timeline')
     await expandAllGroups(page)
-    await expectLabels(page, ['Headline', 'Accent', 'Before section', 'After rule'])
+    await expectLabels(page, ['Headline', 'Accent', 'Before section', 'After rule', 'Title → rule'])
   })
 
   test('Academic — headline_size, accent_color, section_pre/post', async ({ page }) => {
