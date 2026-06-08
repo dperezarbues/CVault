@@ -56,6 +56,13 @@ async function setupWithPdf(page: Page): Promise<string> {
  * on a light background, the sampled pixel is a blend of the text colour and the
  * background; use channel-dominance assertions rather than hard channel cutoffs.
  */
+/**
+ * Returns the most-saturated pixel on the page canvas that contains the given
+ * span.  Scanning the full canvas (rather than a small region around the span)
+ * is robust against text-layer/canvas coordinate misalignment introduced by
+ * pdfjs v6 CSS transforms, and avoids multi-page confusion (one canvas per
+ * page — we walk up from the span's .textLayer to find the right one).
+ */
 async function sampleColorAtSpan(
   page: Page,
   span: Locator,
@@ -63,31 +70,17 @@ async function sampleColorAtSpan(
   await span.scrollIntoViewIfNeeded()
 
   return span.evaluate((el) => {
-    const box = el.getBoundingClientRect()
-    // Sample slightly left of center to reduce the chance of landing on a
-    // gap between characters.
-    const vx = box.left + box.width * 0.3
-    const vy = box.top + box.height * 0.45
-
-    // Use the canvas in the same page wrapper as this span's text layer,
-    // not the first canvas in the viewer — multi-page PDFs have one canvas per page.
     const canvas =
       el.closest('.textLayer')?.parentElement?.querySelector<HTMLCanvasElement>('canvas') ??
       document.querySelector<HTMLCanvasElement>('[data-testid="pdfjs-viewer"] canvas')
     if (!canvas) throw new Error('PDF canvas not found')
-    const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio || 1
-    const cx = Math.round((vx - rect.left) * dpr)
-    const cy = Math.round((vy - rect.top) * dpr)
-    // Use a 30×30 window to tolerate slight misalignment between text-layer
-    // span positions (affected by pdfjs CSS transforms) and canvas glyph pixels.
-    const W = 30, H = 30
-    const x0 = Math.max(0, Math.min(cx - 15, canvas.width - W))
-    const y0 = Math.max(0, Math.min(cy - 15, canvas.height - H))
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('2d context unavailable')
-    const { data } = ctx.getImageData(x0, y0, W, H)
-    // Find the most-saturated pixel — coloured text beats white background and grey.
+
+    // Scan the full page canvas for the most-saturated pixel.
+    // Coloured text stands out from the white/grey PDF background regardless
+    // of where on the page the glyph was rendered.
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
     let best = { r: 255, g: 255, b: 255, sat: 0 }
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i + 1], b = data[i + 2]
