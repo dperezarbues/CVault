@@ -17,17 +17,6 @@ export const KEYS = {
   supportPrompted: 'proof-support-prompted',
 } as const
 
-// Keys used in v0.1 under the old "cvault" brand — kept for data migration only.
-const LEGACY_KEYS: Record<keyof typeof KEYS, string> = {
-  cvs: 'cvault-cvs',
-  currentCv: 'cvault-current-cv',
-  styleOverrides: 'cvault-style-overrides',
-  layoutOverrides: 'cvault-layout-overrides',
-  saves: 'cvault-saves',
-  onboarded: 'cvault-onboarded',
-  supportPrompted: 'cvault-support-prompted',
-}
-
 function store(): Storage {
   if (typeof window === 'undefined')
     return {
@@ -110,18 +99,9 @@ export function disablePrivateMode(): void {
   }
 }
 
-/** Removes all Proof data from both localStorage and sessionStorage, including legacy keys. */
+/** Removes all Proof data from both localStorage and sessionStorage. */
 export function clearAllData(): void {
-  const allKeys = [
-    ...Object.values(KEYS),
-    ...Object.values(LEGACY_KEYS),
-    // Keys from before the cvault era
-    'cv-web-cvs',
-    'cv-web-current-cv',
-    'cv-web-style-overrides',
-    'cv-web-saves',
-    'cv-web-onboarded',
-  ]
+  const allKeys = Object.values(KEYS)
   allKeys.forEach((k) => {
     try {
       localStorage.removeItem(k)
@@ -134,29 +114,4 @@ export function clearAllData(): void {
       devWarn('clearAllData(sessionStorage)', err)
     }
   })
-}
-
-/**
- * One-shot migration from cvault-* keys (v0.1) to proof-* keys.
- * Safe to call on every startup — only copies if the new key is absent.
- */
-export function migrateFromLegacy(): void {
-  if (typeof window === 'undefined') return
-  for (const k of Object.keys(KEYS) as Array<keyof typeof KEYS>) {
-    const newKey = KEYS[k]
-    const oldKey = LEGACY_KEYS[k]
-    for (const storage of [localStorage, sessionStorage]) {
-      try {
-        if (!storage.getItem(newKey)) {
-          const legacy = storage.getItem(oldKey)
-          if (legacy !== null) {
-            storage.setItem(newKey, legacy)
-            storage.removeItem(oldKey)
-          }
-        }
-      } catch {
-        // Storage may be unavailable (private browsing quota, security policy, etc.)
-      }
-    }
-  }
 }

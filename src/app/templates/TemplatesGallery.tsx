@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkProof from '@/components/proof/MarkProof'
 import { Link } from '@/i18n/navigation'
-import { getItem, KEYS, migrateFromLegacy, setItem } from '@/lib/storage'
+import { getItem, KEYS, setItem } from '@/lib/storage'
 import { initTypstWorker } from '@/lib/typst-compile'
 import CvDataModal, { type CvEntry } from './CvDataModal'
 import type { EditorTab } from './EditorShell'
@@ -447,7 +447,6 @@ export default function TemplatesGallery({
   const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    migrateFromLegacy()
     if (!getItem(KEYS.onboarded)) setShowWelcome(true)
     initTypstWorker(templates.map((t) => t.id))
   }, [templates])
