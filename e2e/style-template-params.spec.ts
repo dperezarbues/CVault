@@ -80,6 +80,14 @@ test.describe('Default template — template-specific params', () => {
     await setRange(page, 'section_post', 0.35)
     await waitForNewPdf(page, old)
   })
+
+  test('section_rule_gap triggers recompile', async ({ page }) => {
+    test.setTimeout(COMPILE_TIMEOUT * 2)
+    const old = await generatePdf(page)
+    await openStyleGroup(page, 'Spacing')
+    await setRange(page, 'section_rule_gap', 0.4)
+    await waitForNewPdf(page, old)
+  })
 })
 
 // ── Modern template ───────────────────────────────────────────────────────────
@@ -91,19 +99,11 @@ test.describe('Modern template — template-specific params', () => {
     await selectTemplate(page, 'modern')
   })
 
-  test('header background colour triggers recompile', async ({ page }) => {
-    test.setTimeout(COMPILE_TIMEOUT * 2)
-    const old = await generatePdf(page)
-    await openStyleGroup(page, 'Header')
-    await setColor(page, 'header_bg', '#001133')
-    await waitForNewPdf(page, old)
-  })
-
   test('accent / links colour triggers recompile', async ({ page }) => {
     test.setTimeout(COMPILE_TIMEOUT * 2)
     const old = await generatePdf(page)
-    await openStyleGroup(page, 'Header')
-    await setColor(page, 'accent', '#ff9900')
+    await openStyleGroup(page, 'Colors')
+    await setColor(page, 'accent_color', '#ff9900')
     await waitForNewPdf(page, old)
   })
 })
