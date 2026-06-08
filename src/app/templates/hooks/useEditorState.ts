@@ -16,7 +16,7 @@ export function useEditorState(initialLayout: Record<string, unknown>) {
   const [layout, setLayout] = useState<LayoutStructure>(() => parseLayoutStructure(initialLayout))
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
