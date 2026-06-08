@@ -29,10 +29,25 @@ let pendingTemplateIds: string[] | null = null
 const enc = new TextEncoder()
 
 const FONT_FILES = [
+  // New Computer Modern — traditional academic serif
   'NewCM10-Regular.otf',
   'NewCM10-Bold.otf',
   'NewCM10-Italic.otf',
   'NewCM10-BoldItalic.otf',
+  // EB Garamond — classical serif (variable font)
+  'EBGaramond.ttf',
+  'EBGaramond-Italic.ttf',
+  // Lato — modern sans-serif
+  'Lato-Regular.ttf',
+  'Lato-Bold.ttf',
+  'Lato-Italic.ttf',
+  'Lato-BoldItalic.ttf',
+  // Crimson Pro — elegant readable serif (variable font)
+  'CrimsonPro.ttf',
+  'CrimsonPro-Italic.ttf',
+  // Source Sans 3 — clean professional sans-serif (variable font)
+  'SourceSans3.ttf',
+  'SourceSans3-Italic.ttf',
 ]
 
 const SHARED_TYP_FILES: Array<{ vPath: string; publicPath: string }> = [
