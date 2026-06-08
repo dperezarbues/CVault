@@ -47,7 +47,7 @@ async function setupWithPdf(page: Page): Promise<string> {
 // ── content helpers ───────────────────────────────────────────────────────────
 
 /**
- * Scans every `r g b rg` fill-colour operator in the compiled PDF and returns
+ * Scans every `r g b scn` / `r g b rg` fill-colour operator in the compiled PDF and returns
  * the one where `channel` most dominates the other two.
  *
  * Approach: fetch the blob in the browser (only place a blob: URL is accessible),
@@ -79,8 +79,9 @@ async function pdfDominantFillColor(
 
   const pdfBytes = Buffer.from(base64, 'base64')
 
-  // Scan all FlateDecode content streams for `r g b rg` (DeviceRGB fill colour).
-  const RG_PATTERN = /([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+rg/g
+  // Scan all FlateDecode content streams for DeviceRGB fill colour operators.
+  // Typst uses `scn` (after setting /DeviceRGB color space); `rg` is kept as fallback.
+  const RG_PATTERN = /([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(?:scn|rg)/g
   const STREAM_LF = Buffer.from('stream\n')
   const STREAM_CRLF = Buffer.from('stream\r\n')
   const ENDSTREAM = Buffer.from('endstream')
