@@ -77,17 +77,20 @@ async function sampleColorAtSpan(
     const dpr = window.devicePixelRatio || 1
     const cx = Math.round((vx - rect.left) * dpr)
     const cy = Math.round((vy - rect.top) * dpr)
-    // Clamp both origin and extent so the sample never reads outside canvas bounds.
-    const x0 = Math.max(0, Math.min(cx - 2, canvas.width - 5))
-    const y0 = Math.max(0, Math.min(cy - 2, canvas.height - 5))
+    // Use a 30×30 window to tolerate slight misalignment between text-layer
+    // span positions (affected by pdfjs CSS transforms) and canvas glyph pixels.
+    const W = 30, H = 30
+    const x0 = Math.max(0, Math.min(cx - 15, canvas.width - W))
+    const y0 = Math.max(0, Math.min(cy - 15, canvas.height - H))
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('2d context unavailable')
-    const { data } = ctx.getImageData(x0, y0, 5, 5)
-    // Find the darkest pixel — most likely to be the glyph, not the background.
-    let best = { r: 255, g: 255, b: 255, luma: 255 * 3 }
+    const { data } = ctx.getImageData(x0, y0, W, H)
+    // Find the most-saturated pixel — coloured text beats white background and grey.
+    let best = { r: 255, g: 255, b: 255, sat: 0 }
     for (let i = 0; i < data.length; i += 4) {
-      const luma = data[i] + data[i + 1] + data[i + 2]
-      if (luma < best.luma) best = { r: data[i], g: data[i + 1], b: data[i + 2], luma }
+      const r = data[i], g = data[i + 1], b = data[i + 2]
+      const sat = Math.max(r, g, b) - Math.min(r, g, b)
+      if (sat > best.sat) best = { r, g, b, sat }
     }
     return { r: best.r, g: best.g, b: best.b }
   })

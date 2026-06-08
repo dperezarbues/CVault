@@ -39,6 +39,15 @@ export default function PdfJsViewer({ src }: { src: string }) {
 
         if (renderGenRef.current !== gen) return
 
+        // pdfjs v6 uses Map.prototype.getOrInsertComputed (ES2025, Chrome 136+)
+        // biome-ignore lint/suspicious/noExplicitAny: polyfilling a non-standard prototype method
+        const proto = Map.prototype as any
+        if (typeof proto.getOrInsertComputed !== 'function') {
+          proto.getOrInsertComputed = function <K, V>(key: K, callbackFn: (k: K) => V): V {
+            if (!this.has(key)) this.set(key, callbackFn(key))
+            return this.get(key)
+          }
+        }
         const pdfjs = await import('pdfjs-dist')
         if (renderGenRef.current !== gen) return
 
