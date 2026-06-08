@@ -37,7 +37,7 @@ test.describe('Shared style — Typography', () => {
     test.setTimeout(COMPILE_TIMEOUT * 2)
     const old = await setupWithPdf(page)
     await openStyleTab(page)
-    await page.locator('select#font_family').selectOption('Helvetica Neue')
+    await page.locator('select#font_family').selectOption('Lato')
     await waitForNewPdf(page, old)
   })
 

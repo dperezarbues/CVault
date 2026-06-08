@@ -10,7 +10,7 @@ import { expect, type Page, test } from '@playwright/test'
 
 async function openEditorStyleTab(page: Page, templateName: string) {
   await page.goto('/en/editor')
-  await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
+  await page.evaluate(() => localStorage.setItem('proof-onboarded', '1'))
   await page.reload()
 
   await page.getByRole('tab', { name: /Template/i }).click()

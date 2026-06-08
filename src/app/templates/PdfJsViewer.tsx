@@ -4,23 +4,35 @@ import { useEffect, useRef, useState } from 'react'
 
 type RenderState = 'idle' | 'loading' | 'ready' | 'error'
 
+const ZOOM_STEP = 0.15
+const ZOOM_MIN = 0.5
+const ZOOM_MAX = 2.0
+
 export default function PdfJsViewer({ src }: { src: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [renderState, setRenderState] = useState<RenderState>('idle')
   const [renderError, setRenderError] = useState<string>('')
   const renderGenRef = useRef(0)
+  const lastSrcRef = useRef('')
+  const [zoom, setZoom] = useState(1.0)
 
   useEffect(() => {
     const container = containerRef.current
+    const scrollArea = scrollAreaRef.current
     if (!container || !src) return
     const gen = ++renderGenRef.current
-    setRenderState('loading')
+
+    // Only show the loading spinner when the PDF source itself changes, not on zoom
+    if (src !== lastSrcRef.current) {
+      setRenderState('loading')
+      lastSrcRef.current = src
+    }
+
     const abort = new AbortController()
 
     ;(async () => {
       try {
-        // Fetch PDF bytes in the main thread so the worker never needs to
-        // access the blob URL cross-thread (avoids opaque-origin restrictions).
         const resp = await fetch(src, { signal: abort.signal })
         if (!resp.ok) throw new Error(`fetch ${resp.status}`)
         const data = await resp.arrayBuffer()
@@ -35,7 +47,7 @@ export default function PdfJsViewer({ src }: { src: string }) {
         const pdf = await pdfjs.getDocument({ data }).promise
         if (renderGenRef.current !== gen) return
 
-        const containerWidth = container.clientWidth || 600
+        const containerWidth = scrollArea?.clientWidth || container.clientWidth || 600
         const dpr = window.devicePixelRatio || 1
         const pages: HTMLDivElement[] = []
 
@@ -43,24 +55,19 @@ export default function PdfJsViewer({ src }: { src: string }) {
           if (renderGenRef.current !== gen) return
           const page = await pdf.getPage(i)
           const baseViewport = page.getViewport({ scale: 1 })
-          const cssScale = containerWidth / baseViewport.width
-          // Canvas is rendered at device-pixel-ratio scale for sharpness; the
-          // text layer uses CSS-pixel scale so its coordinates match layout.
+          const cssScale = (containerWidth / baseViewport.width) * zoom
           const cssViewport = page.getViewport({ scale: cssScale })
           const renderViewport = page.getViewport({ scale: cssScale * dpr })
 
-          // Page wrapper — positions the text layer absolutely over the canvas.
           const wrapper = document.createElement('div')
-          wrapper.style.cssText = `position:relative;width:100%;height:${Math.floor(cssViewport.height)}px;${i > 1 ? 'margin-top:8px' : ''}`
+          wrapper.style.cssText = `position:relative;width:${Math.floor(cssViewport.width)}px;height:${Math.floor(cssViewport.height)}px;margin:${i > 1 ? '8' : '0'}px auto 0`
 
-          // Canvas
           const canvas = document.createElement('canvas')
           canvas.width = Math.floor(renderViewport.width)
           canvas.height = Math.floor(renderViewport.height)
           canvas.style.cssText = 'width:100%;display:block;'
           wrapper.appendChild(canvas)
 
-          // Text layer — invisible but DOM-queryable for selection and tests.
           const textLayerDiv = document.createElement('div')
           textLayerDiv.className = 'textLayer'
           wrapper.appendChild(textLayerDiv)
@@ -100,18 +107,22 @@ export default function PdfJsViewer({ src }: { src: string }) {
     return () => {
       abort.abort()
     }
-  }, [src])
+  }, [src, zoom])
 
   return (
     <div
-      className="w-full h-full overflow-y-auto overflow-x-hidden relative"
-      style={{ background: 'var(--c-paper-deep)' }}
+      className="w-full h-full relative"
       data-testid="pdfjs-viewer"
       data-pdf-src={src}
       data-render-state={renderState}
     >
-      {/* Imperatively managed page mount point — React never renders children here */}
-      <div ref={containerRef} />
+      <div
+        ref={scrollAreaRef}
+        className="w-full h-full overflow-y-auto overflow-x-auto"
+        style={{ background: 'var(--c-paper-deep)' }}
+      >
+        <div ref={containerRef} />
+      </div>
 
       {renderState === 'loading' && (
         <div
@@ -131,6 +142,39 @@ export default function PdfJsViewer({ src }: { src: string }) {
           </p>
         </div>
       )}
+
+      {/* Zoom controls — outside scroll area so they stay fixed in place */}
+      <div
+        className="absolute bottom-4 right-4 z-10 flex items-center rounded overflow-hidden shadow-lg"
+        style={{ background: 'var(--c-ink)' }}
+      >
+        <button
+          type="button"
+          disabled={zoom <= ZOOM_MIN}
+          onClick={() => setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))}
+          className="px-3 py-1.5 text-sm font-bold disabled:opacity-30 hover:opacity-75 transition-opacity"
+          style={{ color: 'var(--c-paper)' }}
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+        <span
+          className="text-xs font-mono w-10 text-center select-none"
+          style={{ color: 'var(--c-paper)' }}
+        >
+          {Math.round(zoom * 100)}%
+        </span>
+        <button
+          type="button"
+          disabled={zoom >= ZOOM_MAX}
+          onClick={() => setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)))}
+          className="px-3 py-1.5 text-sm font-bold disabled:opacity-30 hover:opacity-75 transition-opacity"
+          style={{ color: 'var(--c-paper)' }}
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+      </div>
     </div>
   )
 }

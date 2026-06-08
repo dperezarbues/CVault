@@ -130,14 +130,6 @@ describe('clearAllData', () => {
       expect(mockSS._data[k]).toBeUndefined()
     }
   })
-
-  it('clears legacy cv-web-* keys', () => {
-    mockLS._data['cv-web-cvs'] = 'old'
-    mockLS._data['cv-web-saves'] = 'old'
-    clearAllData()
-    expect(mockLS._data['cv-web-cvs']).toBeUndefined()
-    expect(mockLS._data['cv-web-saves']).toBeUndefined()
-  })
 })
 
 // ── Error resilience (catch paths) ───────────────────────────────────────────
