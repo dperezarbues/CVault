@@ -13,18 +13,24 @@ export default function StyleGroup({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="border-t border-gray-100 first:border-t-0">
+    <div className="first:border-t-0" style={{ borderTop: '1px solid var(--c-line)' }}>
       <button
         type="button"
         onClick={() => setOpen((x) => !x)}
-        className="flex items-center justify-between w-full py-2 text-left hover:text-gray-700 transition-colors"
+        className="flex items-center justify-between w-full py-2 text-left transition-colors"
+        style={{ borderBottom: open ? '1px solid var(--c-line)' : undefined }}
       >
-        <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+        <span
+          className="text-xs font-mono uppercase tracking-widest"
+          style={{ color: 'var(--c-faint)' }}
+        >
           {title}
         </span>
-        <span className="text-gray-400 text-xs">{open ? '▲' : '▼'}</span>
+        <span className="text-xs" style={{ color: 'var(--c-faint)' }}>
+          {open ? '▲' : '▼'}
+        </span>
       </button>
-      {open && <div className="space-y-3 pb-3">{children}</div>}
+      {open && <div className="space-y-3 pb-3 pt-2">{children}</div>}
     </div>
   )
 }

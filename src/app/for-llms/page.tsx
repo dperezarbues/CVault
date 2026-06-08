@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import MarkProof from '@/components/proof/MarkProof'
+import ProofButton from '@/components/proof/ProofButton'
 
 export const metadata = {
-  title: 'Schema Reference — CVault',
+  title: 'Schema Reference — Proof',
   description:
-    'Complete CV JSON schema and layout/style reference for CVault. For LLMs and agents generating CV data.',
+    'Complete CV JSON schema and layout/style reference for Proof. For LLMs and agents generating CV data.',
 }
 
 // ── Reusable section shell ────────────────────────────────────────────────────
@@ -17,8 +19,26 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section id={id} className="py-8 border-t border-gray-100 scroll-mt-20">
-      <h2 className="text-base font-bold text-gray-900 mb-5">{title}</h2>
+    <section
+      id={id}
+      style={{
+        borderTop: '1px solid var(--c-line)',
+        paddingTop: '2rem',
+        paddingBottom: '2rem',
+        scrollMarginTop: '5rem',
+      }}
+    >
+      <h2
+        style={{
+          fontSize: 15,
+          fontWeight: 800,
+          color: 'var(--c-ink)',
+          marginBottom: '1.25rem',
+          fontFamily: 'var(--f-display)',
+        }}
+      >
+        {title}
+      </h2>
       {children}
     </section>
   )
@@ -38,15 +58,51 @@ function Field({
   children?: React.ReactNode
 }) {
   return (
-    <div className="py-2.5 border-b border-gray-50 last:border-0">
-      <div className="flex items-baseline gap-2 flex-wrap mb-0.5">
-        <code className="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+    <div
+      style={{ padding: '0.625rem 0', borderBottom: '1px solid var(--c-line2)' }}
+      className="last:border-0"
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 8,
+          flexWrap: 'wrap' as const,
+          marginBottom: 2,
+        }}
+      >
+        <code
+          style={{
+            fontFamily: 'var(--f-mono)',
+            fontSize: 11,
+            fontWeight: 600,
+            background: 'var(--c-accent-soft)',
+            color: 'var(--c-accent-deep)',
+            padding: '2px 6px',
+            borderRadius: 3,
+          }}
+        >
           {name}
         </code>
-        <span className="text-xs text-gray-400 font-mono">{type}</span>
-        {req && <span className="text-xs text-red-500 font-medium">required</span>}
+        <span style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-faint)' }}>
+          {type}
+        </span>
+        {req && (
+          <span
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--c-accent)',
+              fontWeight: 600,
+            }}
+          >
+            required
+          </span>
+        )}
       </div>
-      <p className="text-sm text-gray-600 leading-relaxed">{desc}</p>
+      <p style={{ fontSize: 13, color: 'var(--c-sub)', lineHeight: 1.6 }}>{desc}</p>
       {children}
     </div>
   )
@@ -54,7 +110,19 @@ function Field({
 
 function Code({ children }: { children: string }) {
   return (
-    <pre className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-xs font-mono text-gray-700 overflow-x-auto leading-relaxed whitespace-pre">
+    <pre
+      style={{
+        background: '#0E0B08',
+        color: 'rgba(255,255,255,0.7)',
+        borderRadius: 4,
+        padding: '1rem',
+        fontSize: 11,
+        fontFamily: 'var(--f-mono)',
+        overflowX: 'auto',
+        lineHeight: 1.65,
+        whiteSpace: 'pre',
+      }}
+    >
       {children}
     </pre>
   )
@@ -67,54 +135,106 @@ function Tag({
   children: React.ReactNode
   color?: 'gray' | 'blue' | 'green'
 }) {
-  const cls = {
-    gray: 'bg-gray-100 text-gray-600',
-    blue: 'bg-blue-50 text-blue-700',
-    green: 'bg-green-50 text-green-700',
-  }[color]
-  return <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${cls}`}>{children}</span>
+  const styles: Record<string, React.CSSProperties> = {
+    gray: { background: 'var(--c-paper-deep)', color: 'var(--c-sub)' },
+    blue: { background: 'var(--c-accent-soft)', color: 'var(--c-accent-deep)' },
+    green: { background: '#e6f4ec', color: '#2a7a4a' },
+  }
+  return (
+    <span
+      style={{
+        fontSize: 11,
+        fontWeight: 500,
+        padding: '2px 6px',
+        borderRadius: 3,
+        fontFamily: 'var(--f-mono)',
+        ...styles[color],
+      }}
+    >
+      {children}
+    </span>
+  )
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ForLlmsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: '100vh', background: 'var(--c-paper)' }}>
       {/* Nav */}
-      <nav className="border-b border-gray-100 px-6 py-3 flex items-center justify-between max-w-4xl mx-auto">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-sm font-bold tracking-tight text-gray-900">
-            CVault
+      <nav
+        style={{
+          borderBottom: '1px solid var(--c-line)',
+          padding: '0.75rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: 896,
+          margin: '0 auto',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Link
+            href="/"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
+          >
+            <MarkProof size={26} />
+            <span
+              style={{
+                fontWeight: 900,
+                fontSize: 15,
+                letterSpacing: '-0.02em',
+                color: 'var(--c-ink)',
+                fontFamily: 'var(--f-display)',
+              }}
+            >
+              Proof
+            </span>
           </Link>
-          <span className="text-gray-200">/</span>
-          <span className="text-sm text-gray-500">Schema reference</span>
+          <span style={{ color: 'var(--c-line)', fontSize: 16 }}>/</span>
+          <span style={{ fontSize: 13, color: 'var(--c-sub)' }}>Schema reference</span>
         </div>
-        <div className="flex items-center gap-4">
-          <a href="/llms-full.txt" className="text-xs text-gray-400 hover:text-gray-600 font-mono">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <a
+            href="/llms-full.txt"
+            className="mono-link"
+            style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-faint)' }}
+          >
             llms-full.txt
           </a>
-          <a href="/llms.txt" className="text-xs text-gray-400 hover:text-gray-600 font-mono">
+          <a
+            href="/llms.txt"
+            className="mono-link"
+            style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-faint)' }}
+          >
             llms.txt
           </a>
-          <Link
-            href="/editor"
-            className="text-sm bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors"
-          >
+          <ProofButton href="/editor" variant="dark" size="sm">
             Open editor →
-          </Link>
+          </ProofButton>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div style={{ maxWidth: 896, margin: '0 auto', padding: '2.5rem 1.5rem' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Schema Reference</h1>
-          <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
-            Complete reference for generating valid CVault data. Covers the CV content JSON, layout
+        <div style={{ marginBottom: '2rem' }}>
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 900,
+              color: 'var(--c-ink)',
+              marginBottom: '0.5rem',
+              fontFamily: 'var(--f-display)',
+            }}
+          >
+            Schema Reference
+          </h1>
+          <p style={{ color: 'var(--c-sub)', fontSize: 13, lineHeight: 1.65, maxWidth: 520 }}>
+            Complete reference for generating valid Proof data. Covers the CV content JSON, layout
             structure, and all style parameters for each template. Intended for LLMs and agents
             producing CV files for import.
           </p>
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginTop: '1rem' }}>
             {[
               ['#cv-json', 'CV JSON'],
               ['#sections', 'Sections'],
@@ -125,7 +245,18 @@ export default function ForLlmsPage() {
               <a
                 key={href}
                 href={href}
-                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg transition-colors"
+                style={{
+                  fontFamily: 'var(--f-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  background: 'var(--c-paper-deep)',
+                  color: 'var(--c-ink)',
+                  padding: '4px 10px',
+                  borderRadius: 3,
+                  textDecoration: 'none',
+                  border: '1px solid var(--c-line)',
+                }}
               >
                 {label}
               </a>
@@ -135,14 +266,73 @@ export default function ForLlmsPage() {
 
         {/* ── 1. CV JSON ────────────────────────────────────────────────── */}
         <Section id="cv-json" title="1 · CV JSON schema">
-          <p className="text-sm text-gray-500 mb-5">
+          <p style={{ fontSize: 13, color: 'var(--c-sub)', marginBottom: '1.25rem' }}>
             The CV is a single JSON object. All sections are optional except{' '}
-            <code className="text-xs font-mono bg-gray-100 px-1 rounded">identity</code>. Text
-            fields in <code className="text-xs font-mono bg-gray-100 px-1 rounded">highlights</code>
-            , <code className="text-xs font-mono bg-gray-100 px-1 rounded">description</code>, and{' '}
-            <code className="text-xs font-mono bg-gray-100 px-1 rounded">summary</code> support
-            Markdown-style links:{' '}
-            <code className="text-xs font-mono bg-gray-100 px-1 rounded">[text](https://url)</code>.
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              identity
+            </code>
+            . Text fields in{' '}
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              highlights
+            </code>
+            ,{' '}
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              description
+            </code>
+            , and{' '}
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              summary
+            </code>{' '}
+            support Markdown-style links:{' '}
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              [text](https://url)
+            </code>
+            .
           </p>
 
           <Code>{`{
@@ -225,10 +415,19 @@ export default function ForLlmsPage() {
   ]
 }`}</Code>
 
-          <div className="mt-6 space-y-0.5">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <div style={{ marginTop: '1.5rem' }}>
+            <p
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'var(--c-faint)',
+                marginBottom: '0.75rem',
+              }}
+            >
               identity.contact — type values
-            </h3>
+            </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {[
                 ['email', 'Renders as mailto: link'],
@@ -239,9 +438,25 @@ export default function ForLlmsPage() {
                 ['medium', 'Uses Medium icon'],
                 ['web', 'Generic globe icon'],
               ].map(([t, d]) => (
-                <div key={t} className="bg-gray-50 rounded-lg px-3 py-2">
-                  <code className="text-xs font-mono text-blue-700">{t}</code>
-                  <p className="text-xs text-gray-400 mt-0.5">{d}</p>
+                <div
+                  key={t}
+                  style={{
+                    background: 'var(--c-card)',
+                    borderRadius: 4,
+                    padding: '8px 12px',
+                    border: '1px solid var(--c-line)',
+                  }}
+                >
+                  <code
+                    style={{
+                      fontFamily: 'var(--f-mono)',
+                      fontSize: 11,
+                      color: 'var(--c-accent-deep)',
+                    }}
+                  >
+                    {t}
+                  </code>
+                  <p style={{ fontSize: 11, color: 'var(--c-faint)', marginTop: 2 }}>{d}</p>
                 </div>
               ))}
             </div>
@@ -250,20 +465,29 @@ export default function ForLlmsPage() {
 
         {/* ── 2. Section IDs ───────────────────────────────────────────── */}
         <Section id="sections" title="2 · Available section IDs">
-          <p className="text-sm text-gray-500 mb-4">
+          <p style={{ fontSize: 13, color: 'var(--c-sub)', marginBottom: '1rem' }}>
             These are the built-in section IDs that the editor and templates know about. The sidebar
             template can also render any of these in the left column.
           </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="pb-2 pr-6 font-semibold">ID</th>
-                  <th className="pb-2 pr-6 font-semibold">JSON key</th>
-                  <th className="pb-2 font-semibold">Notes</th>
+                <tr
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--c-faint)',
+                    textAlign: 'left',
+                  }}
+                >
+                  <th style={{ paddingBottom: 8, paddingRight: 24, fontWeight: 600 }}>ID</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 24, fontWeight: 600 }}>JSON key</th>
+                  <th style={{ paddingBottom: 8, fontWeight: 600 }}>Notes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody>
                 {[
                   ['summary', 'summary', 'string'],
                   ['experience', 'experience', 'array'],
@@ -276,20 +500,37 @@ export default function ForLlmsPage() {
                   ['contact', 'identity.contact', 'sidebar only — renders contact list'],
                   ['core_strengths', 'core_strengths', 'sidebar only — string[] of bullet points'],
                 ].map(([id, key, note]) => (
-                  <tr key={id} className="text-gray-700">
-                    <td className="py-2 pr-6">
-                      <code className="text-xs font-mono text-blue-700">{id}</code>
+                  <tr
+                    key={id}
+                    style={{ borderTop: '1px solid var(--c-line2)', color: 'var(--c-ink2)' }}
+                  >
+                    <td style={{ padding: '8px 24px 8px 0' }}>
+                      <code
+                        style={{
+                          fontFamily: 'var(--f-mono)',
+                          fontSize: 11,
+                          color: 'var(--c-accent-deep)',
+                        }}
+                      >
+                        {id}
+                      </code>
                     </td>
-                    <td className="py-2 pr-6">
-                      <code className="text-xs font-mono text-gray-500">{key}</code>
+                    <td style={{ padding: '8px 24px 8px 0' }}>
+                      <code
+                        style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-sub)' }}
+                      >
+                        {key}
+                      </code>
                     </td>
-                    <td className="py-2 text-xs text-gray-500">{note}</td>
+                    <td style={{ padding: '8px 0', fontSize: 12, color: 'var(--c-sub)' }}>
+                      {note}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-gray-400 mt-4">
+          <p style={{ fontSize: 12, color: 'var(--c-faint)', marginTop: '1rem' }}>
             Custom sections: any top-level key not listed above is rendered generically (supports
             strings, string arrays, and arrays of objects with title/subtitle/description).
           </p>
@@ -297,16 +538,25 @@ export default function ForLlmsPage() {
 
         {/* ── 3. Layout JSON ───────────────────────────────────────────── */}
         <Section id="layout" title="3 · Layout JSON structure">
-          <p className="text-sm text-gray-500 mb-5">
+          <p style={{ fontSize: 13, color: 'var(--c-sub)', marginBottom: '1.25rem' }}>
             When you generate a PDF from the editor, a layout JSON is compiled alongside the CV
             data. You can also produce layout JSON directly to control section order, columns, and
             per-section spacing.
           </p>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Top-level fields
-          </h3>
-          <div className="space-y-0">
+          </p>
+          <div>
             <Field
               name="header"
               type="object"
@@ -331,11 +581,21 @@ export default function ForLlmsPage() {
             />
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mt-6 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             Section entry — full type
-          </h3>
+          </p>
           <Code>{`{ "id": "experience", "breakable": true, "pre_spacing": 0.5, "post_spacing": 0.2 }`}</Code>
-          <div className="mt-3 space-y-0">
+          <div style={{ marginTop: '0.75rem' }}>
             <Field name="id" type="string" req desc="Section ID from §2." />
             <Field
               name="breakable"
@@ -354,9 +614,19 @@ export default function ForLlmsPage() {
             />
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mt-6 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             Section entry — columns type
-          </h3>
+          </p>
           <Code>{`{
   "type": "columns",
   "columns": 2,
@@ -366,7 +636,7 @@ export default function ForLlmsPage() {
     ["certifications"]
   ]
 }`}</Code>
-          <div className="mt-3 space-y-0">
+          <div style={{ marginTop: '0.75rem' }}>
             <Field
               name="type"
               type='"columns"'
@@ -382,12 +652,24 @@ export default function ForLlmsPage() {
             />
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mt-6 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             Complete layout examples
-          </h3>
+          </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-gray-400 mb-2">Default / Minimal</p>
+              <p style={{ fontSize: 12, color: 'var(--c-faint)', marginBottom: 8 }}>
+                Default / Minimal
+              </p>
               <Code>{`{
   "header": { "style": "split" },
   "sections": [
@@ -407,7 +689,7 @@ export default function ForLlmsPage() {
 }`}</Code>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-2">Sidebar</p>
+              <p style={{ fontSize: 12, color: 'var(--c-faint)', marginBottom: 8 }}>Sidebar</p>
               <Code>{`{
   "header": { "style": "sidebar" },
   "sidebar_sections": [
@@ -428,26 +710,57 @@ export default function ForLlmsPage() {
 
         {/* ── 4. Style parameters ──────────────────────────────────────── */}
         <Section id="style" title="4 · Style parameters">
-          <p className="text-sm text-gray-500 mb-5">
+          <p style={{ fontSize: 13, color: 'var(--c-sub)', marginBottom: '1.25rem' }}>
             Style values live in the{' '}
-            <code className="text-xs font-mono bg-gray-100 px-1 rounded">style</code> key of the
-            layout JSON. All are optional — omit any to use the template default.
+            <code
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                background: 'var(--c-card)',
+                padding: '2px 6px',
+                borderRadius: 3,
+                color: 'var(--c-ink)',
+              }}
+            >
+              style
+            </code>{' '}
+            key of the layout JSON. All are optional — omit any to use the template default.
           </p>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Common — all templates
-          </h3>
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-xs border-collapse">
+          </p>
+          <div style={{ overflowX: 'auto', marginBottom: '1.5rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="pb-2 pr-4 font-semibold">Key</th>
-                  <th className="pb-2 pr-4 font-semibold">Type</th>
-                  <th className="pb-2 pr-4 font-semibold">Range / options</th>
-                  <th className="pb-2 font-semibold">Default</th>
+                <tr
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--c-faint)',
+                    textAlign: 'left',
+                  }}
+                >
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Key</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Type</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>
+                    Range / options
+                  </th>
+                  <th style={{ paddingBottom: 8, fontWeight: 600 }}>Default</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 font-mono">
+              <tbody style={{ fontFamily: 'var(--f-mono)' }}>
                 {[
                   [
                     'font_family',
@@ -473,80 +786,173 @@ export default function ForLlmsPage() {
                   ['show_contact_icons', 'string', '"true" | "false"', '"false"'],
                   ['show_contact_labels', 'string', '"true" | "false"', '"false"'],
                 ].map(([k, t, r, d]) => (
-                  <tr key={k} className="text-gray-700">
-                    <td className="py-1.5 pr-4 text-blue-700">{k}</td>
-                    <td className="py-1.5 pr-4 text-gray-500">{t}</td>
-                    <td className="py-1.5 pr-4 text-gray-500 font-sans text-xs">{r}</td>
-                    <td className="py-1.5 text-gray-500">{d}</td>
+                  <tr
+                    key={k}
+                    style={{ borderTop: '1px solid var(--c-line2)', color: 'var(--c-ink2)' }}
+                  >
+                    <td style={{ padding: '6px 16px 6px 0', color: 'var(--c-accent-deep)' }}>
+                      {k}
+                    </td>
+                    <td style={{ padding: '6px 16px 6px 0', color: 'var(--c-sub)' }}>{t}</td>
+                    <td
+                      style={{
+                        padding: '6px 16px 6px 0',
+                        color: 'var(--c-sub)',
+                        fontFamily: 'var(--f-display)',
+                        fontSize: 11,
+                      }}
+                    >
+                      {r}
+                    </td>
+                    <td style={{ padding: '6px 0', color: 'var(--c-sub)' }}>{d}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Template-specific — <Tag color="blue">default</Tag> &amp;{' '}
             <Tag color="blue">minimal</Tag>
-          </h3>
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-xs border-collapse">
+          </p>
+          <div style={{ overflowX: 'auto', marginBottom: '1.5rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="pb-2 pr-4 font-semibold">Key</th>
-                  <th className="pb-2 pr-4 font-semibold">Default</th>
-                  <th className="pb-2 font-semibold">Purpose</th>
+                <tr
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--c-faint)',
+                    textAlign: 'left',
+                  }}
+                >
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Key</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Default</th>
+                  <th style={{ paddingBottom: 8, fontWeight: 600 }}>Purpose</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 font-mono">
-                <tr className="text-gray-700">
-                  <td className="py-1.5 pr-4 text-blue-700">accent_color</td>
-                  <td className="py-1.5 pr-4">#1a56db</td>
-                  <td className="py-1.5 font-sans text-gray-500">Hyperlinks and section accents</td>
+              <tbody style={{ fontFamily: 'var(--f-mono)' }}>
+                <tr style={{ borderTop: '1px solid var(--c-line2)', color: 'var(--c-ink2)' }}>
+                  <td style={{ padding: '6px 16px 6px 0', color: 'var(--c-accent-deep)' }}>
+                    accent_color
+                  </td>
+                  <td style={{ padding: '6px 16px 6px 0' }}>#1a56db</td>
+                  <td
+                    style={{
+                      padding: '6px 0',
+                      fontFamily: 'var(--f-display)',
+                      fontSize: 11,
+                      color: 'var(--c-sub)',
+                    }}
+                  >
+                    Hyperlinks and section accents
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Template-specific — <Tag color="green">modern</Tag>
-          </h3>
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-xs border-collapse">
+          </p>
+          <div style={{ overflowX: 'auto', marginBottom: '1.5rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="pb-2 pr-4 font-semibold">Key</th>
-                  <th className="pb-2 pr-4 font-semibold">Default</th>
-                  <th className="pb-2 font-semibold">Purpose</th>
+                <tr
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--c-faint)',
+                    textAlign: 'left',
+                  }}
+                >
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Key</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Default</th>
+                  <th style={{ paddingBottom: 8, fontWeight: 600 }}>Purpose</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 font-mono">
+              <tbody style={{ fontFamily: 'var(--f-mono)' }}>
                 {[
                   ['header_bg', '#111827', 'Dark band header background'],
                   ['accent', '#3b82f6', 'Hyperlinks and accent elements'],
                 ].map(([k, d, p]) => (
-                  <tr key={k} className="text-gray-700">
-                    <td className="py-1.5 pr-4 text-blue-700">{k}</td>
-                    <td className="py-1.5 pr-4">{d}</td>
-                    <td className="py-1.5 font-sans text-gray-500">{p}</td>
+                  <tr
+                    key={k}
+                    style={{ borderTop: '1px solid var(--c-line2)', color: 'var(--c-ink2)' }}
+                  >
+                    <td style={{ padding: '6px 16px 6px 0', color: 'var(--c-accent-deep)' }}>
+                      {k}
+                    </td>
+                    <td style={{ padding: '6px 16px 6px 0' }}>{d}</td>
+                    <td
+                      style={{
+                        padding: '6px 0',
+                        fontFamily: 'var(--f-display)',
+                        fontSize: 11,
+                        color: 'var(--c-sub)',
+                      }}
+                    >
+                      {p}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Template-specific — <Tag>sidebar</Tag>
-          </h3>
-          <div className="overflow-x-auto mb-4">
-            <table className="w-full text-xs border-collapse">
+          </p>
+          <div style={{ overflowX: 'auto', marginBottom: '1rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="pb-2 pr-4 font-semibold">Key</th>
-                  <th className="pb-2 pr-4 font-semibold">Default</th>
-                  <th className="pb-2 font-semibold">Purpose</th>
+                <tr
+                  style={{
+                    fontFamily: 'var(--f-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--c-faint)',
+                    textAlign: 'left',
+                  }}
+                >
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Key</th>
+                  <th style={{ paddingBottom: 8, paddingRight: 16, fontWeight: 600 }}>Default</th>
+                  <th style={{ paddingBottom: 8, fontWeight: 600 }}>Purpose</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 font-mono">
+              <tbody style={{ fontFamily: 'var(--f-mono)' }}>
                 {[
                   ['sidebar_bg', '#1e2d3d', 'Sidebar background colour'],
                   ['sidebar_accent', '#5b9bd5', 'Sidebar section heading colour'],
@@ -555,19 +961,43 @@ export default function ForLlmsPage() {
                   ['sidebar_width', '6.5', 'Sidebar width in cm (4.5 – 9.0)'],
                   ['accent_color', '#1a56db', 'Links in the main column'],
                 ].map(([k, d, p]) => (
-                  <tr key={k} className="text-gray-700">
-                    <td className="py-1.5 pr-4 text-blue-700">{k}</td>
-                    <td className="py-1.5 pr-4">{d}</td>
-                    <td className="py-1.5 font-sans text-gray-500">{p}</td>
+                  <tr
+                    key={k}
+                    style={{ borderTop: '1px solid var(--c-line2)', color: 'var(--c-ink2)' }}
+                  >
+                    <td style={{ padding: '6px 16px 6px 0', color: 'var(--c-accent-deep)' }}>
+                      {k}
+                    </td>
+                    <td style={{ padding: '6px 16px 6px 0' }}>{d}</td>
+                    <td
+                      style={{
+                        padding: '6px 0',
+                        fontFamily: 'var(--f-display)',
+                        fontSize: 11,
+                        color: 'var(--c-sub)',
+                      }}
+                    >
+                      {p}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mt-6 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--c-faint)',
+              marginTop: '1.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             Style embedded in layout — example
-          </h3>
+          </p>
           <Code>{`{
   "header": { "style": "band" },
   "style": {
@@ -615,11 +1045,29 @@ export default function ForLlmsPage() {
                 body: 'There is no strict format for subtitle. Common conventions: "Company · Location" for experience, "Degree · Field" for education, "Issuer · Year" for certifications. The · separator is just a display convention.',
               },
             ].map((t) => (
-              <div key={t.title} className="flex gap-4">
-                <div className="shrink-0 w-1 bg-blue-100 rounded-full mt-1" />
+              <div key={t.title} style={{ display: 'flex', gap: 16 }}>
+                <div
+                  style={{
+                    flexShrink: 0,
+                    width: 3,
+                    background: 'var(--c-accent-soft)',
+                    borderRadius: 99,
+                    marginTop: 4,
+                    border: '1px solid var(--c-accent)',
+                  }}
+                />
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">{t.title}</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">{t.body}</p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: 'var(--c-ink)',
+                      marginBottom: 4,
+                    }}
+                  >
+                    {t.title}
+                  </p>
+                  <p style={{ fontSize: 13, color: 'var(--c-sub)', lineHeight: 1.65 }}>{t.body}</p>
                 </div>
               </div>
             ))}
@@ -627,21 +1075,43 @@ export default function ForLlmsPage() {
         </Section>
 
         {/* Footer */}
-        <div className="py-8 border-t border-gray-100 flex items-center justify-between">
-          <span className="text-xs text-gray-400">CVault schema reference</span>
-          <div className="flex items-center gap-4">
+        <div
+          style={{
+            borderTop: '1px solid var(--c-line)',
+            padding: '2rem 0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 11,
+              color: 'var(--c-faint)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Proof schema reference
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <a
               href="/llms-full.txt"
-              className="text-xs text-gray-400 hover:text-gray-600 font-mono"
+              className="mono-link"
+              style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-faint)' }}
             >
               llms-full.txt
             </a>
-            <a href="/llms.txt" className="text-xs text-gray-400 hover:text-gray-600 font-mono">
+            <a
+              href="/llms.txt"
+              className="mono-link"
+              style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--c-faint)' }}
+            >
               llms.txt
             </a>
-            <Link href="/editor" className="text-sm text-blue-600 hover:text-blue-800">
+            <ProofButton href="/editor" variant="primary" size="sm">
               Open editor →
-            </Link>
+            </ProofButton>
           </div>
         </div>
       </div>

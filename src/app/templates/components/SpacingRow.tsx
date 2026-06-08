@@ -12,7 +12,14 @@ export default function SpacingRow({
   onClear: () => void
 }) {
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 bg-gray-50 border-t border-gray-100 text-xs text-gray-500">
+    <div
+      className="flex items-center gap-2 px-2 py-1.5 text-xs border-t"
+      style={{
+        background: 'var(--c-paper-deep)',
+        borderColor: 'var(--c-line)',
+        color: 'var(--c-sub)',
+      }}
+    >
       <span className="shrink-0">↕</span>
       <label className="flex items-center gap-1 shrink-0">
         <span>before</span>
@@ -23,7 +30,12 @@ export default function SpacingRow({
           step={0.05}
           value={pre.toFixed(2)}
           onChange={(e) => onChange(parseFloat(e.target.value) || pre, post)}
-          className="w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-gray-700 bg-white"
+          className="w-14 rounded px-1 py-0.5 text-xs"
+          style={{
+            border: '1px solid var(--c-line)',
+            color: 'var(--c-ink)',
+            background: 'var(--c-card)',
+          }}
         />
         <span>em</span>
       </label>
@@ -36,14 +48,26 @@ export default function SpacingRow({
           step={0.05}
           value={post.toFixed(2)}
           onChange={(e) => onChange(pre, parseFloat(e.target.value) || post)}
-          className="w-14 border border-gray-200 rounded px-1 py-0.5 text-xs text-gray-700 bg-white"
+          className="w-14 rounded px-1 py-0.5 text-xs"
+          style={{
+            border: '1px solid var(--c-line)',
+            color: 'var(--c-ink)',
+            background: 'var(--c-card)',
+          }}
         />
         <span>em</span>
       </label>
       <button
         type="button"
         onClick={onClear}
-        className="ml-auto text-gray-300 hover:text-red-400 leading-none"
+        className="ml-auto leading-none transition-colors"
+        style={{ color: 'var(--c-faint)' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--c-accent)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--c-faint)'
+        }}
         title="Reset to template default"
       >
         ×

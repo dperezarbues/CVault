@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#111827"/>
-  <text x="16" y="22" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-0.5">CV</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- warm paper background -->
+  <rect width="32" height="32" rx="5" fill="#F1EBDF"/>
+  <!-- accent square (the "proof mark") -->
+  <rect x="9" y="9" width="14" height="14" rx="2" fill="#E2562E"/>
+  <!-- corner crop ticks -->
+  <path d="M3 9H6M9 3V6M29 9H26M23 3V6M3 23H6M9 29V26M29 23H26M23 29V26" stroke="#17130E" stroke-width="1.7" stroke-linecap="round"/>
 </svg>

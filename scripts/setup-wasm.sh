@@ -26,4 +26,12 @@ cp src/typst/icons/*.svg  public/typst/icons/
 
 # Fonts (New Computer Modern) are committed in public/fonts/ — no download needed.
 
+# ── 3. PDF.js worker ─────────────────────────────────────────────────────────
+PDF_WORKER_SRC="node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
+PDF_WORKER_DST="public/pdf.worker.min.mjs"
+if [ ! -f "$PDF_WORKER_DST" ] || [ "$PDF_WORKER_SRC" -nt "$PDF_WORKER_DST" ]; then
+  echo "→ Copying PDF.js worker…"
+  cp "$PDF_WORKER_SRC" "$PDF_WORKER_DST"
+fi
+
 echo "✓ WASM setup complete."

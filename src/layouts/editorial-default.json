@@ -1,0 +1,8 @@
+{
+  "sections": [
+    { "id": "summary", "breakable": true },
+    { "id": "experience", "breakable": true },
+    { "id": "awards", "breakable": false },
+    { "id": "side_projects", "breakable": false }
+  ]
+}

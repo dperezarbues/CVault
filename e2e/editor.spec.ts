@@ -1,23 +1,25 @@
 import { expect, test } from '@playwright/test'
 
-const EDITOR_URL = '/editor'
+const EDITOR_URL = '/en/editor'
 
 test.describe('Editor — initial load', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.clear())
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
   test('shows welcome modal on first visit', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Welcome to CVault' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).toBeVisible()
     await expect(page.getByText('A privacy-first CV editor')).toBeVisible()
   })
 
   test('dismisses welcome modal and shows editor', async ({ page }) => {
     await page.getByRole('button', { name: 'Get started' }).click()
-    await expect(page.getByRole('heading', { name: 'Welcome to CVault' })).not.toBeVisible()
-    await expect(page.getByRole('heading', { name: 'CV Templates' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).not.toBeVisible()
+    // Proof brand mark is visible in the left pane
+    await expect(page.locator('aside').getByText('Proof', { exact: true })).toBeVisible()
   })
 
   test('shows sample PDF banner when no CV exists', async ({ page }) => {
@@ -35,7 +37,7 @@ test.describe('Editor — initial load', () => {
   test('? button reopens welcome modal', async ({ page }) => {
     await page.getByRole('button', { name: 'Get started' }).click()
     await page.getByTitle('Help').click()
-    await expect(page.getByRole('heading', { name: 'Welcome to CVault' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: /Welcome to Proof/i })).toBeVisible()
   })
 })
 
@@ -44,21 +46,27 @@ test.describe('Editor — template and layout selection', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
-  test('shows template list in sidebar', async ({ page }) => {
-    await expect(page.locator('aside').getByRole('button').first()).toBeVisible()
+  test('shows template grid in template tab', async ({ page }) => {
+    await page.getByRole('tab', { name: /Template/i }).click()
+    await expect(page.getByText('Choose a template')).toBeVisible()
   })
 
-  test('PDF preview iframe is rendered with sample PDF', async ({ page }) => {
-    const iframe = page.locator('iframe')
-    await expect(iframe).toBeVisible()
-    const src = await iframe.getAttribute('src')
+  test('PDF preview viewer is rendered with sample PDF', async ({ page }) => {
+    const viewer = page.locator('[data-testid="pdfjs-viewer"]')
+    await expect(viewer).toBeVisible()
+    const src = await viewer.getAttribute('data-pdf-src')
     expect(src).toMatch(/\.pdf/)
   })
 
-  test('layout editor panel is visible', async ({ page }) => {
-    await expect(page.getByText('Layout editor')).toBeVisible()
+  test('layout tab is accessible', async ({ page }) => {
+    await expect(page.getByRole('tab', { name: /Layout/i })).toBeVisible()
+  })
+
+  test('style tab is accessible', async ({ page }) => {
+    await expect(page.getByRole('tab', { name: /Style/i })).toBeVisible()
   })
 })
 
@@ -67,6 +75,7 @@ test.describe('Editor — CV management', () => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   })
 
   test('opens New CV modal', async ({ page }) => {
@@ -85,13 +94,10 @@ test.describe('Editor — CV management', () => {
   test('saves a new CV and shows it in the list', async ({ page }) => {
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('E2E Test CV')
-    // Use exact match to avoid matching 'Saved' accordion and 'Save as…' button
     await page.getByRole('button', { name: 'Save', exact: true }).click()
 
     await expect(page.getByRole('heading', { name: 'New CV' })).not.toBeVisible()
-    // CV name appears in sidebar list
-    await expect(page.getByText('E2E Test CV')).toBeVisible()
-    // "Add your CV" banner is gone — a CV now exists
+    await expect(page.getByRole('button', { name: 'E2E Test CV' })).toBeVisible()
     await expect(page.getByText('Add your CV to generate your own PDF')).not.toBeVisible()
   })
 
@@ -103,26 +109,29 @@ test.describe('Editor — CV management', () => {
   })
 })
 
-test.describe('Editor — layout editor panel', () => {
+test.describe('Editor — layout and style tabs', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(EDITOR_URL)
     await page.evaluate(() => localStorage.setItem('cvault-onboarded', '1'))
     await page.reload()
-    // Wait for LayoutEditor dynamic import to finish loading
-    await expect(page.getByRole('button', { name: 'Generate PDF' })).toBeVisible({
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    // Create a CV so Generate PDF becomes enabled
+    await page.getByTitle('New CV').click()
+    await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Tab Test CV')
+    await page.getByRole('button', { name: 'Save', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Tab Test CV' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Generate PDF' }).first()).toBeVisible({
       timeout: 10_000,
     })
   })
 
-  test('Layout accordion button is visible', async ({ page }) => {
-    // AccordionSection renders "Layout ▲" or "Layout ▼"
-    await expect(page.getByRole('button', { name: /Layout/i }).first()).toBeVisible()
+  test('Layout tab shows layout panel', async ({ page }) => {
+    await page.getByRole('tab', { name: /Layout/i }).click()
+    await expect(page.getByRole('tab', { name: /Layout/i })).toHaveAttribute('aria-selected', 'true')
   })
 
-  test('Style accordion toggle opens style params', async ({ page }) => {
-    const styleBtn = page.getByRole('button', { name: /^Style/i })
-    await expect(styleBtn).toBeVisible()
-    await styleBtn.click()
+  test('Style tab shows style params', async ({ page }) => {
+    await page.getByRole('tab', { name: /Style/i }).click()
     await expect(page.getByRole('button', { name: /Reset to defaults/i })).toBeVisible()
   })
 

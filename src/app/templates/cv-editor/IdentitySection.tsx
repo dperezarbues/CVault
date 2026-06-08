@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { ContactItem } from './types'
 
 const INPUT =
@@ -19,6 +20,7 @@ type Props = {
 }
 
 export function IdentitySection({ identity, onChange }: Props) {
+  const t = useTranslations('identity')
   const set = (k: 'name' | 'headline') => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange({ ...identity, [k]: e.target.value })
 
@@ -40,15 +42,15 @@ export function IdentitySection({ identity, onChange }: Props) {
   return (
     <div className="space-y-3">
       <label className="block text-xs text-gray-500">
-        Full name
+        {t('fullName')}
         <input value={identity.name} onChange={set('name')} className={INPUT} />
       </label>
       <label className="block text-xs text-gray-500">
-        Headline
+        {t('headline')}
         <input value={identity.headline} onChange={set('headline')} className={INPUT} />
       </label>
       <div>
-        <p className="text-xs text-gray-500 mb-1.5">Contact</p>
+        <p className="text-xs text-gray-500 mb-1.5">{t('contact')}</p>
         <div className="space-y-1.5">
           {identity.contact.map((c, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: contact items identified by position
@@ -59,27 +61,27 @@ export function IdentitySection({ identity, onChange }: Props) {
                 aria-label={`Contact ${i + 1} type`}
                 className="text-xs border border-gray-200 rounded px-1.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
               >
-                {CONTACT_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                {CONTACT_TYPES.map((ct) => (
+                  <option key={ct} value={ct}>
+                    {ct}
                   </option>
                 ))}
               </select>
               <input
                 value={c.key}
                 onChange={(e) => setContact(i, 'key', e.target.value)}
-                placeholder="Label"
+                placeholder={t('labelPlaceholder')}
                 className="w-20 text-xs border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
               />
               <input
                 value={c.value}
                 onChange={(e) => setContact(i, 'value', e.target.value)}
-                placeholder="Value"
+                placeholder={t('valuePlaceholder')}
                 className="flex-1 text-xs border border-gray-200 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
               />
               <button
                 type="button"
-                aria-label="Remove contact"
+                aria-label={t('removeContact')}
                 onClick={() => removeContact(i)}
                 className="text-gray-300 hover:text-red-400 text-sm"
               >
@@ -92,7 +94,7 @@ export function IdentitySection({ identity, onChange }: Props) {
             onClick={addContact}
             className="w-full text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 hover:bg-gray-50 transition-colors"
           >
-            + Add contact
+            {t('addContact')}
           </button>
         </div>
       </div>

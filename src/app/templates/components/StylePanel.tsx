@@ -44,11 +44,15 @@ export default function StylePanel({ styleParams, style, setStyleValue, resetSty
           ))}
         </StyleGroup>
       ))}
-      <div className="border-t border-gray-100 pt-2 mt-1">
+      <div className="pt-2 mt-1" style={{ borderTop: '1px solid var(--c-line)' }}>
         <button
           type="button"
           onClick={resetStyle}
-          className="text-xs text-gray-400 hover:text-gray-600"
+          className="text-xs px-3 py-1.5 rounded-[3px] transition-colors"
+          style={{
+            boxShadow: 'inset 0 0 0 1.3px var(--c-line)',
+            color: 'var(--c-ink2)',
+          }}
         >
           ↺ Reset to defaults
         </button>

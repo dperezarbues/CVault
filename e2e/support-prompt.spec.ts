@@ -5,18 +5,19 @@ const GENERATE_TIMEOUT = 60_000
 
 test.describe('Support prompt (pre-download modal)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/editor')
+    await page.goto('/en/editor')
     await page.evaluate(() => {
       localStorage.setItem('cvault-onboarded', '1')
       sessionStorage.removeItem('cvault-support-prompted')
     })
     await page.reload()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
 
     // Create a CV so Generate PDF becomes available
     await page.getByTitle('New CV').click()
     await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Support Test CV')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByText('Support Test CV')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Support Test CV' })).toBeVisible()
   })
 
   test('support prompt is shown before download when configured', async ({ page }) => {

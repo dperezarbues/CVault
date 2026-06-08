@@ -1,20 +1,20 @@
-// Unified storage abstraction for CVault.
+// Storage abstraction for Proof.
 // In normal mode  → localStorage  (persists across sessions)
 // In private mode → sessionStorage (auto-clears when tab closes)
 //
 // Private mode flag is stored in sessionStorage itself — it lives only for the
 // current tab and is never written to localStorage.
 
-const PRIVATE_FLAG = 'cvault-private'
+const PRIVATE_FLAG = 'proof-private'
 
 export const KEYS = {
-  cvs: 'cvault-cvs',
-  currentCv: 'cvault-current-cv',
-  styleOverrides: 'cvault-style-overrides',
-  layoutOverrides: 'cvault-layout-overrides',
-  saves: 'cvault-saves',
-  onboarded: 'cvault-onboarded',
-  supportPrompted: 'cvault-support-prompted',
+  cvs: 'proof-cvs',
+  currentCv: 'proof-current-cv',
+  styleOverrides: 'proof-style-overrides',
+  layoutOverrides: 'proof-layout-overrides',
+  saves: 'proof-saves',
+  onboarded: 'proof-onboarded',
+  supportPrompted: 'proof-support-prompted',
 } as const
 
 function store(): Storage {
@@ -99,9 +99,10 @@ export function disablePrivateMode(): void {
   }
 }
 
-/** Removes all CVault data from both localStorage and sessionStorage, including legacy keys. */
+/** Removes all Proof data from both localStorage and sessionStorage. */
 export function clearAllData(): void {
-  Object.values(KEYS).forEach((k) => {
+  const allKeys = Object.values(KEYS)
+  allKeys.forEach((k) => {
     try {
       localStorage.removeItem(k)
     } catch (err) {
@@ -111,26 +112,6 @@ export function clearAllData(): void {
       sessionStorage.removeItem(k)
     } catch (err) {
       devWarn('clearAllData(sessionStorage)', err)
-    }
-  })
-  // Also clear the old cv-web-* keys from before the rename
-  const legacyKeys = [
-    'cv-web-cvs',
-    'cv-web-current-cv',
-    'cv-web-style-overrides',
-    'cv-web-saves',
-    'cv-web-onboarded',
-  ]
-  legacyKeys.forEach((k) => {
-    try {
-      localStorage.removeItem(k)
-    } catch (err) {
-      devWarn('clearAllData(legacy/localStorage)', err)
-    }
-    try {
-      sessionStorage.removeItem(k)
-    } catch (err) {
-      devWarn('clearAllData(legacy/sessionStorage)', err)
     }
   })
 }

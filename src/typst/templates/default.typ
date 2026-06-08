@@ -13,7 +13,6 @@
 #let show-qr             = style.at("show_qr",             default: show-qr-sys)             == "true"
 #let show-contact-icons  = style.at("show_contact_icons",  default: show-contact-icons-sys)  == "true"
 #let show-contact-labels = style.at("show_contact_labels", default: show-contact-labels-sys) == "true"
-#let qr-url              = style.at("qr_url",              default: qr-url-sys)
 
 // ── Page & typography ────────────────────────────────────────────────────────
 #set page(
@@ -86,6 +85,10 @@
     stacked-content
   }
 }
+
+// ── Header bottom rule ────────────────────────────────────────────────────────
+#v(sp-md)
+#line(length: 100%, stroke: 1.5pt + rule-color)
 
 // ── Layout ───────────────────────────────────────────────────────────────────
 #for section in layout.sections {

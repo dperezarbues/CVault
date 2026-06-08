@@ -15,7 +15,7 @@ export default function StyleParamField({
     const v = (value as string) ?? p.default
     return (
       <div className="flex items-center justify-between gap-2">
-        <label htmlFor={p.key} className="text-xs text-gray-600 flex-1">
+        <label htmlFor={p.key} className="text-xs flex-1" style={{ color: 'var(--c-ink2)' }}>
           {p.label}
         </label>
         <div className="flex items-center gap-1.5">
@@ -24,9 +24,12 @@ export default function StyleParamField({
             type="color"
             value={v}
             onChange={(e) => onChange(p.key, e.target.value)}
-            className="w-7 h-7 rounded cursor-pointer border border-gray-200 p-0.5 bg-white"
+            className="w-7 h-7 rounded cursor-pointer p-0.5"
+            style={{ border: '1px solid var(--c-line)', background: 'var(--c-card)' }}
           />
-          <span className="text-xs text-gray-400 font-mono w-16 text-right">{v}</span>
+          <span className="text-xs font-mono w-16 text-right" style={{ color: 'var(--c-faint)' }}>
+            {v}
+          </span>
         </div>
       </div>
     )
@@ -34,14 +37,19 @@ export default function StyleParamField({
   if (p.type === 'select') {
     return (
       <div className="flex items-center justify-between gap-2">
-        <label htmlFor={p.key} className="text-xs text-gray-600 flex-1">
+        <label htmlFor={p.key} className="text-xs flex-1" style={{ color: 'var(--c-ink2)' }}>
           {p.label}
         </label>
         <select
           id={p.key}
           value={(value as string) ?? p.default}
           onChange={(e) => onChange(p.key, e.target.value)}
-          className="text-xs border border-gray-200 rounded px-2 py-1 text-gray-700 bg-white max-w-36"
+          className="text-xs rounded px-2 py-1 max-w-36"
+          style={{
+            border: '1px solid var(--c-line)',
+            background: 'var(--c-card)',
+            color: 'var(--c-ink)',
+          }}
         >
           {p.options.map((o) => (
             <option key={o.value} value={o.value}>
@@ -56,14 +64,17 @@ export default function StyleParamField({
     const checked = ((value as string) ?? p.default) === 'true'
     return (
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-gray-600 flex-1">{p.label}</span>
+        <span className="text-xs flex-1" style={{ color: 'var(--c-ink2)' }}>
+          {p.label}
+        </span>
         <button
           type="button"
           role="switch"
           aria-checked={checked}
           aria-label={p.label}
           onClick={() => onChange(p.key, checked ? 'false' : 'true')}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? 'bg-blue-500' : 'bg-gray-200'}`}
+          className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
+          style={{ background: checked ? 'var(--c-accent)' : 'var(--c-line)' }}
         >
           <span
             className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-4' : 'translate-x-1'}`}
@@ -75,7 +86,7 @@ export default function StyleParamField({
   if (p.type === 'text') {
     return (
       <div className="flex flex-col gap-1">
-        <label htmlFor={p.key} className="text-xs text-gray-600">
+        <label htmlFor={p.key} className="text-xs" style={{ color: 'var(--c-ink2)' }}>
           {p.label}
         </label>
         <input
@@ -84,7 +95,12 @@ export default function StyleParamField({
           value={(value as string) ?? p.default}
           placeholder={p.placeholder ?? ''}
           onChange={(e) => onChange(p.key, e.target.value)}
-          className="text-xs border border-gray-200 rounded px-2 py-1 text-gray-700 bg-white w-full"
+          className="text-xs rounded px-2 py-1 w-full"
+          style={{
+            border: '1px solid var(--c-line)',
+            background: 'var(--c-card)',
+            color: 'var(--c-ink)',
+          }}
         />
       </div>
     )
@@ -92,13 +108,14 @@ export default function StyleParamField({
   // range
   const v = (value as number) ?? p.default
   const decimals = p.step >= 1 ? 0 : p.step >= 0.1 ? 1 : 2
+  const pct = ((v - p.min) / (p.max - p.min)) * 100
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <label htmlFor={p.key} className="text-xs text-gray-600">
+        <label htmlFor={p.key} className="text-xs" style={{ color: 'var(--c-ink2)' }}>
           {p.label}
         </label>
-        <span className="text-xs text-gray-400 font-mono">
+        <span className="text-xs font-mono" style={{ color: 'var(--c-faint)' }}>
           {v.toFixed(decimals)}
           {p.unit}
         </span>
@@ -111,9 +128,13 @@ export default function StyleParamField({
         step={p.step}
         value={v}
         onChange={(e) => onChange(p.key, parseFloat(e.target.value))}
-        className="w-full accent-blue-500 h-1.5"
+        className="w-full h-1.5"
+        style={{
+          accentColor: 'var(--c-accent)',
+          background: `linear-gradient(to right, var(--c-accent) ${pct}%, var(--c-line) ${pct}%)`,
+        }}
       />
-      <div className="flex justify-between text-xs text-gray-300 mt-0.5">
+      <div className="flex justify-between text-xs mt-0.5" style={{ color: 'var(--c-faint)' }}>
         <span>
           {p.min}
           {p.unit}
