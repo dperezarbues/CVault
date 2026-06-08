@@ -13,6 +13,7 @@ export default function PdfJsViewer({ src }: { src: string }) {
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [renderState, setRenderState] = useState<RenderState>('idle')
   const [renderError, setRenderError] = useState<string>('')
+  const [renderedSrc, setRenderedSrc] = useState('')
   const renderGenRef = useRef(0)
   const lastSrcRef = useRef('')
   const [zoom, setZoom] = useState(1.0)
@@ -100,6 +101,7 @@ export default function PdfJsViewer({ src }: { src: string }) {
 
         if (renderGenRef.current !== gen) return
         container.replaceChildren(...pages)
+        setRenderedSrc(src)
         setRenderState('ready')
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return
@@ -122,6 +124,7 @@ export default function PdfJsViewer({ src }: { src: string }) {
       data-testid="pdfjs-viewer"
       data-pdf-src={src}
       data-render-state={renderState}
+      data-rendered-src={renderedSrc}
     >
       <div
         ref={scrollAreaRef}
